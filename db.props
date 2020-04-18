@@ -1,0 +1,5 @@
+jdbc.url=jdbc:mariadb://localhost:3306
+jdbc.schema=cab302
+jdcb.username=root
+jdcb.password=
+
