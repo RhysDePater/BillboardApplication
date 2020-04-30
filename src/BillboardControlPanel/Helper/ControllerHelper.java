@@ -1,7 +1,6 @@
 package BillboardControlPanel.Helper;
 
 import BillboardControlPanel.Controller.MainController;
-import BillboardControlPanel.Model.DBConnection;
 import BillboardControlPanel.Model.DBInteract;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
@@ -9,13 +8,12 @@ import BillboardControlPanel.View.MasterView;
 import javax.swing.*;
 import java.awt.*;
 import java.security.*;
-import java.security.MessageDigest.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ControllerHelper {
 
-    //GUI RELATED HELPERS
+
     public static MainView updateFrame(MainView mainView, MasterView masterView){
         mainView.getMainFrame().getContentPane().removeAll();
         mainView.getMainFrame().getContentPane().add(masterView.getNorthCard(), BorderLayout.NORTH);
@@ -53,7 +51,7 @@ public class ControllerHelper {
     public static Boolean[] checkUserPrivileges(String userID){
         int amountOfPrivliges = 4;
         Boolean[] boolPrivilges = new Boolean[amountOfPrivliges];
-        String[][] userInfo = DBInteract.getUserInfo(DBInteract.selectTarget("user", "id", userID));
+        String[][] userInfo = DBInteract.getUserData(DBInteract.selectTargetUserJoinPermission("user.id", userID));
         //userInfo[row of info][columns from row] -> userInfo[row][0=id:1=email: 2=password: 3=createbillboard: 4=editbillboard: 5=scheduel: 6=edituser]
         for(int i =0; i < amountOfPrivliges; ++i){
             boolPrivilges[i] = Boolean.valueOf(userInfo[0][i + 3]);
@@ -94,13 +92,6 @@ public class ControllerHelper {
     }
 
     public static byte[] getSalt(String userEmailInput){
-        ResultSet resultSet = DBInteract.dbQueryCommand(DBInteract.selectTarget("salts", "salt", "user_email", userEmailInput));
-        try {
-            byte[] salt = resultSet.getBytes("salt");
-            return salt;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 }

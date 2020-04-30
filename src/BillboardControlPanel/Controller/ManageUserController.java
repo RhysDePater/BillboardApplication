@@ -75,12 +75,12 @@ public class ManageUserController {
         switch (action){
             case(JOptionPane.OK_OPTION):
                 JRadioButton[] jBtnPermission = manageUserCard.getPermissionField();
-                Boolean[] permissions = new Boolean[jBtnPermission.length];
+                int[] permissions = new int[jBtnPermission.length];
                 for(int i = 0; i < jBtnPermission.length; ++i){
                     if(jBtnPermission[i].isSelected()){
-                        permissions[i] = true;
+                        permissions[i] = 1;
                     } else{
-                        permissions[i] = false;
+                        permissions[i] = 0;
                     }
                 }
 
@@ -91,18 +91,15 @@ public class ManageUserController {
 
                 String[] fieldStringArray = {
                     fieldArray[0].getText(),
-                        //useremail, userpass, salt
-                    ControllerHelper.createSecurePassword(fieldArray[1].getText(), ControllerHelper.createSalt(fieldArray[0].getText())),
+                        fieldArray[1].getText()
                 };
 
                 DBInteract.dbExecuteCommand(DBInteract.createUser(
                         fieldStringArray[0],
                         fieldStringArray[1],
-                        permissions[0],
-                        permissions[1],
-                        permissions[2],
-                        permissions[3]
+                        "salt"
                 ));
+                DBInteract.dbExecuteCommand(DBInteract.createPermission(permissions[0], permissions[1], permissions[2], permissions[3]));
                 ControllerHelper.resetJTextFields(fieldArray);
                 break;
             case(JOptionPane.CANCEL_OPTION):
@@ -124,16 +121,16 @@ public class ManageUserController {
             } else{
                 switch (selectedValue){
                     case("false"):
-                        selectedValue = "true";
+                        selectedValue = "1";
                         break;
                     case("true"):
-                        selectedValue = "false";
+                        selectedValue = "0";
                         break;
                 }
-                int action = ControllerHelper.confirmPopUp("Update " + colName + " to " + selectedValue.toUpperCase() + "?");
+                int action = ControllerHelper.confirmPopUp("Update " + colName + " to " + Boolean.valueOf(selectedValue).toString().toUpperCase() + "?");
                 switch (action) {
                     case (JOptionPane.OK_OPTION):
-                        DBInteract.dbExecuteCommand(DBInteract.updateColumn("user", colName, selectedValue, rowIdValue));
+                        DBInteract.dbExecuteCommand(DBInteract.updateColumn("permission", colName, selectedValue, rowIdValue));
                         break;
                     case (JOptionPane.CANCEL_OPTION):
                         break;
@@ -173,7 +170,7 @@ public class ManageUserController {
                 int action = JOptionPane.showConfirmDialog(null, "DELETE USER " + rowIdValue,"ARE YOU SURE", JOptionPane.OK_CANCEL_OPTION);
                 switch(action){
                     case(JOptionPane.OK_OPTION):
-                        DBInteract.dbExecuteCommand(DBInteract.deleteInnerJoin("user", "salts", "email",  "user_email", rowEmailValue));
+                        DBInteract.dbExecuteCommand(DBInteract.deleteInnerJoin("user", "permission", "id", "user_id", "username", rowEmailValue));
                         break;
                     case(JOptionPane.CANCEL_OPTION):
                         break;

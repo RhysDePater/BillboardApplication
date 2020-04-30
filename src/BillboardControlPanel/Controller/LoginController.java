@@ -34,7 +34,7 @@ public class LoginController{
         loginCard.getBypassLogIn().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[][] userInfo = DBInteract.getUserInfo(DBInteract.selectTarget("user", "email", "ADMIN"));
+                String[][] userInfo = DBInteract.getUserData(DBInteract.selectUserJoinPermission());
                 currentUserID = userInfo[0][0];
                 currentUserPrivs = ControllerHelper.checkUserPrivileges(currentUserID);
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
@@ -44,24 +44,22 @@ public class LoginController{
 
 
     //LOGIN TOKEN AUTHENTICATION - TO BE DONE
-    private void loginToken(){
-        String userEmailInput = loginCard.getUserEmailTextField().getText();
+    private void loginToken() {
+        String username = loginCard.getUserEmailTextField().getText();
         String userPasswordInput = loginCard.getPasswordTextField().getText();
         //userInfo[row of info][columns from row] -> userInfo[row][0=id:1=email: 2=password: 3=createBillboard: 4=editBillboard: 5=schedule: 6=editUser]
-        String[][] userInfo = DBInteract.getUserInfo(DBInteract.selectTarget("user", "email", userEmailInput));
-        String userEmailDB = userInfo[0][1];
+        String[][] userInfo = DBInteract.getUserData(DBInteract.selectTargetUserJoinPermission("username", username));
+        String usernameDB = userInfo[0][1];
         String userPasswordDB = userInfo[0][2];
 
-
-
-        if(userEmailDB.equals(userEmailInput) && userPasswordDB.equals(userPasswordInput)){
+        if (usernameDB.equals(username) && userPasswordDB.equals(userPasswordInput)) {
             ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
             currentUserID = userInfo[0][0];
             currentUserPrivs = ControllerHelper.checkUserPrivileges(currentUserID);
-        } else{
+        } else {
             ControllerHelper.returnMessage("wrong password/username");
-            System.out.println("DB:" +  userEmailDB);
-            System.out.println("INPUT:" + userEmailInput);
+            System.out.println("DB:" + usernameDB);
+            System.out.println("INPUT:" + username);
         }
     }
 

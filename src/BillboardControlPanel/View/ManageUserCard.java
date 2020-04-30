@@ -37,7 +37,7 @@ public class ManageUserCard extends MasterView {
         centerCard = ViewHelper.createPanel(Color.white);
         JLabel titleLabel = ViewHelper.createLabel("Manage Users", ViewHelper.TITLE_FONT);
         //get user table to display
-        userTable = ViewHelper.createJTable(DBInteract.getUserInfo(DBInteract.selectAll("user")), DBInteract.getColNames("user"));
+        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), DBInteract.getColNames(DBInteract.selectUserJoinPermission()));
         centerCard.add(titleLabel);
         centerCard.add(ViewHelper.createLabel("Double click to edit cell", ViewHelper.TEXT_FONT));
         centerCard.add(new JScrollPane(userTable));

@@ -19,7 +19,7 @@ public class DBInteract {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    };
+    }
 
     /**
      * Runs a Query Command for any given 'valid' SQL command
@@ -37,39 +37,53 @@ public class DBInteract {
             ex.printStackTrace();
             return null;
         }
-    };
+    }
 
 
     //CREATE FUNCTIONS
+
     /**
      * SQL COMMAND to Create new user and Insert into database
-     * @param email
-     * @param password
-     * @param createBillboard
-     * @param editAllBillboards
-     * @param scheduleBillboards
-     * @param editUsers
+     *
+     * @param username  name input value
+     * @param password  password input value
+     * @param saltValue saltValue relative to user
      * @return ReturnType=String: Insert User command
      */
-    public static String createUser(String email, String password, Boolean createBillboard, Boolean editAllBillboards, Boolean scheduleBillboards, Boolean editUsers){
-        String createUser = "INSERT INTO user (email, password, create_billboards, edit_billboard, schedule_billboards, edit_users) VALUES (" +
-                "'" + email + "'," +
+    public static String createUser(String username, String password, String saltValue) {
+        return "INSERT INTO user (username, password, salt) VALUES (" +
+                "'" + username + "'," +
                 " '" + password + "'," +
-                " " + createBillboard + "," +
-                " " + editAllBillboards + "," +
-                " " + scheduleBillboards + "," +
-                " " + editUsers + ")";
-        return createUser;
+                " " + saltValue + ")";
     }
 
     /**
+     * Create user permissions IS CALLED DIRECTLY after create user
+     *
+     * @param create_billboard   tinyint value ? 0 : 1
+     * @param edit_billboard     tinyint value ? 0 : 1
+     * @param schedule_billboard tinyint value ? 0 : 1
+     * @param edit_user          tinyint value ? 0 : 1
+     * @return String command to create permission
+     */
+    public static String createPermission(int create_billboard, int edit_billboard, int schedule_billboard, int edit_user) {
+        return "INSERT INTO permission (user_id, create_billboard, edit_billboard, schedule_billboard, edit_user) VALUES (LAST_INSERT_ID(), " +
+                "'" + create_billboard + "'," +
+                " '" + edit_billboard + "'," +
+                "'" + schedule_billboard + "'," +
+                " " + edit_user + ")";
+    }
+
+
+    /**
      * SQL CREATE COMMAND insert userPasswords' salt into database
+     *
      * @param salt
      * @param userEmail
      * @return
      */
-    public static String createSalt(byte[] salt, String userEmail){
-        String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('"+ userEmail +"','"+salt+"')";
+    public static String createSalt(byte[] salt, String userEmail) {
+        String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('" + userEmail + "','" + salt + "')";
         return createSalt;
     }
 
@@ -109,28 +123,54 @@ public class DBInteract {
 
     /**
      * SQL Query to select a specific row and column from a table
+     *
      * @param table
      * @param targetColumn the target column of info to be returned
-     * @param columnName Column to match
-     * @param toMatch   String to match to database
+     * @param columnName   Column to match
+     * @param toMatch      String to match to database
      * @return ReturnType=String: Select query SQL command
      */
-    public static String selectTarget(String table, String targetColumn ,String columnName, String toMatch){
-        String selectQuery = "SELECT " + targetColumn + " from " + table + " WHERE " + columnName + "='" + toMatch +"'";
+    public static String selectTarget(String table, String targetColumn, String columnName, String toMatch) {
+        String selectQuery = "SELECT " + targetColumn + " from " + table + " WHERE " + columnName + "='" + toMatch + "'";
         return selectQuery;
     }
 
+    /**
+     * Inner joins user table and permission table and returns the joined table
+     *
+     * @return
+     */
+    public static String selectUserJoinPermission() {
+        String selectQuery = "SELECT user.id, username, password, create_billboard, edit_billboard, schedule_billboard, edit_user FROM user INNER JOIN permission ON user.id = permission.user_id";
+        return (selectQuery);
+    }
+
+    /**
+     * Selects a target from user inner joined permission and returns the target
+     *
+     * @param columnName column to match
+     * @param toMatch    value to match
+     * @return
+     */
+    public static String selectTargetUserJoinPermission(String columnName, String toMatch) {
+        String selectQuery = "SELECT user.id, username, password, create_billboard, edit_billboard, schedule_billboard, edit_user FROM user INNER JOIN permission ON user.id = permission.user_id WHERE "
+                + columnName + "='" + toMatch + "'";
+        return (selectQuery);
+    }
+
     //UPDATE FUNCTIONS
+
     /**
      * SQL UPDATE COMMAND update column from a given table using id as identifier
-     * @param tableName table name to be updated
+     *
+     * @param tableName  table name to be updated
      * @param columnName column name to be updated
-     * @param newValue new value to be inserted
-     * @param id    id of row
+     * @param newValue   new value to be inserted
+     * @param id         id of row
      * @return ReturnType=String:
      */
-    public static String updateColumn(String tableName, String columnName, String newValue, String id){
-        String updateColumn = "UPDATE "+ tableName + " SET " + columnName + "=" + newValue + " WHERE id=" + id;
+    public static String updateColumn(String tableName, String columnName, String newValue, String id) {
+        String updateColumn = "UPDATE " + tableName + " SET " + columnName + "='" + newValue + "' WHERE id=" + id;
         return updateColumn;
     }
 
@@ -152,74 +192,79 @@ public class DBInteract {
      * @return
      */
     public static String deleteTarget(String table, String targetID){
-        String deleteQuery = "DELETE from " + table + " WHERE id='" + targetID +"'";
+        String deleteQuery = "DELETE from " + table + " WHERE id='" + targetID + "'";
         return deleteQuery;
     }
 
     /**
      * SQL DELETE COMMAND delete rows from tables with correlating target
+     *
      * @param table1
      * @param table2
      * @param table1ColName table1 col name to check
      * @param table2ColName table2 col name to check
-     * @param target target unique value
+     * @param target        target unique value
      * @return
      */
-    public static String deleteInnerJoin(String table1, String table2, String table1ColName, String table2ColName, String target){
-        String innerJoinDelete = "DELETE " +table1+ ", " +table2+ " FROM "+table1+" INNER JOIN " +table2+ " ON" +
-                " " +table2 + "." + table2ColName+ "=" +table1 + "." + table1ColName+ " WHERE "+table1 + "." + table1ColName+ "='"+target+"'";
-        //"DELETE user, salts FROM user INNER JOIN salts ON salts.user_email=user.email WHERE user.email='11'"
+    public static String deleteInnerJoin(String table1, String table2, String table1ColName, String table2ColName, String targetColumn, String target) {
+        String innerJoinDelete = "DELETE " + table1 + ", " + table2 + " FROM " + table1 + " INNER JOIN " + table2 + " ON" +
+                " " + table2 + "." + table2ColName + "=" + table1 + "." + table1ColName + " WHERE " + table1 + "." + targetColumn + "='" + target + "'";
+        //"DELETE user, permission FROM user INNER JOIN permission ON permission.user_id=user.id WHERE user.id='2'"
         return innerJoinDelete;
     }
 
-
     //GETS
+
     /**
-     * Queries the user Table and returns results
-     * @param queryCommand command defining what to return from user table
+     * Queries the user Table inner joined with permission table and returns results
+     *
+     * @param queryCommand TAKES A QUERY COMMAND FOR USER TABLE INNER JOINED WITH PERMISSIONS
      * @return ReturnType=String[][]: containing results from query
      */
-    public static String[][] getUserInfo(String queryCommand){
-        try{
-            ResultSet rs = DBInteract.dbQueryCommand(queryCommand);
+    public static String[][] getUserData(String queryCommand) throws NullPointerException {
+        try {
+            ResultSet rs = dbQueryCommand(queryCommand);
             int rowCount = getRowCount(rs);
             int colCount = getColCount(rs);
-            String[] colNames = getColNames("user");
+            String[] colNames = getColNames(queryCommand);
             rs.first();
             String[][] userList = new String[rowCount][colCount];
-            for(int i=0; i < rowCount; ++i){
+            for (int i = 0; i < rowCount; ++i) {
                 String id = Integer.toString(rs.getInt(colNames[0]));
-                String email = rs.getString(colNames[1]);
+                String username = rs.getString(colNames[1]);
                 String password = rs.getString(colNames[2]);
                 Boolean createBillboard = rs.getBoolean(colNames[3]);
                 Boolean editAllBillboards = rs.getBoolean(colNames[4]);
                 Boolean scheduleBillboards = rs.getBoolean(colNames[5]);
                 Boolean editUsers = rs.getBoolean(colNames[6]);
-                String[] colItem = new String[]{id, email, password, String.valueOf(createBillboard), String.valueOf(editAllBillboards), String.valueOf(scheduleBillboards), String.valueOf(editUsers)};
-                for(int j=0; j< colCount; ++j){
+                String[] colItem = new String[]{id, username, password, String.valueOf(createBillboard), String.valueOf(editAllBillboards), String.valueOf(scheduleBillboards), String.valueOf(editUsers)};
+                for (int j = 0; j < colCount; ++j) {
                     userList[i][j] = colItem[j];
                 }
                 rs.next();
             }
-            return userList;
+                return userList;
         } catch (SQLException e){
-            System.err.println(e);
+            System.out.println(e);
             return null;
         }
+
     }
 
     /**
      * Queries a table, parses resultSet metadata, returning column names
-     * @param table
+     *
+     * @param commandToQuery an sql command to return the table which column names are to be retrieved from
      * @return ReturnType=String[]: containing column names
      */
-    public static String[] getColNames(String table){
+    public static String[] getColNames(String commandToQuery) throws NullPointerException {
         try {
-            ResultSet rs = DBInteract.dbQueryCommand(DBInteract.selectAll(table, 1));
+            String formattedQuery = commandToQuery + " LIMIT 1";
+            ResultSet rs = DBInteract.dbQueryCommand(formattedQuery);
             ResultSetMetaData rsmd = rs.getMetaData();
             int colCount = getColCount(rs);
             String[] colNames = new String[colCount];
-            for(int i = 1; i <= colCount; ++i){
+            for (int i = 1; i <= colCount; ++i) {
                 colNames[i - 1] = rsmd.getColumnName(i);
             }
             return colNames;
@@ -228,6 +273,8 @@ public class DBInteract {
             return null;
         }
     }
+
+
     //private functions
     /**
      * Gets table metadata(column count) from result set

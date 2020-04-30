@@ -17,8 +17,7 @@ North panel as of now only contains a home button, Center panel is for content a
 +MASTERVIEW adult class containing some general functions for all cards
 
 **CONTROLLER**
-Controller handles all event handling
-Each CARD has a corresponding controller handling all events for that card.
+Controller handles all event handlingEach CARD has a corresponding controller handling all events for that card.
 The controller accesses each element of the card through gets and sets(can be found towards the bottom of any class)
 +HOMECONTROLLER
 +LOGINCONTROLLER
