@@ -32,3 +32,5 @@ Model contains all database related commands aswell as the database model itself
 +DBConnection initiates a database connection instance and is called in DBInteract
 +DBInteract manages all command and queries towards the database
 +models.sql is the file used to create the database. U HAVE TO GIVE YOURSELF(ROOTUSER) ADMIN PRIVILEGES OR U WILL GET A FAILED CONNECTION ERROR. i did this through console
+
+EIDTED HERE
