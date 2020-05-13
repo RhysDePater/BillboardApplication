@@ -158,24 +158,28 @@ public class ManageUserController {
     }
 
     private void deleteUser(){
-        if(selectedRow == -1 || selectedCol == -1){
-            ControllerHelper.returnMessage("Please Select a User");
-        } else{
-            String rowIdValue = manageUserCard.getUserTable().getValueAt(selectedRow, 0).toString();
-            String rowEmailValue = manageUserCard.getUserTable().getValueAt(selectedRow, 1).toString();
-            if(rowIdValue.equals(MainController.getLoginController().getCurrentUserID())) {
-                ControllerHelper.returnMessage("CANT DELETE SELF");
-            }
-            else {
-                int action = JOptionPane.showConfirmDialog(null, "DELETE USER " + rowIdValue,"ARE YOU SURE", JOptionPane.OK_CANCEL_OPTION);
-                switch(action){
-                    case(JOptionPane.OK_OPTION):
-                        DBInteract.dbExecuteCommand(DBInteract.deleteInnerJoin("user", "permission", "id", "user_id", "username", rowEmailValue));
-                        break;
-                    case(JOptionPane.CANCEL_OPTION):
-                        break;
+        switch (selectedCol) {
+            case (-1):
+                ControllerHelper.returnMessage("Please Select a User");
+                break;
+            case (1):
+                ControllerHelper.returnMessage("Admin user cannot be deleted");
+                break;
+            default:
+                String rowIdValue = manageUserCard.getUserTable().getValueAt(selectedRow, 0).toString();
+                String rowEmailValue = manageUserCard.getUserTable().getValueAt(selectedRow, 1).toString();
+                if (rowIdValue.equals(MainController.getLoginController().getCurrentUserID())) {
+                    ControllerHelper.returnMessage("CANT DELETE SELF");
+                } else {
+                    int action = JOptionPane.showConfirmDialog(null, "DELETE USER " + rowIdValue, "ARE YOU SURE", JOptionPane.OK_CANCEL_OPTION);
+                    switch (action) {
+                        case (JOptionPane.OK_OPTION):
+                            DBInteract.dbExecuteCommand(DBInteract.deleteInnerJoin("user", "permission", "id", "user_id", "username", rowEmailValue));
+                            break;
+                        case (JOptionPane.CANCEL_OPTION):
+                            break;
+                    }
                 }
-            }
         }
         ControllerHelper.refreshUsersTablePanel();
     }
