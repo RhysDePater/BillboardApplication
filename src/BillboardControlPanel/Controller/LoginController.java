@@ -43,7 +43,7 @@ public class LoginController{
         });
     }
 
-
+    //edit to connect to server not db
     //LOGIN TOKEN AUTHENTICATION - TO BE DONE
     private void loginToken() {
         String username = loginCard.getUserEmailTextField().getText();

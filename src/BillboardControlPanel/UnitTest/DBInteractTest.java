@@ -1,13 +1,14 @@
-package BillboardControlPanel.Model;
+package BillboardControlPanel.UnitTest;
 
+import BillboardControlPanel.Model.DBInteract;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 class DBInteractTest extends DBInteract {
-
     static ResultSet rs;
 
     @BeforeAll

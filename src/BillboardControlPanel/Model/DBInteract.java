@@ -57,6 +57,7 @@ public class DBInteract {
                 " " + saltValue + ")";
     }
 
+
     /**
      * Create user permissions IS CALLED DIRECTLY after create user
      *
@@ -74,18 +75,6 @@ public class DBInteract {
                 " " + edit_user + ")";
     }
 
-
-    /**
-     * SQL CREATE COMMAND insert userPasswords' salt into database
-     *
-     * @param salt
-     * @param userEmail
-     * @return
-     */
-    public static String createSalt(byte[] salt, String userEmail) {
-        String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('" + userEmail + "','" + salt + "')";
-        return createSalt;
-    }
 
     //SELECT FUNCTIONS
     /**
@@ -213,8 +202,8 @@ public class DBInteract {
         return innerJoinDelete;
     }
 
-    //GETS
 
+    //GETS
     /**
      * Queries the user Table inner joined with permission table and returns results
      *

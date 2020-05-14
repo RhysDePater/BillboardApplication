@@ -70,6 +70,7 @@ public class ManageUserController {
         });
     }
 
+    //edit to connect to server not db
     private void createUser(){
         int action = ManageUserCard.createUserCreateInputBox();
         switch (action){
@@ -84,30 +85,33 @@ public class ManageUserController {
                     }
                 }
 
-                JTextField[] fieldArray= {
+                JTextField[] fieldArray = {
                         manageUserCard.getEmailField(),
                         manageUserCard.getPasswordField(),
                 };
 
                 String[] fieldStringArray = {
-                    fieldArray[0].getText(),
+                        fieldArray[0].getText(),
                         fieldArray[1].getText()
                 };
-
+                //password hashing and salting is implemented by no server yet
+//                String securePassword = ControllerHelper.createSecurePassword(fieldStringArray[1], ControllerHelper.createSalt());
                 DBInteract.dbExecuteCommand(DBInteract.createUser(
                         fieldStringArray[0],
                         fieldStringArray[1],
                         "salt"
                 ));
+
                 DBInteract.dbExecuteCommand(DBInteract.createPermission(permissions[0], permissions[1], permissions[2], permissions[3]));
                 ControllerHelper.resetJTextFields(fieldArray);
                 break;
-            case(JOptionPane.CANCEL_OPTION):
+            case (JOptionPane.CANCEL_OPTION):
                 break;
         }
         ControllerHelper.refreshUsersTablePanel();
     }
 
+    //edit to connect to server not db
     private void editUser(){
         if(selectedRow == -1 || selectedCol == -1){
             ControllerHelper.returnMessage("Please Select a User");
@@ -157,6 +161,7 @@ public class ManageUserController {
         ControllerHelper.refreshUsersTablePanel();
     }
 
+    //edit to connect to server not db
     private void deleteUser(){
         switch (selectedCol) {
             case (-1):
