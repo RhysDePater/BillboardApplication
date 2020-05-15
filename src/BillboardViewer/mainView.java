@@ -14,18 +14,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class mainView extends JFrame implements Runnable{
-    public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 40);
-    public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 20);
+    public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 70);
+    public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 40);
 
     public mainView(String title) throws HeadlessException {
         super(title);
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent ke) {  // handler
                 if(ke.getKeyCode() == ke.VK_ESCAPE) {
-                    System.out.println("escaped ?");
                     mainView.this.dispose();
-                } else {
-                    System.out.println("not escaped");
                 }
             }
         });
