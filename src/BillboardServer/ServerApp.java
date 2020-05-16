@@ -12,7 +12,8 @@ import java.io.IOException;
 
 public class ServerApp {
     public static void main(String[] args) throws IOException { // handle the exception properly
-        Networking network = new Networking(12345);
+        int port = ReadFromNetworkPropsFile.readNetworkProps();
+        Networking network = new Networking(port);
         network.Listen();
     }
 
