@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class ClientTest {
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket ( "localhost", 12345);
+        Socket socket = new Socket ( "localhost", 500);
         OutputStream MyOutputSteam = socket.getOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(MyOutputSteam);
         //BufferedOutputStream bos = new BufferedOutputStream(MyOutputSteam);
