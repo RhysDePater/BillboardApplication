@@ -115,6 +115,33 @@ public class DBInteract {
         return createSalt;
     }*/
 
+
+    /**
+     * SQL command for adding a new billboard to the database.
+     * NOTE: Although the data types for user_id and schedule_id are strings here, they are still listed as their actual data
+     *      * types as they were set as in the models.sql file.
+     * @param user_id user_id value.
+     * @param schedule_id schedule_id value.
+     * @param xml_data xml_data is stored as a string.
+     * @return returns the prepared statement string.
+     */
+    public static PreparedStatement createBillboardPreparedStatement(String user_id, String schedule_id, String xml_data) {
+        String sql= "INSERT INTO billboard (user_id, schedule_id, xml_data) VALUES (" +
+                "'" + user_id + "'," +
+                " '" + schedule_id + "'," +
+                " ?)";
+        PreparedStatement ps = null;
+        try{
+            Connection connection =  DBConnection.getInstance(); // Get a new database connection
+            ps = connection.prepareStatement(sql); // Create the prepared statement with the above string
+            ps.setString(1, xml_data); // Add the xml string where there is a ?
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return ps;
+    }
+
     //SELECT FUNCTIONS
     /**
      * SQL QUERY to select all Rows from Table

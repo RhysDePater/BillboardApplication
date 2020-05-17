@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS billboard(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL ,
     user_id INT UNSIGNED NOT NULL,
     schedule_id INT UNSIGNED,
-    xml_data BLOB NOT NULL,
+    xml_data TEXT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (id),
     CONSTRAINT fk_billboard_user
