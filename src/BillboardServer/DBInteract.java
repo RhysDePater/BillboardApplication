@@ -11,16 +11,12 @@ public class DBInteract {
      * Runs an Execute command for any given 'valid' SQL command
      * @param command sql command to be executed
      */
-    public static void dbExecuteCommand(String command){
-        try {
+    public static void dbExecuteCommand(String command) throws SQLException {
             Connection connection = DBConnection.getInstance();
             Statement st = connection.createStatement();
             st.execute("USE cab302");
             st.execute(command);
             st.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
     }
 
     /**
@@ -101,6 +97,13 @@ public class DBInteract {
                 " " + edit_user + ")";
     }
 
+    public static String addSchedule(String user_id, String billboard_id, String start_time, String duration){
+        return "INSERT INTO schedule (user_id, billboard_id, start_time, duration) VALUES (" +
+                user_id + ", " +
+                "'" + billboard_id + "'," +
+                " '" + start_time + "'," +
+                "'" + duration + "')";
+    }
 
     /**
      * SQL CREATE COMMAND insert userPasswords' salt into database
@@ -109,11 +112,10 @@ public class DBInteract {
      * @param userEmail
      * @return
      */
-    /*
     public static String createSalt(byte[] salt, String userEmail) {
         String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('" + userEmail + "','" + salt + "')";
         return createSalt;
-    }*/
+    }
 
     //SELECT FUNCTIONS
     /**
@@ -219,8 +221,8 @@ public class DBInteract {
      * @param targetID  id of row to be deleted
      * @return
      */
-    public static String deleteTarget(String table, String targetID){
-        String deleteQuery = "DELETE from " + table + " WHERE id='" + targetID + "'";
+    public static String deleteTarget(String table, String targetColumn, String targetID){
+        String deleteQuery = "DELETE from " + table + " WHERE " + targetColumn + "='" + targetID + "'";
         return deleteQuery;
     }
 
@@ -297,11 +299,28 @@ public class DBInteract {
             }
             return colNames;
         }catch (SQLException e){
-            System.err.println(e);
+            System.err.println(e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Gets just the password from the user table where the username equals whatever is provided to the function
+     * Used to login using a given username
+     */
+    public static String getPassword(String username) {
+        String getPasswordQuery = "SELECT password from user WHERE username = '" + username + "'";
+        try{
+            ResultSet rs = DBInteract.dbQueryCommand(getPasswordQuery);
+            assert rs != null;
+            rs.next();
+            return rs.getString("password");
+        }
+        catch (Exception e){
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }
 
     //private functions
     /**

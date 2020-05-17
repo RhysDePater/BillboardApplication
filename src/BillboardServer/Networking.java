@@ -41,7 +41,7 @@ public class Networking {
             // stuff
             try{
                 InitialisedSocket = NetworkingSocket.accept(); // Accept the incoming connection
-                System.out.println("New connection to:" + InitialisedSocket.getInetAddress());
+                System.out.println("New connection from:" + InitialisedSocket.getInetAddress());
                 System.out.println("--------------------------------------------------------");
             }catch (Exception e){
                 System.out.println(e.getMessage());
@@ -50,7 +50,7 @@ public class Networking {
             oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
             Object data = ois.readObject();
             //ois.close();
-            System.out.println("Data: " + data.getClass());
+            System.out.println("Incoming data is: " + data.getClass());
             Parse(data);
             //InitialisedSocket.close();
         }
@@ -62,12 +62,14 @@ public class Networking {
      */
     private void Parse(Object data){
         boolean commandSucceeded = false;
+        String optionalMessage = "";
+        String responseData = "";
         String[] stringArray;
         try{
             stringArray = (String[])data;
         }
         catch (Exception e ){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return;
         }
         String command = stringArray[0];
@@ -75,36 +77,90 @@ public class Networking {
         if(command.equals("createUser")) { // Creates a user and the associated permissions
             byte[] salt = GenerateSalt();
             //String placeHolderSalt = "11001";
-            PreparedStatement createUser = DBInteract.createUserPreparedStatement(stringArray[1], stringArray[2], salt);
-            String createPermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]),
+            PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(stringArray[1], stringArray[2], salt);
+            String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]),
                     Integer.parseInt(stringArray[4]),
                     Integer.parseInt(stringArray[5]),
                     Integer.parseInt(stringArray[6]));
-            System.out.println(createPermission);
-            System.out.println(createUser.toString());
+            System.out.println(QueryCreatePermission);
+            System.out.println(QueryCreateUser.toString());
             try{
-                createUser.execute();
-                DBInteract.dbExecuteCommand(createPermission);
+                QueryCreateUser.execute();
+                DBInteract.dbExecuteCommand(QueryCreatePermission);
                 commandSucceeded = true;
             }
-            catch(Exception e){
-                System.out.println(e.getMessage());
+            catch (SQLException e){
+                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
         }
-        SendBackData(command, commandSucceeded);
+        if(command.equals("deleteUser")) {
+            String QueryDeleteUser = DBInteract.deleteTarget("user", "id", stringArray[1]);
+            String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", stringArray[1]);
+            //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
+            // TODO
+            // Change these to be a transaction so that they are guaranteed to both run together.
+            // Otherwise it could be deleted from the user table without deleting the permissions
+            System.out.println(QueryDeleteUser);
+            System.out.println(QueryDeletePermissions);
+            try{
+                DBInteract.dbExecuteCommand(QueryDeleteUser);
+                DBInteract.dbExecuteCommand(QueryDeletePermissions);
+                commandSucceeded = true;
+            }
+            catch (SQLException e){
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        if(command.equals("login")){
+            String password = DBInteract.getPassword(stringArray[1]);
+            if(password == null){
+                optionalMessage = "Username does not exist";
+            }
+            else if(password.equals(stringArray[2])){
+                commandSucceeded = true;
+                optionalMessage = "Password matches the supplied username";
+                responseData = "Session token placeholder";
+            }
+            else{
+                optionalMessage = "Password does not match the supplied username";
+            }
+        }
+        if(command.equals("addSchedule")){
+            //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
+            // Get the billboard id from the billboard name
+            String billboard_id = "1";
+            String user_id = "1";
+            // Add the new schedule to the schedule table
+            String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id,stringArray[2],stringArray[3]);
+            System.out.println(QueryAddSchedule);
+            try{
+                DBInteract.dbExecuteCommand(QueryAddSchedule);
+                commandSucceeded = true;
+                optionalMessage = "Schedule successfully added";
+            }
+            catch (SQLException e){
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                optionalMessage = "Error adding schedule to database";
+            }
+
+        }
+        SendBackData(commandSucceeded, responseData, optionalMessage);
+        System.out.println("--------------------------------------------------------");
     }
 
-    private void SendBackData( String command, boolean status){
-        String[] ServerResponse = {command + " succeeded: " + status};
+    private void SendBackData(boolean status, String responseData, String optionalMessage){
+        String[] ServerResponse = {String.valueOf(status), responseData, optionalMessage};
         try{
             oos.writeObject(ServerResponse);
             oos.flush();
         }
         catch( Exception e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
-
 
     private byte[] GenerateSalt() { // Returns a string which represents a random array of bytes with length 16
         final Random r = new SecureRandom();

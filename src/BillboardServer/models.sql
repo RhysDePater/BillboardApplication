@@ -20,12 +20,15 @@ CREATE TABLE If NOT EXISTS permission(
     edit_billboard TINYINT(1) NOT NULL,
     schedule_billboard TINYINT(1) NOT NULL,
     edit_user TINYINT(1) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT fk_permission_user
+        FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
 CREATE TABLE IF NOT EXISTS billboard(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL ,
     user_id INT UNSIGNED NOT NULL,
+    billboard_name VARCHAR(255) UNIQUE,
     schedule_id INT UNSIGNED,
     xml_data BLOB NOT NULL,
     status BOOLEAN NOT NULL DEFAULT false,
@@ -40,7 +43,7 @@ CREATE TABLE IF NOT EXISTS schedule(
     user_id INT UNSIGNED NOT NULL,
     billboard_id INT UNSIGNED NOT NULL,
     start_time timestamp default current_timestamp,
-    end_time timestamp default current_timestamp,
+    duration INT default 60, -- Seconds that the billboard will be displayed
     PRIMARY KEY (id),
     CONSTRAINT fk_schedule_user
         FOREIGN KEY (user_id) REFERENCES user (id),
@@ -50,3 +53,5 @@ CREATE TABLE IF NOT EXISTS schedule(
 
 INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
 INSERT INTO permission VALUES (1, 1, true, true, true, true);
+
+INSERT INTO billboard VALUES (1, 1, 'BillboardName', '1', 'xml data', false );
