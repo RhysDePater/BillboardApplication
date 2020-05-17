@@ -13,7 +13,7 @@ public class DBInteract {
      */
     public static void dbExecuteCommand(String command){
         try {
-            Connection connection = BillboardControlPanel.Model.DBConnection.getInstance();
+            Connection connection = DBConnection.getInstance();
             Statement st = connection.createStatement();
             st.execute("USE cab302");
             st.execute(command);
@@ -60,6 +60,31 @@ public class DBInteract {
     }
 
     /**
+     * SQL COMMAND to Create new user using prepared statements
+     *
+     * @param username  name input value
+     * @param password  password input value
+     * @param saltValue saltValue relative to user, as a byte array. This is why a prepared statement has to be used to insert the salt.
+     * @return ReturnType=String: Insert User command
+     */
+    public static PreparedStatement createUserPreparedStatement(String username, String password, byte[] saltValue) {
+        String sql= "INSERT INTO user (username, password, salt) VALUES (" +
+                "'" + username + "'," +
+                " '" + password + "'," +
+                " ?)";
+        PreparedStatement ps = null;
+        try{
+            Connection connection =  DBConnection.getInstance(); // Get a new database connection
+            ps = connection.prepareStatement(sql); // Create the prepared statement with the above string
+            ps.setBytes(1, saltValue); // Add the salt value where there is a ?
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return ps;
+    }
+
+    /**
      * Create user permissions IS CALLED DIRECTLY after create user
      *
      * @param create_billboard   tinyint value ? 0 : 1
@@ -79,15 +104,16 @@ public class DBInteract {
 
     /**
      * SQL CREATE COMMAND insert userPasswords' salt into database
-     *
+     * Currently not in use because salt values are part of the user table
      * @param salt
      * @param userEmail
      * @return
      */
+    /*
     public static String createSalt(byte[] salt, String userEmail) {
         String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('" + userEmail + "','" + salt + "')";
         return createSalt;
-    }
+    }*/
 
     //SELECT FUNCTIONS
     /**

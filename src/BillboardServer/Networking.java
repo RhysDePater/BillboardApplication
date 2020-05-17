@@ -1,32 +1,35 @@
 package BillboardServer;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import com.sun.jdi.BooleanValue;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 
 /**
  * The Networking constructor sets up the Socket
  * Listen is an infinite for loop which accepts incoming connections and messages as an ObjectInputStream.
- * The server expects a String array which is {Command, param1, param2, param3, ...} as appropriate
- * Such as: {createUser, username, password}
+ * The server expects a String array which is {Command, param1, param2, param3, ...}
+ * Such as: {createUser, username, password(hashed), createbillboard, editbillboard, schedulebillboard, edituser}
  */
-
 public class Networking {
     static ServerSocket NetworkingSocket;
     static Socket InitialisedSocket;
+    static ObjectInputStream ois;
+    static ObjectOutputStream oos;
     static int port_number;
-    public Networking(int port) throws IOException {
+    public Networking(int port) {
         port_number = port;
         try {
-            NetworkingSocket = new ServerSocket(port); // Make the port dynamic
+            NetworkingSocket = new ServerSocket(port);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -38,24 +41,27 @@ public class Networking {
             // stuff
             try{
                 InitialisedSocket = NetworkingSocket.accept(); // Accept the incoming connection
+                System.out.println("New connection to:" + InitialisedSocket.getInetAddress());
+                System.out.println("--------------------------------------------------------");
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
-            InputStream MyInputStream = InitialisedSocket.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(MyInputStream);
-            Object command = ois.readObject();
-            System.out.println("byte read:" + command.toString());
-            Parse(command);
-            InitialisedSocket.close();
+            ois = new ObjectInputStream(InitialisedSocket.getInputStream());
+            oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
+            Object data = ois.readObject();
+            //ois.close();
+            System.out.println("Data: " + data.getClass());
+            Parse(data);
+            //InitialisedSocket.close();
         }
     }
 
     /**
-     * Takes the data from Listen() and translates it into commands to be run on the database
-     * @param data
+     * Takes the data from Listen() and translates it into commands to be run on the database, then runs them
+     * @param data , the data received from the control panel
      */
-
-    private void Parse(Object data) {
+    private void Parse(Object data){
+        boolean commandSucceeded = false;
         String[] stringArray;
         try{
             stringArray = (String[])data;
@@ -65,35 +71,44 @@ public class Networking {
             return;
         }
         String command = stringArray[0];
-        System.out.println(command);
-        System.out.println(stringArray[1]);
-        /*
-        if(command != "createUser")
-        {
-            System.out.println(true);
-        }*/
-
-
-        if(command.equals("ExecuteSQL")){
-            //DBInteract.dbExecuteCommand(data.substring(10,-1));
+        System.out.println("Command is: " + command);
+        if(command.equals("createUser")) { // Creates a user and the associated permissions
+            byte[] salt = GenerateSalt();
+            //String placeHolderSalt = "11001";
+            PreparedStatement createUser = DBInteract.createUserPreparedStatement(stringArray[1], stringArray[2], salt);
+            String createPermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]),
+                    Integer.parseInt(stringArray[4]),
+                    Integer.parseInt(stringArray[5]),
+                    Integer.parseInt(stringArray[6]));
+            System.out.println(createPermission);
+            System.out.println(createUser.toString());
+            try{
+                createUser.execute();
+                DBInteract.dbExecuteCommand(createPermission);
+                commandSucceeded = true;
+            }
+            catch(Exception e){
+                System.out.println(e.getMessage());
+            }
         }
-        else if(command.equals("createUser")) {
-            //int salt = GenerateSalt();
-            String placeHolderSalt = "11001";
-            String sqlcommand = DBInteract.createUser(stringArray[1], stringArray[2], placeHolderSalt);
-            System.out.println(sqlcommand);
-            DBInteract.dbExecuteCommand(sqlcommand);
+        SendBackData(command, commandSucceeded);
+    }
+
+    private void SendBackData( String command, boolean status){
+        String[] ServerResponse = {command + " succeeded: " + status};
+        try{
+            oos.writeObject(ServerResponse);
+            oos.flush();
+        }
+        catch( Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
-    private void SendBackData(){
 
-    }
-
-
-    private byte[] GenerateSalt(){
+    private byte[] GenerateSalt() { // Returns a string which represents a random array of bytes with length 16
         final Random r = new SecureRandom();
-        byte[] salt = new byte[64];
+        byte[] salt = new byte[32];
         r.nextBytes(salt);
         return salt;
     }

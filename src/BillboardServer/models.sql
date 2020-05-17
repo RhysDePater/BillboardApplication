@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS user (
     id INT UNSIGNED AUTO_INCREMENT,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    salt VARBINARY(16) NOT NULL,
+    salt VARBINARY(32) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY (username)
 );
@@ -48,5 +48,5 @@ CREATE TABLE IF NOT EXISTS schedule(
         FOREIGN KEY (billboard_id) REFERENCES billboard (id)
 );
 
-INSERT INTO user VALUES (1, 'ADMIN', 'pass', 'pass' );
+INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
 INSERT INTO permission VALUES (1, 1, true, true, true, true);
