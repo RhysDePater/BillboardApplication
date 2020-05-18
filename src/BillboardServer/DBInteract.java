@@ -118,14 +118,12 @@ public class DBInteract {
      * NOTE: Although the data types for user_id and schedule_id are strings here, they are still listed as their actual data
      *      * types as they were set as in the models.sql file.
      * @param user_id user_id value.
-     * @param schedule_id schedule_id value.
      * @param xml_data xml_data is stored as a string.
      * @return returns the prepared statement string.
      */
-    public static PreparedStatement createBillboardPreparedStatement(String user_id, String schedule_id, String billboard_name, String xml_data) {
-        String sql= "INSERT INTO billboard (user_id, schedule_id, billboard_name, xml_data) VALUES (" +
+    public static PreparedStatement createBillboardPreparedStatement(String user_id, String billboard_name, String xml_data) {
+        String sql= "INSERT INTO billboard (user_id, billboard_name, xml_data) VALUES (" +
                 "'" + user_id + "'," +
-                " '" + schedule_id + "'," +
                 " '" + billboard_name + "'," +
                 " ?)";
         PreparedStatement ps = null;
@@ -222,7 +220,7 @@ public class DBInteract {
      * @param id         id of row
      * @return ReturnType=String:
      */
-    public static String updateColumn(String tableName, String columnName, String newValue, String id) {
+    public static String updateColumnWhereId(String tableName, String columnName, String newValue, String id) {
         String updateColumn = "UPDATE " + tableName + " SET " + columnName + "='" + newValue + "' WHERE id=" + id;
         return updateColumn;
     }

@@ -28,13 +28,17 @@ CREATE TABLE If NOT EXISTS permission(
 CREATE TABLE IF NOT EXISTS billboard(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL ,
     user_id INT UNSIGNED NOT NULL,
-    schedule_id INT UNSIGNED,
+    schedule_id INT UNSIGNED DEFAULT NULL,
     billboard_name VARCHAR(255) UNIQUE,
     xml_data TEXT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (id),
     CONSTRAINT fk_billboard_user
         FOREIGN KEY (user_id) REFERENCES user (id)
+    /*
+    CONSTRAINT fk_schedule_id
+        FOREIGN KEY (schedule_id) REFERENCES schedule (id)
+    */
 );
 
 --complete as per requirements
