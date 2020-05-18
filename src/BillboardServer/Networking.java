@@ -57,8 +57,8 @@ public class Networking {
     }
 
     /**
-     * Takes the data from Listen() and translates it into commands to be run on the database, then runs them
-     * @param data , the data received from the control panel
+     * Takes the data from Listen() and translates it into commands to be run on the database, then runs them.
+     * @param data , the data received from the control panel or viewer
      */
     private void Parse(Object data){
         boolean commandSucceeded = false;
@@ -94,74 +94,153 @@ public class Networking {
                 e.printStackTrace();
             }
         }
-        if(command.equals("deleteUser")) {
-            String QueryDeleteUser = DBInteract.deleteTarget("user", "id", stringArray[1]);
-            String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", stringArray[1]);
-            //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
-            // TODO
-            // Change these to be a transaction so that they are guaranteed to both run together.
-            // Otherwise it could be deleted from the user table without deleting the permissions
-            System.out.println(QueryDeleteUser);
-            System.out.println(QueryDeletePermissions);
+        else if(command.equals("deleteUser")) {
+            boolean user_exists = false;
+            String user_id = "";
             try{
-                DBInteract.dbExecuteCommand(QueryDeleteUser);
-                DBInteract.dbExecuteCommand(QueryDeletePermissions);
-                commandSucceeded = true;
+                user_id = DBInteract.getUserId(stringArray[1]); // Get the id from the given username
+                user_exists = true; // The above line will throw an exception is the user id doesn't exist for a username
             }
             catch (SQLException e){
                 System.err.println(e.getMessage());
                 e.printStackTrace();
+                optionalMessage = "User_id for supplied username not found: User doesn't exist";
             }
+            if(user_exists){
+                String QueryDeleteUser = DBInteract.deleteTarget("user", "id", user_id);
+                String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
+                //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
+                // TODO
+                // Change these to be a transaction so that they are guaranteed to both run together.
+                // Otherwise it could be deleted from the user table without deleting the permissions
+                System.out.println(QueryDeletePermissions);
+                System.out.println(QueryDeleteUser);
+                try{
+                    DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
+                    DBInteract.dbExecuteCommand(QueryDeleteUser);
+                    commandSucceeded = true;
+                }
+                catch (SQLException e){
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
         }
-        if(command.equals("login")){
-            String password = DBInteract.getPassword(stringArray[1]);
-            if(password == null){
-                optionalMessage = "Username does not exist";
+        else if(command.equals("login")){
+            boolean user_exists = false;
+            String password = "";
+            try{
+                password = DBInteract.getPassword(stringArray[1]);
+                user_exists = true;
             }
-            else if(password.equals(stringArray[2])){
-                commandSucceeded = true;
-                optionalMessage = "Password matches the supplied username";
-                responseData = "Session token placeholder";
+            catch (SQLException e){
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                optionalMessage = "Password for supplied username not found: User doesn't exist";
             }
-            else{
-                optionalMessage = "Password does not match the supplied username";
+            if(user_exists){ // This code will only run if a password was found in the database
+                if(password == null){
+                    optionalMessage = "Username does not exist";
+                }
+                else if(password.equals(stringArray[2])){
+                    commandSucceeded = true;
+                    optionalMessage = "Password matches the supplied username";
+                    responseData = "Session token placeholder";
+                }
+                else{
+                    optionalMessage = "Password does not match the supplied username";
+                    System.out.println(optionalMessage);
+                }
             }
+
         }
-        if(command.equals("addSchedule")){
+        else if(command.equals("addSchedule")){
             //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
-            // Get the billboard id from the billboard name
-            String billboard_id = "1";
+            boolean billboard_exists = false;
+            String billboard_id ="";
             String user_id = "1";
-            // Add the new schedule to the schedule table
-            String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id,stringArray[2],stringArray[3]);
-            System.out.println(QueryAddSchedule);
             try{
-                DBInteract.dbExecuteCommand(QueryAddSchedule);
-                commandSucceeded = true;
-                optionalMessage = "Schedule successfully added";
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_exists = true;
             }
             catch (SQLException e){
                 System.err.println(e.getMessage());
                 e.printStackTrace();
-                optionalMessage = "Error adding schedule to database";
+                optionalMessage = "Billboard id for supplied Billboard name not found: Billboard doesn't exist";
+            }
+            if(billboard_exists){
+                // Add the new schedule to the schedule table, if the billboard exists
+                String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id,stringArray[2],stringArray[3]);
+                System.out.println(QueryAddSchedule);
+                try{
+                    DBInteract.dbExecuteCommand(QueryAddSchedule);
+                    commandSucceeded = true;
+                    optionalMessage = "Schedule successfully added";
+                }
+                catch (SQLException e){
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                    optionalMessage = "Error adding schedule to the database";
+                }
             }
         }
         // If the first element of the string array in clienttest.java is "createBillboard", then a prepared statement will be run.
-        if (command.equals("createBillboard")){
-            PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(stringArray[1], stringArray[2], stringArray[3]);
+        else if (command.equals("createBillboard")){
+            PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(stringArray[1], stringArray[2], stringArray[3], stringArray[4]);
             System.out.println(createBillboard.toString());
-
             try{
                 createBillboard.execute();
                 commandSucceeded = true;
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
+                optionalMessage = "Error adding billboard to the database";
             }
         }
+        else if (command.equals("deleteBillboard")){
+            boolean billboard_exists = false;
+            String billboard_id ="";
+            try{
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_exists = true;
+            }
+            catch (SQLException e){
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                optionalMessage = "Billboard id for supplied Billboard name not found: Billboard doesn't exist";
+            }
+            if(billboard_exists){
+                String QueryDeleteBillboard = DBInteract.deleteTarget("billboard", "id", billboard_id);
+                String QueryDeleteSchedule = DBInteract.deleteTarget("schedule", "billboard_id", billboard_id);
+                // TODO
+                // Change these to be a transaction so that they are guaranteed to both run together.
+                // Otherwise it could be deleted from the billboard without deleting the schedule
+                System.out.println(QueryDeleteSchedule);
+                System.out.println(QueryDeleteBillboard);
+                try{
+                    DBInteract.dbExecuteCommand(QueryDeleteSchedule);// This has to be run first so it deletes the foreign key billboard_id in schedule
+                    DBInteract.dbExecuteCommand(QueryDeleteBillboard);
+                    commandSucceeded = true;
+                }
+                catch (SQLException e){
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
         SendBackData(commandSucceeded, responseData, optionalMessage);
         System.out.println("--------------------------------------------------------");
     }
 
+    /**
+     * Sends a response back to the client in the form {"true/false (succeeded or failed)", "A result set or string if appropriate", "Optional message that could be displayed to the user/debugging purposes"}
+     * status is the boolean describing the state the database operation
+     * @param status
+     * @param responseData
+     * @param optionalMessage
+     */
     private void SendBackData(boolean status, String responseData, String optionalMessage){
         String[] ServerResponse = {String.valueOf(status), responseData, optionalMessage};
         try{

@@ -28,8 +28,8 @@ CREATE TABLE If NOT EXISTS permission(
 CREATE TABLE IF NOT EXISTS billboard(
     id INT UNSIGNED AUTO_INCREMENT NOT NULL ,
     user_id INT UNSIGNED NOT NULL,
-    billboard_name VARCHAR(255) UNIQUE,
     schedule_id INT UNSIGNED,
+    billboard_name VARCHAR(255) UNIQUE,
     xml_data TEXT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (id),
@@ -54,4 +54,4 @@ CREATE TABLE IF NOT EXISTS schedule(
 INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
 INSERT INTO permission VALUES (1, 1, true, true, true, true);
 
-INSERT INTO billboard VALUES (1, 1, 'BillboardName', '1', 'xml data', false );
+--INSERT INTO billboard VALUES (1, 1, 'BillboardName', '1', 'xml data', false );

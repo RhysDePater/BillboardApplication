@@ -24,18 +24,13 @@ public class DBInteract {
      * @param command sql command to be executed
      * @return ResultSet containing queried data
      */
-    public static ResultSet dbQueryCommand(String command){
-        try {
-            Connection connection =  DBConnection.getInstance();
+    public static ResultSet dbQueryCommand(String command) throws SQLException {
+            Connection connection = DBConnection.getInstance();
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(command);
             st.close();
             return rs;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
         }
-    }
 
 
     //CREATE FUNCTIONS
@@ -127,10 +122,11 @@ public class DBInteract {
      * @param xml_data xml_data is stored as a string.
      * @return returns the prepared statement string.
      */
-    public static PreparedStatement createBillboardPreparedStatement(String user_id, String schedule_id, String xml_data) {
-        String sql= "INSERT INTO billboard (user_id, schedule_id, xml_data) VALUES (" +
+    public static PreparedStatement createBillboardPreparedStatement(String user_id, String schedule_id, String billboard_name, String xml_data) {
+        String sql= "INSERT INTO billboard (user_id, schedule_id, billboard_name, xml_data) VALUES (" +
                 "'" + user_id + "'," +
                 " '" + schedule_id + "'," +
+                " '" + billboard_name + "'," +
                 " ?)";
         PreparedStatement ps = null;
         try{
@@ -335,18 +331,40 @@ public class DBInteract {
      * Gets just the password from the user table where the username equals whatever is provided to the function
      * Used to login using a given username
      */
-    public static String getPassword(String username) {
+    public static String getPassword(String username) throws SQLException {
         String getPasswordQuery = "SELECT password from user WHERE username = '" + username + "'";
-        try{
-            ResultSet rs = DBInteract.dbQueryCommand(getPasswordQuery);
-            assert rs != null;
-            rs.next();
-            return rs.getString("password");
+        ResultSet rs = DBInteract.dbQueryCommand(getPasswordQuery);
+        if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
+            throw new SQLException ("No password with username: " + username);
         }
-        catch (Exception e){
-            System.err.println(e.getMessage());
-            return null;
+        rs.next();
+        return rs.getString("password");
+    }
+
+    /**
+     * Gets the user_id where the username equals whatever is provided to the function
+     */
+    public static String getUserId(String username) throws SQLException {
+        String getPasswordQuery = "SELECT id from user WHERE username = '" + username + "'";
+        ResultSet rs = DBInteract.dbQueryCommand(getPasswordQuery);
+        if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
+            throw new SQLException ("No user with username: " + username);
         }
+        rs.next();
+        return rs.getString("id");
+    }
+
+    /**
+     * Gets the value in one column of a row where a different column (of the same row) has a value equal to the value provided to the function
+     */
+    public static String getValue(String target_column, String table_name, String filter_column, String filter_value) throws SQLException {
+        String sqlGet = "SELECT " + target_column + " from " + table_name + " WHERE " + filter_column + " = '" + filter_value + "'";
+        ResultSet rs = DBInteract.dbQueryCommand(sqlGet);
+        if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
+            throw new SQLException ("No value at " + target_column + " where : " + filter_column + " = " + filter_value);
+        }
+        rs.next();
+        return rs.getString(target_column);
     }
 
     //private functions
