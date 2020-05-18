@@ -9,6 +9,7 @@ public class MainController{
     private static HomeController homeController;
     private static ManageUserController manageUserController;
     private static MainView mainView;
+    private static ManageBillboardController manageBillboardController;
 
     public MainController(){
         initController();
@@ -23,6 +24,7 @@ public class MainController{
         loginController = new LoginController();
         homeController = new HomeController();
         manageUserController = new ManageUserController();
+        manageBillboardController = new ManageBillboardController();
     }
 
     public static MainView getMainView() {
@@ -40,4 +42,6 @@ public class MainController{
     public static ManageUserController getManageUserController() {
         return manageUserController;
     }
+
+    public static ManageBillboardController getManageBillboardController() {return manageBillboardController;}
 }

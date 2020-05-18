@@ -59,32 +59,39 @@ public class ControllerHelper {
         return boolPrivilges;
     }
 
-    public static String createSecurePassword(String passwordToHash) {
+    public static String createSecurePassword(String passwordToHash, byte[] salt){
         String securePassword = null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-//            md.update(salt); this is to create a salted hashed password
+            md.update(salt);
             byte[] bytes = md.digest(passwordToHash.getBytes());
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; ++i) {
+            for(int i=0; i <bytes.length; ++i){
                 sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
             securePassword = sb.toString();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+
         return securePassword;
     }
 
-    public static byte[] createSalt() {
-        try {
+    public static byte[] createSalt(String userEmailInput){
+        try{
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
             byte[] salt = new byte[16];
             sr.nextBytes(salt);
+            DBInteract.dbExecuteCommand(DBInteract.createSalt(salt, userEmailInput));
             return salt;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+
+        return null;
+    }
+
+    public static byte[] getSalt(String userEmailInput){
         return null;
     }
 }

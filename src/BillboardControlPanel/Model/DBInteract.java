@@ -57,7 +57,6 @@ public class DBInteract {
                 " " + saltValue + ")";
     }
 
-
     /**
      * Create user permissions IS CALLED DIRECTLY after create user
      *
@@ -75,6 +74,18 @@ public class DBInteract {
                 " " + edit_user + ")";
     }
 
+
+    /**
+     * SQL CREATE COMMAND insert userPasswords' salt into database
+     *
+     * @param salt
+     * @param userEmail
+     * @return
+     */
+    public static String createSalt(byte[] salt, String userEmail) {
+        String createSalt = "INSERT INTO salts (user_email, salt) VALUES ('" + userEmail + "','" + salt + "')";
+        return createSalt;
+    }
 
     //SELECT FUNCTIONS
     /**
@@ -147,6 +158,14 @@ public class DBInteract {
         return (selectQuery);
     }
 
+    /**
+     * SQL command for selecting all billboard data, except for xml_data
+     * @return
+     */
+    public static String selectAllBillboards(){
+        String selectQuery = "SELECT id, user_id, schedule_id, billboard_name, status FROM billboard;";
+        return (selectQuery);
+    }
     //UPDATE FUNCTIONS
 
     /**
@@ -202,8 +221,8 @@ public class DBInteract {
         return innerJoinDelete;
     }
 
-
     //GETS
+
     /**
      * Queries the user Table inner joined with permission table and returns results
      *
@@ -237,7 +256,39 @@ public class DBInteract {
             System.out.println(e);
             return null;
         }
+    }
 
+    /**
+     * Queries the billboards table in database, with the SQL command from selectAllBillboards()
+     * @param queryCommand uses selectedAllBillboards() to return the SQL command
+     * @return two dimensional string array, billboardList, with data from billboards table
+     * @throws NullPointerException
+     */
+    public static String[][] getBillboardData(String queryCommand) throws NullPointerException {
+        try {
+            ResultSet rs = dbQueryCommand(queryCommand);
+            int rowCount = getRowCount(rs);
+            int colCount = getColCount(rs);
+            String[] colNames = {"id", "user_id", "schedule_id", "billboard_name", "status"};
+            rs.first();
+            String[][] billboardList = new String[rowCount][colCount];
+            for (int i = 0; i < rowCount; ++i) {
+                String id = Integer.toString(rs.getInt(colNames[0]));
+                String user_id = rs.getString(colNames[1]);
+                String schedule_id = rs.getString(colNames[2]);
+                String billboard_name = rs.getString(colNames[3]);
+                String status = rs.getString(colNames[4]);
+                String[] colItem = new String[]{id, user_id, schedule_id, billboard_name, status};
+                for (int j = 0; j < colCount; ++j) {
+                    billboardList[i][j] = colItem[j];
+                }
+                rs.next();
+            }
+            return billboardList;
+        } catch (SQLException e){
+            System.out.println(e);
+            return null;
+        }
     }
 
     /**

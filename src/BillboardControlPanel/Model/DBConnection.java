@@ -10,9 +10,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Creates the db.props file to connect to server with the credentials.
+ */
 public class DBConnection {
 
     private static Connection instance = null;
+
 
     private DBConnection(){
         Properties props = new Properties();

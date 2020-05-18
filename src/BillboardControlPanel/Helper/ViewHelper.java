@@ -67,6 +67,11 @@ public class ViewHelper {
         return panel;
     }
 
+//    public static JPanel createFlowPanel(){
+//        JPanel panel = new JPanel(new FlowLayout());
+//
+//    }
+
     //old functions
     public static void addToPanel(JPanel jp,Component c, GridBagConstraints constraints,int x, int y, int w, int h) {
         constraints.gridx = x;

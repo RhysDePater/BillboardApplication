@@ -35,7 +35,13 @@ public class HomeController{
                 } else{
                     ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
                 }
+            }
+        });
+        homeCard.getManageBillboard().addActionListener(new ActionListener (){
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
             }
         });
     }
