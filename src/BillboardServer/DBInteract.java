@@ -243,12 +243,11 @@ public class DBInteract {
      * @return
      */
     public static String deleteTarget(String table, String targetColumn, String targetID){
-        String deleteQuery = "DELETE from " + table + " WHERE " + targetColumn + "='" + targetID + "'";
-        return deleteQuery;
+        return "DELETE from " + table + " WHERE " + targetColumn + "='" + targetID + "'";
     }
 
     /**
-     * SQL DELETE COMMAND delete rows from tables with correlating target
+     * SQL DELETE COMMAND delete rows from tables with correlating tar
      *
      * @param table1
      * @param table2
@@ -357,6 +356,19 @@ public class DBInteract {
      */
     public static String getValue(String target_column, String table_name, String filter_column, String filter_value) throws SQLException {
         String sqlGet = "SELECT " + target_column + " from " + table_name + " WHERE " + filter_column + " = '" + filter_value + "'";
+        ResultSet rs = DBInteract.dbQueryCommand(sqlGet);
+        if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
+            throw new SQLException ("No value at " + target_column + " where : " + filter_column + " = " + filter_value);
+        }
+        rs.next();
+        return rs.getString(target_column);
+    }
+
+    /**
+     * Similar to getValue. Emulates the sql query: SELECT column FROM table WHERE column = value AND column2 = value2;
+     */
+    public static String getValueAnd(String target_column, String table_name, String filter_column, String filter_value, String filter_column2, String filter_value2) throws SQLException {
+        String sqlGet = "SELECT " + target_column + " from " + table_name + " WHERE " + filter_column + " = '" + filter_value + "' AND " + filter_column2 + "= '" + filter_value2 + "'";
         ResultSet rs = DBInteract.dbQueryCommand(sqlGet);
         if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
             throw new SQLException ("No value at " + target_column + " where : " + filter_column + " = " + filter_value);

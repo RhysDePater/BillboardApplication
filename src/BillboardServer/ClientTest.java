@@ -21,7 +21,9 @@ public class ClientTest {
         //String[] string_array = {"login", "admin", "p1ass"};
         String xmlString = XMLStringCreator.createXmlString(); // Here, a string is created from an xml file so that it can be sent to and stored in the database.
         //String[] string_array = {"createBillboard", "BillboardName", xmlString}; // Command, billboard_name, xml_data
-        String[] string_array = {"deleteBillboard", "billboardname"};
+        //String[] string_array = {"deleteBillboard", "billboardname"};
+        //String[] string_array = {"getBillboard", "billboardname"};
+        String[] string_array = {"deleteSchedule", "billboardname", startDate.toString()};
         oos.writeObject(string_array);
         oos.flush();
         //oos.close();
