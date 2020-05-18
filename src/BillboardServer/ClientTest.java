@@ -9,7 +9,7 @@ public class ClientTest {
     public static void main(String[] args) throws IOException {
         LocalDateTime startDate = LocalDateTime.of(2015, 2, 20, 6, 30);;
         System.out.println(startDate.toString());
-
+        //the host and port here should be read from the network.props file.
         Socket socket = new Socket ( "localhost", 12345);
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
@@ -18,9 +18,12 @@ public class ClientTest {
         //String[] string_array = {"createUser", "testusername", "testpassword", "1", "1", "1", "1"};
         //String[] string_array = {"deleteUser", "2"};
         //String[] string_array = {"addSchedule", "billboardname", "LocalDateTime.toString()", "duration_in_seconds", "sessiontoken"};
-        String[] string_array = {"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
+        //String[] string_array = {"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
         //String[] string_array = {"login", "admin", "pass"};
-        oos.writeObject(string_array);
+        // Here, a string is created from an xml file so that it can be sent to and stored in the database.
+        String xmlString = XMLStringCreator.createXmlString();
+        String[] addbillboard = {"createBillboard", "3", "3", "" + xmlString};
+        oos.writeObject(addbillboard);
         oos.flush();
         //oos.close();
         //ois.close();

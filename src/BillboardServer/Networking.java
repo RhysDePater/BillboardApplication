@@ -145,7 +145,18 @@ public class Networking {
                 e.printStackTrace();
                 optionalMessage = "Error adding schedule to database";
             }
+        }
+        // If the first element of the string array in clienttest.java is "createBillboard", then a prepared statement will be run.
+        if (command.equals("createBillboard")){
+            PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(stringArray[1], stringArray[2], stringArray[3]);
+            System.out.println(createBillboard.toString());
 
+            try{
+                createBillboard.execute();
+                commandSucceeded = true;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
         SendBackData(commandSucceeded, responseData, optionalMessage);
         System.out.println("--------------------------------------------------------");
