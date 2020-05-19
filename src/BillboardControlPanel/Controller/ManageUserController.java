@@ -92,16 +92,14 @@ public class ManageUserController {
                         fieldArray[1].getText()
                 };
 
-                //fix this later
                 if (fieldStringArray[0].length() <= 0) {
                     ControllerHelper.returnMessage("user name is null");
                     createUser();
                     break;
                 } else if (fieldStringArray[1].length() <= 0) {
-                    ControllerHelper.returnMessage("Password is null");
+                    ControllerHelper.returnMessage("password is null");
                     createUser();
                     break;
-                    //
                 } else {
                     DBInteract.dbExecuteCommand(DBInteract.createUser(
                             fieldStringArray[0],
