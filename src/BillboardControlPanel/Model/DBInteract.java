@@ -158,14 +158,6 @@ public class DBInteract {
         return (selectQuery);
     }
 
-    /**
-     * SQL command for selecting all billboard data, except for xml_data
-     * @return
-     */
-    public static String selectAllBillboards(){
-        String selectQuery = "SELECT id, user_id, schedule_id, billboard_name, status FROM billboard;";
-        return (selectQuery);
-    }
     //UPDATE FUNCTIONS
 
     /**
@@ -269,16 +261,16 @@ public class DBInteract {
             ResultSet rs = dbQueryCommand(queryCommand);
             int rowCount = getRowCount(rs);
             int colCount = getColCount(rs);
-            String[] colNames = {"id", "user_id", "schedule_id", "billboard_name", "status"};
+            String[] colNames = getColNames(selectAll("billboard"));
             rs.first();
             String[][] billboardList = new String[rowCount][colCount];
             for (int i = 0; i < rowCount; ++i) {
                 String id = Integer.toString(rs.getInt(colNames[0]));
                 String user_id = rs.getString(colNames[1]);
                 String schedule_id = rs.getString(colNames[2]);
-                String billboard_name = rs.getString(colNames[3]);
+                String xml_data = rs.getString(colNames[3]);
                 String status = rs.getString(colNames[4]);
-                String[] colItem = new String[]{id, user_id, schedule_id, billboard_name, status};
+                String[] colItem = new String[]{id, user_id, schedule_id, xml_data, status};
                 for (int j = 0; j < colCount; ++j) {
                     billboardList[i][j] = colItem[j];
                 }

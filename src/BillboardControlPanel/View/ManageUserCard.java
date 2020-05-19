@@ -16,7 +16,7 @@ public class ManageUserCard extends MasterView {
     private static JTextField emailField;
     private static JPasswordField passwordField;
     private static JRadioButton[] permissionField;
-
+    private static String[] colNames = DBInteract.getColNames(DBInteract.selectUserJoinPermission());
 
     private static JTextField updateTextField;
 
@@ -37,7 +37,7 @@ public class ManageUserCard extends MasterView {
         centerCard = ViewHelper.createPanel(Color.white);
         JLabel titleLabel = ViewHelper.createLabel("Manage Users", ViewHelper.TITLE_FONT);
         //get user table to display
-        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), DBInteract.getColNames(DBInteract.selectUserJoinPermission()));
+        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), colNames);
         centerCard.add(titleLabel);
         centerCard.add(ViewHelper.createLabel("Double click to edit cell", ViewHelper.TEXT_FONT));
         centerCard.add(new JScrollPane(userTable));
