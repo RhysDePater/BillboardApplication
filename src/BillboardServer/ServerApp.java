@@ -12,8 +12,7 @@ import java.io.IOException;
 
 public class ServerApp {
     public static void main(String[] args) throws IOException, ClassNotFoundException { // handle the exception properly
-        int port = ReadFromNetworkPropsFile.readNetworkProps();
-        Networking network = new Networking(port);
+        Networking network = new Networking(ReadFromNetworkPropsFile.readNetworkPropsPort());
         network.Listen();
     }
 }

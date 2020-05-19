@@ -9,7 +9,7 @@ public class ClientTest {
     public static void main(String[] args) throws IOException {
         LocalDateTime startDate = LocalDateTime.of(2015, 2, 20, 6, 30);;
         //the host and port here should be read from the network.props file.
-        Socket socket = new Socket ( "localhost", 12345);
+        Socket socket = new Socket (ReadFromNetworkPropsFile.readNetworkPropsHost(), ReadFromNetworkPropsFile.readNetworkPropsPort());
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
         //BufferedOutputStream bos = new BufferedOutputStream(MyOutputSteam);
