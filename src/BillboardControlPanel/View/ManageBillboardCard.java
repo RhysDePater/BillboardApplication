@@ -7,12 +7,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ManageBillboardCard extends MasterView {
-//    private static JButton createBillboard;
+    //    private static JButton createBillboard;
 //    private static JButton deleteBillboard;
     private static JTable billboardTable;
-    private static String[] colNames = {"id", "user_id", "schedule_id", "billboard_name", "status"};
+    private static String[] colNames = DBInteract.getColNames(DBInteract.selectAll("billboard"));
+//    private static String[] colNames = {"id", "user_id", "schedule_id", "billboard_name", "status"};
 
-    public ManageBillboardCard(){
+    public ManageBillboardCard() {
         createNorthCard();
         createCenterCard();
         createSouthCard();
@@ -26,7 +27,7 @@ public class ManageBillboardCard extends MasterView {
     }
     private JPanel createCenterCard() {
         centerCard = ViewHelper.createPanel(Color.white);
-        billboardTable = ViewHelper.createJTable((DBInteract.getBillboardData(DBInteract.selectAllBillboards())), colNames);
+        billboardTable = ViewHelper.createJTable((DBInteract.getBillboardData(DBInteract.selectAll("billboard"))), colNames);
         centerCard.add(new JScrollPane(billboardTable));
         return centerCard;
     }

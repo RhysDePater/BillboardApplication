@@ -72,39 +72,52 @@ public class ManageUserController {
 
     private void createUser(){
         int action = ManageUserCard.createUserCreateInputBox();
-        switch (action){
-            case(JOptionPane.OK_OPTION):
+        switch (action) {
+            case (JOptionPane.OK_OPTION):
                 JRadioButton[] jBtnPermission = manageUserCard.getPermissionField();
                 int[] permissions = new int[jBtnPermission.length];
-                for(int i = 0; i < jBtnPermission.length; ++i){
-                    if(jBtnPermission[i].isSelected()){
+                for (int i = 0; i < jBtnPermission.length; ++i) {
+                    if (jBtnPermission[i].isSelected()) {
                         permissions[i] = 1;
-                    } else{
+                    } else {
                         permissions[i] = 0;
                     }
                 }
-
-                JTextField[] fieldArray= {
-                        manageUserCard.getEmailField(),
+                JTextField[] fieldArray = {
+                        manageUserCard.getUserNameField(),
                         manageUserCard.getPasswordField(),
                 };
-
                 String[] fieldStringArray = {
-                    fieldArray[0].getText(),
+                        fieldArray[0].getText(),
                         fieldArray[1].getText()
                 };
 
-                DBInteract.dbExecuteCommand(DBInteract.createUser(
-                        fieldStringArray[0],
-                        fieldStringArray[1],
-                        "salt"
-                ));
-                DBInteract.dbExecuteCommand(DBInteract.createPermission(permissions[0], permissions[1], permissions[2], permissions[3]));
-                ControllerHelper.resetJTextFields(fieldArray);
+                //fix this later
+                if (fieldStringArray[0].length() <= 0) {
+                    ControllerHelper.returnMessage("user name is null");
+                    createUser();
+                    break;
+                } else if (fieldStringArray[1].length() <= 0) {
+                    ControllerHelper.returnMessage("Password is null");
+                    createUser();
+                    break;
+                    //
+                } else {
+                    DBInteract.dbExecuteCommand(DBInteract.createUser(
+                            fieldStringArray[0],
+                            fieldStringArray[1],
+                            ControllerHelper.createSalt()
+                    ));
+                    DBInteract.dbExecuteCommand(DBInteract.createPermission(permissions[0], permissions[1], permissions[2], permissions[3]));
+                    ControllerHelper.resetJTextFields(fieldArray);
+                }
+
                 break;
-            case(JOptionPane.CANCEL_OPTION):
+            case (JOptionPane.CANCEL_OPTION):
                 break;
         }
+
+
         ControllerHelper.refreshUsersTablePanel();
     }
 
@@ -158,11 +171,11 @@ public class ManageUserController {
     }
 
     private void deleteUser(){
-        switch (selectedCol) {
+        switch (selectedRow) {
             case (-1):
                 ControllerHelper.returnMessage("Please Select a User");
                 break;
-            case (1):
+            case (0):
                 ControllerHelper.returnMessage("Admin user cannot be deleted");
                 break;
             default:

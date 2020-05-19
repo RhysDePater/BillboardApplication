@@ -13,10 +13,10 @@ public class ManageUserCard extends MasterView {
     private static JButton btnCreateUser;
     private static JTable userTable;
 
-    private static JTextField emailField;
+    private static JTextField usernameField;
     private static JPasswordField passwordField;
     private static JRadioButton[] permissionField;
-
+    private static String[] colNames = DBInteract.getColNames(DBInteract.selectUserJoinPermission());
 
     private static JTextField updateTextField;
 
@@ -37,7 +37,7 @@ public class ManageUserCard extends MasterView {
         centerCard = ViewHelper.createPanel(Color.white);
         JLabel titleLabel = ViewHelper.createLabel("Manage Users", ViewHelper.TITLE_FONT);
         //get user table to display
-        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), DBInteract.getColNames(DBInteract.selectUserJoinPermission()));
+        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), colNames);
         centerCard.add(titleLabel);
         centerCard.add(ViewHelper.createLabel("Double click to edit cell", ViewHelper.TEXT_FONT));
         centerCard.add(new JScrollPane(userTable));
@@ -70,7 +70,7 @@ public class ManageUserCard extends MasterView {
         JLabel emailLabel = ViewHelper.createLabel("Email: ", ViewHelper.TEXT_FONT);
         JLabel passwordLabel = ViewHelper.createLabel("Password: ", ViewHelper.TEXT_FONT);
         JLabel permissionLabel = ViewHelper.createLabel("Permission: ", ViewHelper.TEXT_FONT);
-        emailField = ViewHelper.createTextField();
+        usernameField = ViewHelper.createTextField();
         passwordField = ViewHelper.createPasswordField();
         permissionField = new JRadioButton[]{
                 new JRadioButton("Create Billboards", false),
@@ -81,13 +81,14 @@ public class ManageUserCard extends MasterView {
         //
         jPanel.add(titleLabel);
         jPanel.add(emailLabel);
-        jPanel.add(emailField);
+        jPanel.add(usernameField);
         jPanel.add(passwordLabel);
         jPanel.add(passwordField);
         jPanel.add(permissionLabel);
         for (JRadioButton button: permissionField) {
             jPanel.add(button);
         }
+
         int action = JOptionPane.showConfirmDialog(null, jPanel, "Create User",JOptionPane.OK_CANCEL_OPTION);
         return action;
     }
@@ -108,8 +109,8 @@ public class ManageUserCard extends MasterView {
         return btnCreateUser;
     }
 
-    public JTextField getEmailField() {
-        return emailField;
+    public JTextField getUserNameField() {
+        return usernameField;
     }
 
     public JPasswordField getPasswordField() {

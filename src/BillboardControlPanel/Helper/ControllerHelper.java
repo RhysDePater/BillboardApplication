@@ -59,14 +59,13 @@ public class ControllerHelper {
         return boolPrivilges;
     }
 
-    public static String createSecurePassword(String passwordToHash, byte[] salt){
+    public static String createSecurePassword(String passwordToHash) {
         String securePassword = null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt);
             byte[] bytes = md.digest(passwordToHash.getBytes());
             StringBuilder sb = new StringBuilder();
-            for(int i=0; i <bytes.length; ++i){
+            for (int i = 0; i < bytes.length; ++i) {
                 sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
             securePassword = sb.toString();
@@ -77,12 +76,11 @@ public class ControllerHelper {
         return securePassword;
     }
 
-    public static byte[] createSalt(String userEmailInput){
-        try{
+    public static byte[] createSalt() {
+        try {
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
             byte[] salt = new byte[16];
             sr.nextBytes(salt);
-            DBInteract.dbExecuteCommand(DBInteract.createSalt(salt, userEmailInput));
             return salt;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
