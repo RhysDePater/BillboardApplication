@@ -2,7 +2,7 @@ Drop DATABASE IF EXISTS cab302;
 CREATE DATABASE IF NOT EXISTS cab302;
 
 USE cab302;
-
+-- use the sql query "describe table;" at a mariadb console to get column data types and other info
 
 CREATE TABLE IF NOT EXISTS user (
     id INT UNSIGNED AUTO_INCREMENT,

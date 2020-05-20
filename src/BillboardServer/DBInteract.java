@@ -225,6 +225,15 @@ public class DBInteract {
         return updateColumn;
     }
 
+    public static String updatePermission(String user_id, int create_billboard, int edit_billboard, int schedule_billboard, int edit_user ) {
+        return "UPDATE permission SET create_billboard ='" + create_billboard
+                + "', edit_billboard ='"  + edit_billboard
+                + "', schedule_billboard ='" + schedule_billboard
+                + "', edit_user ='" + edit_user
+                + "' WHERE user_id=" + user_id;
+    }
+
+
     //DELETE FUNCTIONS
     /**
      * SQL QUERY to DELETE all Rows from Table

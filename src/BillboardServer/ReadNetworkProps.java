@@ -9,11 +9,11 @@ import java.util.Properties;
  * Reads from the network.props file to retrieve the host or port number.
  */
 
-public class ReadFromNetworkPropsFile {
+public class ReadNetworkProps {
     private static int portNum;
     private static String host;
     // Method for reading the port number from the network.props file.
-    public static int readNetworkPropsPort() {
+    public static int getPort() {
         Properties props = new Properties();
         FileInputStream input = null;
 
@@ -35,7 +35,7 @@ public class ReadFromNetworkPropsFile {
     }
 
     // Reads the value of the host property in network.props. Allows clients to connect to the server.
-    public static String readNetworkPropsHost(){
+    public static String getHost(){
         Properties props = new Properties();
         FileInputStream input;
 

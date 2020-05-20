@@ -1,17 +1,12 @@
 package BillboardServer;
 
-import com.sun.jdi.BooleanValue;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -36,12 +31,11 @@ public class Networking {
     }
 
     public void Listen() throws IOException, ClassNotFoundException {
-        System.out.println("Starting listening on port:" + port_number );
-        for (; ; ) {
-            // stuff
+        System.out.println("Starting listening on port: " + port_number );
+        for (;;) {
             try{
                 InitialisedSocket = NetworkingSocket.accept(); // Accept the incoming connection
-                System.out.println("New connection from:" + InitialisedSocket.getInetAddress());
+                System.out.println("New connection from: " + InitialisedSocket.getInetAddress());
                 System.out.println("--------------------------------------------------------");
             }catch (Exception e){
                 System.out.println(e.getMessage());
@@ -49,18 +43,21 @@ public class Networking {
             ois = new ObjectInputStream(InitialisedSocket.getInputStream());
             oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
             Object data = ois.readObject();
-            //ois.close();
             System.out.println("Incoming data is: " + data.getClass());
             Parse(data);
-            //InitialisedSocket.close();
+            // I don't know if these need to be closed every time
+            ois.close();
+            oos.close();
+            InitialisedSocket.close();
         }
     }
 
     /**
      * Takes the data from Listen() and translates it into commands to be run on the database, then runs them.
-     * @param data , the data received from the control panel or viewer
+     * The main logic of the server
+     * @param data the data received from the control panel or viewer
      */
-    private void Parse(Object data){
+    private static void Parse(Object data){
         boolean commandSucceeded = false;
         String optionalMessage = "";
         String responseData = "";
@@ -79,7 +76,7 @@ public class Networking {
                 byte[] salt = GenerateSalt();
                 //String placeHolderSalt = "11001";
                 PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(stringArray[1], stringArray[2], salt);
-                String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]),
+                String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]), // The data comes in as part of a string array, so change it back to an int
                         Integer.parseInt(stringArray[4]),
                         Integer.parseInt(stringArray[5]),
                         Integer.parseInt(stringArray[6]));
@@ -89,9 +86,11 @@ public class Networking {
                     QueryCreateUser.execute();
                     DBInteract.dbExecuteCommand(QueryCreatePermission);
                     commandSucceeded = true;
+                    optionalMessage = "User successfully created";
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
+                    optionalMessage = "Error adding user to database: User likely already exists";
                 }
                 break;
             case "deleteUser": {
@@ -118,28 +117,53 @@ public class Networking {
                         DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
                         DBInteract.dbExecuteCommand(QueryDeleteUser);
                         commandSucceeded = true;
+                        optionalMessage = "User successfully deleted";
                     } catch (SQLException e) {
                         System.err.println(e.getMessage());
                         e.printStackTrace();
+                        optionalMessage = "Failed to delete user";
+                    }
+                }
+                break;
+            }
+            case "editPermission": {
+                String user_id = "";
+                try {
+                    user_id = DBInteract.getUserId(stringArray[1]); // Get the id from the given username
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                    optionalMessage = "User_id for supplied username not found: User doesn't exist";
+                }
+                if (!user_id.equals("")) {
+                    String QueryEditPermission = DBInteract.updatePermission(user_id,Integer.parseInt(stringArray[2]), // The data comes in as part of a string array, so change it back to an int as the database stores tiny ints
+                            Integer.parseInt(stringArray[3]),
+                            Integer.parseInt(stringArray[4]),
+                            Integer.parseInt(stringArray[5]));
+                    System.out.println(QueryEditPermission);
+                    try {
+                        DBInteract.dbExecuteCommand(QueryEditPermission);
+                        commandSucceeded = true;
+                        optionalMessage = "Permissions successfully changed";
+                    } catch (SQLException e) {
+                        System.err.println(e.getMessage());
+                        e.printStackTrace();
+                        optionalMessage = "Error changing permissions";
                     }
                 }
                 break;
             }
             case "login": {
-                boolean user_exists = false;
                 String password = "";
                 try {
                     password = DBInteract.getPassword(stringArray[1]);
-                    user_exists = true;
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
                     optionalMessage = "Password for supplied username not found: User doesn't exist";
                 }
-                if (user_exists) { // This code will only run if a password was found in the database
-                    if (password == null) {
-                        optionalMessage = "Username does not exist";
-                    } else if (password.equals(stringArray[2])) {
+                if (!password.equals("")) { // This code will only run if a password was found in the database
+                    if (password.equals(stringArray[2])) {
                         commandSucceeded = true;
                         optionalMessage = "Password matches the supplied username";
                         responseData = "Session token placeholder";
@@ -156,18 +180,16 @@ public class Networking {
                 // Currently if this is the case, the deleteSchedule won't know which one to delete, and just delete the first one
                 // But, there shouldn't be a case where two of the same billboard want to start at the same time
                 //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
-                boolean billboard_exists = false;
                 String billboard_id = "";
                 String user_id = "1";
                 try {
                     billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
-                    billboard_exists = true;
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
                     optionalMessage = "Billboard id for supplied Billboard name not found: Billboard doesn't exist";
                 }
-                if (billboard_exists) {
+                if (!billboard_id.equals("")) {
                     // Add the new schedule to the schedule table, if the billboard exists
                     String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id, stringArray[2], stringArray[3]);
                     System.out.println(QueryAddSchedule);
@@ -235,18 +257,41 @@ public class Networking {
             }
 
             // If the first element of the string array in clienttest.java is "createBillboard", then a prepared statement will be run.
-            case "createBillboard":
+            case "createBillboard": {// Will modify a billboard if the billboard name already exists
                 String user_id = "1";
-                PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(user_id, stringArray[1], stringArray[2]); // There should be no schedule at the start for the billboard
-                System.out.println(createBillboard.toString());
+                String billboard_id = "";
+                // First see if the billboard actually exists
                 try {
-                    createBillboard.execute();
-                    commandSucceeded = true;
-                } catch (Exception e) {
+                    billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                } catch (SQLException e) {
                     System.err.println(e.getMessage());
-                    optionalMessage = "Error adding billboard to the database";
+                }
+                if(billboard_id.equals("")) { // Create billboard because no billboard exists
+                    PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(user_id, stringArray[1], stringArray[2]); // There should be no schedule at the start for the billboard
+                    System.out.println(createBillboard.toString());
+                    try {
+                        createBillboard.execute();
+                        commandSucceeded = true;
+                        optionalMessage = "Billboard successfully added";
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                        optionalMessage = "Error adding billboard to the database";
+                    }
+                }
+                else{ // Modify the existing billboard
+                    String modifyBillboard = DBInteract.updateColumnWhereId("billboard", "xml_data", stringArray[2], billboard_id); // There should be no schedule at the start for the billboard
+                    System.out.println(modifyBillboard);
+                    try {
+                        DBInteract.dbExecuteCommand(modifyBillboard);
+                        optionalMessage = "Billboard " + stringArray[1] + " modified successfully";
+                        commandSucceeded = true;
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                        optionalMessage = "Error modifying existing billboard";
+                    }
                 }
                 break;
+            }
             case "deleteBillboard": {
                 String billboard_id = "";
                 try {
@@ -273,6 +318,7 @@ public class Networking {
                     } catch (SQLException e) {
                         System.err.println(e.getMessage());
                         e.printStackTrace();
+                        optionalMessage = "Error deleting billboard";
                     }
                 }
                 break;
@@ -281,6 +327,7 @@ public class Networking {
                 try {
                     responseData = DBInteract.getValue("xml_data", "billboard", "billboard_name", stringArray[1]); // Get the billboard content from the billboard name
                     commandSucceeded = true;
+                    optionalMessage = "Billboard data for supplied Billboard successfully found";
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
@@ -301,7 +348,7 @@ public class Networking {
      * @param responseData If the command was a get, such as get billboard content, then this will be the response
      * @param optionalMessage Optional message for debugging/ to be shown to the user
      */
-    private void SendBackData(boolean status, String responseData, String optionalMessage){
+    private static void SendBackData(boolean status, String responseData, String optionalMessage){
         String[] ServerResponse = {String.valueOf(status), responseData, optionalMessage};
         try{
             oos.writeObject(ServerResponse);
@@ -312,7 +359,7 @@ public class Networking {
         }
     }
 
-    private byte[] GenerateSalt() { // Returns a string which represents a random array of bytes with length 16
+    private static byte[] GenerateSalt() { // Returns a string which represents a random array of bytes with length 16
         final Random r = new SecureRandom();
         byte[] salt = new byte[32];
         r.nextBytes(salt);

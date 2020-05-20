@@ -1,4 +1,4 @@
-package BillboardServer;
+package BillboardServer.ClientUtilities;
 
 import java.io.*;
 

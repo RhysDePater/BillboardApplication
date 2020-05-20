@@ -1,18 +1,11 @@
 package BillboardServer;
-// To do
-// Copy code to read from props file
-// Copy/Create code to listen on a port
-// Connect to database
-// Get information being sent to port
-// Send that information to the database
-// Get the response from the database
-// Send it back to the control panel
-
 import java.io.IOException;
 
 public class ServerApp {
-    public static void main(String[] args) throws IOException, ClassNotFoundException { // handle the exception properly
-        Networking network = new Networking(ReadFromNetworkPropsFile.readNetworkPropsPort());
+    // TODO
+    // handle the exception properly
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        Networking network = new Networking(ReadNetworkProps.getPort());
         network.Listen();
     }
 }
