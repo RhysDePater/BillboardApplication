@@ -50,11 +50,11 @@ public class DBInteract {
      * @param saltValue saltValue relative to user
      * @return ReturnType=String: Insert User command
      */
-    public static String createUser(String username, String password, byte[] saltValue) {
+    public static String createUser(String username, String password, String saltValue) {
         return "INSERT INTO user (username, password, salt) VALUES (" +
                 "'" + username + "'," +
                 " '" + password + "'," +
-                " '" + saltValue + "')";
+                " " + saltValue + ")";
     }
 
     /**
@@ -131,7 +131,7 @@ public class DBInteract {
      * @return ReturnType=String: Select query SQL command
      */
     public static String selectTarget(String table, String targetColumn, String columnName, String toMatch) {
-        String selectQuery = "SELECT " + targetColumn + " from " + table + " WHERE " + columnName + "='" + toMatch + "'";
+        String selectQuery = "SELECT " + targetColumn + " FROM " + table + " WHERE " + columnName + " = '" + toMatch + "';";
         return selectQuery;
     }
 
@@ -268,10 +268,18 @@ public class DBInteract {
                 String id = Integer.toString(rs.getInt(colNames[0]));
                 String user_id = rs.getString(colNames[1]);
                 String schedule_id = rs.getString(colNames[2]);
-                String xml_data = rs.getString(colNames[3]);
-                String status = rs.getString(colNames[4]);
-                String[] colItem = new String[]{id, user_id, schedule_id, xml_data, status};
+                String billboard_name = rs.getString(colNames[3]);
+                String xml_data = rs.getString(colNames[4]);
+                String status = rs.getString(colNames[5]);
+                String[] colItem = new String[]{id, user_id, schedule_id, billboard_name, xml_data, status};
+                //String[] colItem = new String[]{id, user_id, schedule_id, status};
                 for (int j = 0; j < colCount; ++j) {
+//                    if (j == 4){
+//                        j = 5;
+//                        billboardList[i][j] = colItem[j];
+//                    } else{
+//                        billboardList[i][j] = colItem[j];
+//                    }
                     billboardList[i][j] = colItem[j];
                 }
                 rs.next();
