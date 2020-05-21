@@ -12,6 +12,8 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Base64;
+
 
 public class xmlParser {
 
@@ -20,27 +22,19 @@ public class xmlParser {
 
         String message = "";
         String picture  ="";
+        String encodedPicture ="";
         String information="";
 
-        try {
-            FileWriter fileWriter = new FileWriter(filePath);
-            PrintWriter printWriter = new PrintWriter(fileWriter);
-            printWriter.print(xmlString);
-            printWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeXMLFile(xmlString, filePath);
+
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.parse(new File(filePath));
 
-            XPath xPath = XPathFactory.newInstance().newXPath();
-
             //get message data
             try {
-                XPathExpression expression = xPath.compile("/billboard/message");
-                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                Node node = helper.xmlNode("/billboard/message", document);
                 message = node.getTextContent();
                 System.out.println("Message: " + message);
             }
@@ -50,8 +44,7 @@ public class xmlParser {
             }
 
             try {
-                XPathExpression expression = xPath.compile("/billboard/picture[@url]");
-                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                Node node = helper.xmlNode("/billboard/picture[@url]", document);
                 picture = node.getAttributes().getNamedItem("url").getNodeValue();
                 System.out.println("picture: " + picture);
             }
@@ -61,8 +54,17 @@ public class xmlParser {
             }
 
             try {
-                XPathExpression expression = xPath.compile("/billboard/information");
-                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                Node node = helper.xmlNode("/billboard/picture[@data]", document);
+                encodedPicture = node.getAttributes().getNamedItem("data").getNodeValue();
+                System.out.println("picture: " + encodedPicture);
+            }
+            catch(Exception e)
+            {
+                encodedPicture ="";
+            }
+
+            try {
+                Node node = helper.xmlNode("/billboard/information", document);
                 information = node.getTextContent();
                 System.out.println("Information: " + information);
             }
@@ -71,9 +73,21 @@ public class xmlParser {
                 information="";
             }
         } catch (ParserConfigurationException | SAXException | IOException | DOMException  exp) {
-            return (new String[]{message, picture, information});
+            return (new String[]{message, picture, information, encodedPicture});
         }
 
-        return (new String[]{message, picture, information});
+        return (new String[]{message, picture, information, encodedPicture});
+    }
+
+    public static void writeXMLFile(String xml, String filePath)
+    {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(xml);
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,19 +8,21 @@ import java.awt.*;
 import java.awt.event.*;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
 
 public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 2);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 20);
 
     public final String xmlText = "<billboard>\n" +
-            "<message>Billboard with message, GIF and information</message>\n" +
-            "<picture url=\"https://cloudstor.aarnet.edu.au/plus/s/A26R8MYAplgjUhL/download\"/>\n" +
-            "<information>\n" +
-            "This billboard has a message tag, a picture tag (linking to a URL with a GIF image) and an information tag. The picture is drawn in the centre and the message and information text are centred in the space between the top of the image and the top of the page, and the space between the bottom of the image and the bottom of the page, respectively.\n" +
-            "</information>\n" +
+            "<message>\n" +
+            "Billboard with message and picture with data attribute\n" +
+            "</message>\n" +
+            "<picture data=\"iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAIAAAD4YuoOAAAAKXRFWHRDcmVhdGlvbiBUaW1lAJCFIDI1IDMgMjAyMCAwOTowMjoxNyArMDkwMHlQ1XMAAAAHdElNRQfkAxkAAyQ8nibjAAAACXBIWXMAAAsSAAALEgHS3X78AAAABGdBTUEAALGPC/xhBQAAAS5JREFUeNq1kb9KxEAQxmcgcGhhJ4cnFwP6CIIiPoZwD+ALXGFxj6BgYeU7BO4tToSDFHYWZxFipeksbMf5s26WnAkJki2+/c03OzPZDRJNYcgVwfsU42cmKi5YjS1s4p4DCrkBPc0wTlkdX6bsG4hZQOj3HRDLHqh08U4Adb/zgEMtq5RuH3Axd45PbftdB2wO5OsWc7pOYaOeOk63wYfdFtL5qldB34W094ZfJ+4RlFldTrmW/ZNbn2g0of1vLHdZq77qSDCaSAsLf9kXh9w44PNoR/YSPHycEmbIOs5QzBJsmDHrWLPeF24ZkCe6ZxDCOqHcmxmsr+hsicahss+n8vYb8NHZPTJxi/RGC5IqbRwqH6uxVTX+5LvHtvT/V/R6PGh/iF4GHoBAwz7RD26spwq6Amh/AAAAAElFTkSuQmCC\"/>\n" +
             "</billboard>";
 
     public mainView(String title) throws HeadlessException {
@@ -48,6 +50,7 @@ public class mainView extends JFrame implements Runnable{
         String Message = elements[0];
         String Picture = elements[1];
         String Info = elements[2];
+        String encodedPicture = elements[3];
 
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -64,7 +67,7 @@ public class mainView extends JFrame implements Runnable{
             JPanel messagePanel = new JPanel();
             messagePanel.setLayout(new GridBagLayout());
             messageLabel = helper.createLabel(Message, MESSAGE_FONT);
-            setMessageFont(messageLabel);
+            helper.setMessageFont(messageLabel, this);
             messagePanel.add(messageLabel);
             this.getContentPane().add(messagePanel,BorderLayout.NORTH);
         }
@@ -72,8 +75,18 @@ public class mainView extends JFrame implements Runnable{
         if(Picture != "") {
             JPanel picPanel = new JPanel();
             picPanel.setLayout(new GridBagLayout());
-            URL url = new URL(elements[1]);
+            URL url = new URL(Picture);
             BufferedImage myPicture = ImageIO.read(url);
+            picLabel = new JLabel(new ImageIcon(myPicture));
+            picPanel.add(picLabel);
+            this.getContentPane().add(picPanel,BorderLayout.CENTER);
+        }
+
+        if(encodedPicture != "") {
+            JPanel picPanel = new JPanel();
+            picPanel.setLayout(new GridBagLayout());
+            byte[] decodedPicture = Base64.getDecoder().decode(encodedPicture);
+            BufferedImage myPicture = ImageIO.read(new ByteArrayInputStream(decodedPicture));
             picLabel = new JLabel(new ImageIcon(myPicture));
             picPanel.add(picLabel);
             this.getContentPane().add(picPanel,BorderLayout.CENTER);
@@ -86,49 +99,12 @@ public class mainView extends JFrame implements Runnable{
             infoPanel.add(infoLabel);
             if(Message!="")
             {
-                setInformationFont(messageLabel, infoLabel);
+                helper.setInformationFont(messageLabel, infoLabel);
             }
             this.getContentPane().add(infoPanel,BorderLayout.SOUTH);
         }
     }
 
-    public void setMessageFont(JLabel label)
-    {
-        Font labelFont = label.getFont();
-        String labelText = label.getText();
-
-        int stringWidth = label.getFontMetrics(labelFont).stringWidth(labelText);
-        System.out.println(stringWidth);
-        int componentWidth = this.getWidth();
-        System.out.println(componentWidth);
-
-// Find out how much the font can grow in width.
-        double widthRatio = (double)componentWidth / (double)stringWidth;
-        System.out.println(widthRatio);
-
-        int newFontSize = (int)(labelFont.getSize() * widthRatio);
-        System.out.println(newFontSize);
-        int componentHeight = this.getHeight();
-        System.out.println(componentHeight);
-
-// Pick a new font size so it will not be larger than the height of label.
-        int fontSizeToUse = Math.min(newFontSize, componentHeight);
-        System.out.println(fontSizeToUse);
-
-// Set the label's font size to the newly determined size.
-        label.setFont(new Font(labelFont.getName(), Font.BOLD, newFontSize));
-    }
-
-    public void setInformationFont(JLabel message, JTextArea info)
-    {
-        Font messageFont = message.getFont();
-        Font infoFont = info.getFont();
-        int infoFontSize = 0;
-
-        infoFontSize = messageFont.getSize() / 2;
-
-        info.setFont(new Font(infoFont.getName(), Font.BOLD, infoFontSize));
-    }
 
     @Override
     public void run() {
