@@ -35,24 +35,43 @@ public class xmlParser {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.parse(new File(filePath));
 
-            //get message data
             XPath xPath = XPathFactory.newInstance().newXPath();
-            XPathExpression expression = xPath.compile("/billboard/message");
-            Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
-            message = node.getTextContent();
-            System.out.println("Message: " + message);
 
-            expression = xPath.compile("/billboard/picture[@url]");
-            node = (Node) expression.evaluate(document, XPathConstants.NODE);
-            picture = node.getAttributes().getNamedItem("url").getNodeValue();
-            System.out.println("picture: " + picture );
+            //get message data
+            try {
+                XPathExpression expression = xPath.compile("/billboard/message");
+                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                message = node.getTextContent();
+                System.out.println("Message: " + message);
+            }
+            catch(Exception e)
+            {
+                message="";
+            }
 
-            expression = xPath.compile("/billboard/information");
-            node = (Node) expression.evaluate(document, XPathConstants.NODE);
-            information = node.getTextContent();
-            System.out.println("Information: " + information);
-        } catch (ParserConfigurationException | SAXException | IOException | DOMException | XPathExpressionException exp) {
-            exp.printStackTrace();
+            try {
+                XPathExpression expression = xPath.compile("/billboard/picture[@url]");
+                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                picture = node.getAttributes().getNamedItem("url").getNodeValue();
+                System.out.println("picture: " + picture);
+            }
+            catch(Exception e)
+            {
+                picture="";
+            }
+
+            try {
+                XPathExpression expression = xPath.compile("/billboard/information");
+                Node node = (Node) expression.evaluate(document, XPathConstants.NODE);
+                information = node.getTextContent();
+                System.out.println("Information: " + information);
+            }
+            catch(Exception e)
+            {
+                information="";
+            }
+        } catch (ParserConfigurationException | SAXException | IOException | DOMException  exp) {
+            return (new String[]{message, picture, information});
         }
 
         return (new String[]{message, picture, information});
