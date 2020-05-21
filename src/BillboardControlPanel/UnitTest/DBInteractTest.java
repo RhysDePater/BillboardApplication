@@ -6,19 +6,5 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 
 class DBInteractTest extends DBInteract {
-    static ResultSet rs;
-    @BeforeAll
-    public static void getResultSet() {
-        rs = dbQueryCommand(selectUserJoinPermission());
-    }
-
-    @Test
-    public void getUserInfo() {
-        String[][] data = getUserData(selectUserJoinPermission());
-    }
-
-    @Test
-    public void createNewPermission() {
-//        dbExecuteCommand(createPermission(true,true,true,true));
-    }
+    //tests to be implemented once server is available and functions can be implemented correctly
 }
