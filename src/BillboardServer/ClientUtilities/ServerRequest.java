@@ -67,7 +67,7 @@ public class ServerRequest {
      * @return See ServerRequest.sendQuery
      */
     public static String[] createUser(String username, String password, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
-        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString()};
+        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
         return sendQuery(command);
     }
 
@@ -78,7 +78,7 @@ public class ServerRequest {
      * @return See ServerRequest.sendQuery
      */
     public static String[]  deleteUser(String username, String sessionToken) throws IOException {
-        String[] command = {"deleteUser", username};
+        String[] command = {"deleteUser", username, sessionToken};
         return sendQuery(command);
     }
 
