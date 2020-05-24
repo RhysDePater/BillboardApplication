@@ -25,14 +25,15 @@ public class ClientTest {
         // See ServerRequest.sendQuery (and below) for what they return.
         try{
             responseArray = ServerRequest.login("ADMIN", "pass");
-            //responseArray = ServerRequest.createUser("testusername1", "testpassword1", 1,1,1,1, sessionToken);
-            //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
+            //responseArray = ServerRequest.createUser("testusername5", "testpassword1", 1,1,1,1, sessionToken);
+            //responseArray = ServerRequest.deleteUser("testusername1", sessionToken);
             //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", xmlString);
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
             //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
             //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
             //responseArray = ServerRequest.editPermission("testusername", 0,0,0,0, sessionToken);
+
         }
         catch (IOException e){
             System.out.println("Could not access server");
@@ -43,30 +44,32 @@ public class ClientTest {
             System.out.println(responseArray[0]); // true or false if the sql query ran okay
             System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
             System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
-        sessionToken = responseArray[1];
+            sessionToken = responseArray[1];
 
         // Used for testing that the session token (in the previous try block, uncomment and comment out ServerRequest.login to
         // check that the rest of the commands can be handled if they don't have a session token.
-        try{
-            //responseArray = ServerRequest.login("ADMIN", "pass");
-            responseArray = ServerRequest.createUser("testusername6", "testpassword6", 1,1,1,1, sessionToken);
-            //TimeUnit.SECONDS.sleep(3); // Test to see that session token can expire if a command is made after a specified time in Networking.IsSessionTokenValid().
-            //responseArray = ServerRequest.deleteUser("testusername4", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
-            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
-            //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
-            //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
-            //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
-            //responseArray = ServerRequest.editPermission("testusername", 0,0,0,0, sessionToken);
-        }
-        catch (IOException e){
-            System.out.println("Could not access server");
-            return; // Can't really do much if we can't access the server
-        }
+        if (true) {
+            try{
+                //responseArray = ServerRequest.login("ADMIN", "pass");
+                responseArray = ServerRequest.createUser("testusername6", "testpassword6", 1,1,1,1, sessionToken);
+                //TimeUnit.SECONDS.sleep(3); // Test to see that session token can expire if a command is made after a specified time in Networking.IsSessionTokenValid().
+                //responseArray = ServerRequest.deleteUser("testusername6", sessionToken);
+                //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
+                //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
+                //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
+                //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
+                //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
+                //responseArray = ServerRequest.editPermission("testusername", 0,0,0,0, sessionToken);
+            }
+            catch (IOException e){
+                System.out.println("Could not access server");
+                return; // Can't really do much if we can't access the server
+            }
 
-        System.out.println(responseArray[0]); // true or false if the sql query ran okay
-        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
-        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+            System.out.println(responseArray[0]); // true or false if the sql query ran okay
+            System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
+            System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+        }
     }
 }
 

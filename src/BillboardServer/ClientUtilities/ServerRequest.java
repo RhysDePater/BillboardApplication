@@ -1,6 +1,6 @@
 package BillboardServer.ClientUtilities;
 
-import BillboardServer.ReadNetworkProps;
+import BillboardServer.Misc.ReadNetworkProps;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,6 +48,32 @@ public class ServerRequest {
         }
         try{
             return (String[])Response;
+        }
+        catch (Exception e ){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    // Same as above but returns a string[][] for use in the get functions
+    public static String[][] sendQueryMultiArray(String[] queryArray) throws IOException{
+        Socket socket = new Socket (ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
+        socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+        oos.writeObject(queryArray);
+        oos.flush();
+        // Now listen for a response, no loop is required because there will only be a single response from the server for now, then return the results
+        Object Response = null;
+        try{
+            Response = ois.readObject();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+        try{
+            return (String[][])Response;
         }
         catch (Exception e ){
             System.out.println(e.getMessage());
@@ -168,6 +194,16 @@ public class ServerRequest {
         String[] command = {"login", username, password};
         return sendQuery(command);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // GETS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static String[][] getColumns(String table_name) throws IOException {
+        String[] command = {"getColumns", table_name};
+        return sendQueryMultiArray(command);
+    }
+
 }
 
 
