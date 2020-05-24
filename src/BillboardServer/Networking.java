@@ -24,6 +24,7 @@ public class Networking {
     static ObjectOutputStream oos;
     static int port_number;
     private static HashMap<String, Long> validSessionToken = new HashMap<>(); // Used for storing the session token generated in login case + time of login.
+    private static HashMap<String, String> usersSessionTokens = new HashMap<>(); // Used to keep track of the session token for each username.
     private static Random rng = new Random(); // Used for generating random bytes in createSessionToken method.
     public Networking(int port) {
         port_number = port;
@@ -104,6 +105,23 @@ public class Networking {
     }
 
     /**
+     * Used in the deleteUser case. Ensures that a logged in user cannot delete themselves from the system.
+     * Checks the usersSessionTokens hashmap to see if the sessionToken sent by the client belongs to the username to be deleted.
+     * If it does, then the user is attempting to delete themselves, which means that deleteUser case will not execute.
+     * @param username The username entered by the client that is to be checked if it can be deleted.
+     * @param sessionToken The session token sent by the client.
+     * @return
+     */
+    private static boolean doesUserMatchSessionTokenFromClient(String sessionToken, String username){
+        boolean returnStatement = false;
+        // Checks that the sessionToken of the current user is not a value of the current users name in the hashmap usersSessionTokens.
+        returnStatement = (usersSessionTokens.get(sessionToken).equals(username));
+//        System.out.println(usersSessionTokens.get(username));
+//        System.out.println("in new bool function");
+        return returnStatement;
+    }
+
+    /**
      * Takes the data from Listen() and translates it into commands to be run on the database, then runs them.
      * The main logic of the server
      * @param data the data received from the control panel or viewer
@@ -154,6 +172,7 @@ public class Networking {
             case "deleteUser": {
                 boolean user_exists = false;
                 String user_id = "";
+                String username = stringArray[1];
                 sessionTokenFromClient = stringArray[2]; //Session tokens come from ServerRequest methods.
                 if(isSessionTokenValid(sessionTokenFromClient)){
                 try {
@@ -164,25 +183,31 @@ public class Networking {
                     e.printStackTrace();
                     optionalMessage = "User_id for supplied username not found: User doesn't exist";
                 }
-                if (user_exists) {
-                    String QueryDeleteUser = DBInteract.deleteTarget("user", "id", user_id);
-                    String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
-                    //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
-                    // TODO
-                    // Change these to be a transaction so that they are guaranteed to both run together.
-                    // Otherwise it could be deleted from the user table without deleting the permissions
-                    System.out.println(QueryDeletePermissions);
-                    System.out.println(QueryDeleteUser);
-                    try {
-                        DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
-                        DBInteract.dbExecuteCommand(QueryDeleteUser);
-                        commandSucceeded = true;
-                        optionalMessage = "User successfully deleted";
-                    } catch (SQLException e) {
-                        System.err.println(e.getMessage());
-                        e.printStackTrace();
-                        optionalMessage = "Failed to delete user";
+                if (!doesUserMatchSessionTokenFromClient(sessionTokenFromClient, username)) {
+                    if (user_exists) {
+                        //doesUserMatchSessionTokenFromClient(username, sessionTokenFromClient);
+                        String QueryDeleteUser = DBInteract.deleteTarget("user", "id", user_id);
+                        String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
+                        //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
+                        // TODO
+                        // Change these to be a transaction so that they are guaranteed to both run together.
+                        // Otherwise it could be deleted from the user table without deleting the permissions
+                        System.out.println(QueryDeletePermissions);
+                        System.out.println(QueryDeleteUser);
+                        try {
+                            DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
+                            DBInteract.dbExecuteCommand(QueryDeleteUser);
+                            commandSucceeded = true;
+                            optionalMessage = "User successfully deleted";
+                        } catch (SQLException e) {
+                            System.err.println(e.getMessage());
+                            e.printStackTrace();
+                            optionalMessage = "Failed to delete user";
+                        }
                     }
+                }
+                else if (doesUserMatchSessionTokenFromClient(sessionTokenFromClient, username)){
+                    optionalMessage = "You cannot delete your own account.";
                 }
                 }
                 else if(!isSessionTokenValid(sessionTokenFromClient)){
@@ -237,6 +262,8 @@ public class Networking {
                         String sessiontoken = createSessionToken();
                         Long loginUnixTime = Instant.now().getEpochSecond(); // Gets the time elapsed in seconds since unix epoch.
                         validSessionToken.put(sessiontoken, loginUnixTime); // Need to store the current time.
+                        String username = stringArray[1];
+                        usersSessionTokens.put(sessiontoken, username);
                         commandSucceeded = true;
                         optionalMessage = "Password matches the supplied username";
                         responseData = sessiontoken;
