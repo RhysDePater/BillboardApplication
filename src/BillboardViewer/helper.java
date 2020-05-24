@@ -13,6 +13,7 @@ public class helper {
         JLabel label = new JLabel();
         label.setText(str);
         label.setFont(font);
+        label.setOpaque(false);
         return label;
     }
 
@@ -29,8 +30,8 @@ public class helper {
         textArea.setWrapStyleWord(true);
         textArea.setLineWrap(true);
 
-//        textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
-//        textArea.setAlignmentY(JLabel.CENTER_ALIGNMENT);
+        textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
+        textArea.setAlignmentY(JLabel.CENTER_ALIGNMENT);
         return textArea;
     }
 

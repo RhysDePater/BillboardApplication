@@ -24,6 +24,9 @@ public class xmlParser {
         String picture  ="";
         String encodedPicture ="";
         String information="";
+        String backGroundColour = "";
+        String messageColour = "";
+        String infoColour = "";
 
         writeXMLFile(xmlString, filePath);
 
@@ -31,6 +34,16 @@ public class xmlParser {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.parse(new File(filePath));
+
+            try {
+                Node node = helper.xmlNode("/billboard[@background]", document);
+                backGroundColour = node.getAttributes().getNamedItem("background").getNodeValue();
+                System.out.println("background: " + backGroundColour);
+            }
+            catch(Exception e)
+            {
+                backGroundColour="#FFFFFF";
+            }
 
             //get message data
             try {
@@ -41,6 +54,16 @@ public class xmlParser {
             catch(Exception e)
             {
                 message="";
+            }
+
+            try {
+                Node node = helper.xmlNode("/billboard/message[@colour]", document);
+                messageColour = node.getAttributes().getNamedItem("colour").getNodeValue();
+                System.out.println("message colour: " + messageColour);
+            }
+            catch(Exception e)
+            {
+                messageColour="#000000";
             }
 
             try {
@@ -72,11 +95,21 @@ public class xmlParser {
             {
                 information="";
             }
+
+            try {
+                Node node = helper.xmlNode("/billboard/information[@colour]", document);
+                infoColour = node.getAttributes().getNamedItem("colour").getNodeValue();
+                System.out.println("information colour: " + infoColour);
+            }
+            catch(Exception e)
+            {
+                infoColour="#000000";
+            }
         } catch (ParserConfigurationException | SAXException | IOException | DOMException  exp) {
-            return (new String[]{message, picture, information, encodedPicture});
+            return (new String[]{message, picture, information, encodedPicture, backGroundColour, messageColour, infoColour});
         }
 
-        return (new String[]{message, picture, information, encodedPicture});
+        return (new String[]{message, picture, information, encodedPicture, backGroundColour, messageColour, infoColour});
     }
 
     public static void writeXMLFile(String xml, String filePath)
