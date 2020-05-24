@@ -1,4 +1,4 @@
-package BillboardServer;
+package BillboardServer.Database;
 
 import BillboardControlPanel.Model.DBInteract;
 import org.junit.jupiter.api.BeforeAll;

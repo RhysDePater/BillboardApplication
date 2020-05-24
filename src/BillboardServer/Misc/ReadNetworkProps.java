@@ -1,4 +1,4 @@
-package BillboardServer;
+package BillboardServer.Misc;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

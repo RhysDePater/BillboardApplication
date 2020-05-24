@@ -1,4 +1,4 @@
-package BillboardServer;
+package BillboardServer.Database;
 
 import BillboardControlPanel.Model.DBConnection;
 
