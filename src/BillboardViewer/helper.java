@@ -5,6 +5,9 @@ import org.w3c.dom.Node;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.xml.xpath.*;
 import java.awt.*;
 
@@ -21,7 +24,7 @@ public class helper {
 
         JTextArea textArea = new JTextArea();
         textArea.setText(text);
-        textArea.setSize(Height,Width);
+        textArea.setSize((int)((double)Width * 0.75),(int)((double)Height * 0.50));
         textArea.setEditable(false);
         textArea.setCursor(null);
         textArea.setOpaque(false);
@@ -30,8 +33,6 @@ public class helper {
         textArea.setWrapStyleWord(true);
         textArea.setLineWrap(true);
 
-        textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
-        textArea.setAlignmentY(JLabel.CENTER_ALIGNMENT);
         return textArea;
     }
 
@@ -52,6 +53,7 @@ public class helper {
         int stringWidth = label.getFontMetrics(labelFont).stringWidth(labelText);
         int componentWidth = component.getWidth();
 
+
 // Find out how much the font can grow in width.
         double widthRatio = (double)componentWidth / (double)stringWidth;
 
@@ -62,7 +64,8 @@ public class helper {
         int fontSizeToUse = Math.min(newFontSize, componentHeight);
 
 // Set the label's font size to the newly determined size.
-        label.setFont(new Font(labelFont.getName(), Font.BOLD, newFontSize));
+        label.setFont(new Font(labelFont.getName(), Font.BOLD, fontSizeToUse));
+        System.out.println(label.getFontMetrics(labelFont).stringWidth(labelText));
     }
 
     public static void setInformationFont(JLabel message, JTextArea info)
