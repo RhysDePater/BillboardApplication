@@ -50,22 +50,16 @@ public class helper {
         String labelText = label.getText();
 
         int stringWidth = label.getFontMetrics(labelFont).stringWidth(labelText);
-        System.out.println(stringWidth);
         int componentWidth = component.getWidth();
-        System.out.println(componentWidth);
 
 // Find out how much the font can grow in width.
         double widthRatio = (double)componentWidth / (double)stringWidth;
-        System.out.println(widthRatio);
 
         int newFontSize = (int)(labelFont.getSize() * widthRatio);
-        System.out.println(newFontSize);
         int componentHeight = component.getHeight();
-        System.out.println(componentHeight);
 
 // Pick a new font size so it will not be larger than the height of label.
         int fontSizeToUse = Math.min(newFontSize, componentHeight);
-        System.out.println(fontSizeToUse);
 
 // Set the label's font size to the newly determined size.
         label.setFont(new Font(labelFont.getName(), Font.BOLD, newFontSize));
@@ -81,4 +75,26 @@ public class helper {
 
         info.setFont(new Font(infoFont.getName(), Font.BOLD, infoFontSize));
     }
+
+    public static int[] getImgDimensions(int height, int width, double scale, Frame frame)
+    {
+        int newHeight;
+        int newWidth;
+
+        if(height >= width)
+        {
+            double ratio = (double)width/(double)height;
+            newHeight = (int) ((double) frame.getHeight() * scale);
+            newWidth = (int) ((double) newHeight * ratio);
+        }
+        else
+        {
+            double ratio = (double)height/(double)width;
+            newWidth = (int) ((double) frame.getWidth() * scale);
+            newHeight = (int) ((double) newWidth * ratio);
+        }
+        return (new int[]{newHeight, newWidth});
+    }
 }
+
+
