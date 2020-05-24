@@ -1,4 +1,3 @@
-package BillboardControlPanel.UnitTest;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -15,10 +14,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.sql.ResultSet;
-import java.sql.SQLDataException;   //Don't remove required for the commented tests below
-import java.sql.SQLException;       //Don't remove required for the commented tests below
-import static BillboardControlPanel.Model.DBInteract.*;
-import static BillboardControlPanel.Model.XMLParsing.*;
+
+import static BillboardControlPanel.ModelOUTDATED.DBInteract.*;
+import static BillboardControlPanel.ModelOUTDATED.XMLParsing.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -65,8 +63,8 @@ public class XMLParsingTests {
         assertEquals(expectedStr, actualStr);
     }
 
-    //Uncomment the following commented tests if connected to a local database from testing.
-    //Testing to make getXMLData() using existing billboard ID
+//    Uncomment the following commented tests if connected to a local database from testing.
+//    Testing to make getXMLData() using existing billboard ID
 //    @Test
 //    public void shouldReturn() throws SQLException {
 //        rs = dbQueryCommand(QueryOnExisting);

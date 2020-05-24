@@ -1,5 +1,3 @@
-package BillboardControlPanel.UnitTest;
-
 import BillboardControlPanel.Helper.ControllerHelper;
 import org.junit.jupiter.api.Test;
 

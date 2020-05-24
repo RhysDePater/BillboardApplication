@@ -1,7 +1,7 @@
 package BillboardControlPanel.View;
 
 import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.Model.DBInteract;
+import BillboardControlPanel.ModelOUTDATED.DBInteract;
 
 import javax.swing.*;
 import java.awt.*;
