@@ -1,8 +1,7 @@
 package BillboardControlPanel.Controller;
 
 import BillboardControlPanel.Helper.ControllerHelper;
-import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.Model.DBInteract;
+import BillboardControlPanel.ModelOUTDATED.DBInteract;
 import BillboardControlPanel.View.LoginCard;
 
 import java.awt.event.ActionEvent;

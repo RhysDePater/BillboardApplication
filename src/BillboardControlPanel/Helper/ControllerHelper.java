@@ -1,15 +1,13 @@
 package BillboardControlPanel.Helper;
 
 import BillboardControlPanel.Controller.MainController;
-import BillboardControlPanel.Model.DBInteract;
+import BillboardControlPanel.ModelOUTDATED.DBInteract;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.security.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class ControllerHelper {
 

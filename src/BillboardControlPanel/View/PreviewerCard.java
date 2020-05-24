@@ -1,9 +1,6 @@
 package BillboardControlPanel.View;
-import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.Model.DBInteract;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class PreviewerCard extends MasterView{
     public PreviewerCard(){
