@@ -18,12 +18,10 @@ public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 30);
 
-    public final String xmlText ="<billboard background=\"#555555\">\n" +
-            "<message colour=\"#FFFFFF\">\n" +
-            "The information text is always smaller than the message text\n" +
-            "</message>\n" +
-            "<information colour=\"#DDDDDD\">\n" +
-            "The information text is always smaller than the message text test test test test test test test test test test test test test \n" +
+    public final String xmlText ="<billboard>\n" +
+            "<picture url=\"https://cloudstor.aarnet.edu.au/plus/s/vYipYcT3VHa1uNt/download\"/>\n" +
+            "<information>\n" +
+            "Billboard with picture (with URL attribute) and information text only. The picture is now centred within the top 2/3 of the image and the information text is centred in the remaining space below the image.\n" +
             "</information>\n" +
             "</billboard>";
 
@@ -139,7 +137,8 @@ public class mainView extends JFrame implements Runnable{
         JTextPane infoLabel;
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridBagLayout());
-        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getHeight(), this.getWidth());
+        //pass the scale through
+        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getBounds().height, this.getBounds().width, scale);
         infoLabel.setForeground(Color.decode(infoColour));
         infoPanel.setBackground(Color.decode(backGroundColour));
         infoPanel.add(infoLabel);

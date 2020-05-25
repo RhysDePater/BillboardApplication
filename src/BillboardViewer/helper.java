@@ -21,11 +21,18 @@ public class helper {
         return label;
     }
 
-    public static JTextPane JMultilineLabel(String text, Font font, int Height, int Width){
+    public static JTextPane JMultilineLabel(String text, Font font, int Height, int Width, double scale){
 
         JTextPane textArea = new JTextPane();
         textArea.setText(text);
-        textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75),(int)((double)Height * 0.50)));
+        //handle the scale
+        if (scale<=0.5)
+        {
+            textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75),(int)((double)Height * scale)));
+        }
+        else {
+            textArea.setPreferredSize(new Dimension((int) ((double) Width * 0.75), (int) ((double) Height * 0.50)));
+        }
         textArea.setEditable(false);
         textArea.setCursor(null);
         textArea.setOpaque(false);
