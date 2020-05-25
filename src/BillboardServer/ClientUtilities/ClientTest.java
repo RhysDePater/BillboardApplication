@@ -24,7 +24,7 @@ public class ClientTest {
         // Session tokens aren't a thing at the moment so you can send whatever
         // See ServerRequest.sendQuery (and below) for what they return.
         try{
-            responseArray = ServerRequest.login("ADMIN", "pass");
+            responseArray = ServerRequest.login("testusername6", "testpassword6");
             //responseArray = ServerRequest.createUser("testusername5", "testpassword1", 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername1", sessionToken);
             //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", xmlString);
@@ -51,9 +51,9 @@ public class ClientTest {
         if (true) {
             try{
                 //responseArray = ServerRequest.login("ADMIN", "pass");
-                responseArray = ServerRequest.createUser("testusername6", "testpassword6", 1,1,1,1, sessionToken);
+                //responseArray = ServerRequest.createUser("testusername6", "testpassword6", 1,1,1,1, sessionToken);
                 //TimeUnit.SECONDS.sleep(3); // Test to see that session token can expire if a command is made after a specified time in Networking.IsSessionTokenValid().
-                //responseArray = ServerRequest.deleteUser("testusername6", sessionToken);
+                responseArray = ServerRequest.deleteUser("testusername6", sessionToken);
                 //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
                 //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
                 //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);

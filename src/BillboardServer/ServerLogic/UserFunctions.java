@@ -7,8 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
 
-import static BillboardServer.Misc.SessionToken.createSessionToken;
-import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
+import static BillboardServer.Misc.SessionToken.*;
 
 public class UserFunctions extends ServerVariables{
 
@@ -43,13 +42,22 @@ public class UserFunctions extends ServerVariables{
             optionalMessage = "Error adding user to database: User likely already exists";
         }
     }
+
     public static void deleteUser(){
         boolean user_exists = false;
         String user_id = "";
+        String username = stringArray[1];
         sessionTokenFromClient = stringArray[2]; //Session tokens come from ServerRequest methods.
-        if(isSessionTokenValid(sessionTokenFromClient)){
+        if(!isSessionTokenValid(sessionTokenFromClient)){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        if (doesUserMatchSessionTokenFromClient(sessionTokenFromClient, username)){
+            optionalMessage = "You cannot delete your own account.";
+            return;
+        }
             try {
-                user_id = DBInteract.getUserId(stringArray[1]); // Get the id from the given username
+                user_id = DBInteract.getUserId(username); // Get the id from the given username
                 user_exists = true; // The above line will throw an exception is the user id doesn't exist for a username
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -76,11 +84,8 @@ public class UserFunctions extends ServerVariables{
                     optionalMessage = "Failed to delete user";
                 }
             }
-        }
-        else if(!isSessionTokenValid(sessionTokenFromClient)){
-            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
-        }
     }
+
     public static void editPermissions(){
         String user_id = "";
         sessionTokenFromClient = stringArray[6];
@@ -113,10 +118,12 @@ public class UserFunctions extends ServerVariables{
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
         }
     }
+
     public static void login(){
         String password = "";
+        String username = stringArray[1];
         try {
-            password = DBInteract.getPassword(stringArray[1]);
+            password = DBInteract.getPassword(username);
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -127,6 +134,7 @@ public class UserFunctions extends ServerVariables{
                 commandSucceeded = true;
                 optionalMessage = "Password matches the supplied username";
                 responseData = createSessionToken();
+                usersSessionTokens.put(responseData, username);
             } else {
                 optionalMessage = "Password does not match the supplied username";
                 System.out.println(optionalMessage);
