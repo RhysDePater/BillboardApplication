@@ -1,14 +1,7 @@
 package BillboardServer.ServerLogic;
 
-import BillboardServer.Database.DBInteract;
+import java.util.Arrays;
 
-import java.security.SecureRandom;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Random;
-
-import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
-import static BillboardServer.Misc.SessionToken.createSessionToken;
 import static BillboardServer.Networking.SendBackData;
 
 public class ServerLogic extends ServerVariables{
@@ -20,18 +13,18 @@ public class ServerLogic extends ServerVariables{
      * @param data the data received from the control panel or viewer
      */
     public static void Parse(Object data){
-
         resetServerVariables();
         try{
-            stringArray = (String[])data;
+            inboundData = (String[])data;
+            System.out.println("Incoming data is: " + Arrays.toString(inboundData));
         }
         catch (Exception e ){
             System.err.println(e.getMessage());
+            System.out.println("Incoming data is not a string array");
             return;
         }
-        String command = stringArray[0];
+        String command = inboundData[0];
         System.out.println("Command is: " + command);
-
         switch (command) {
             case "createUser": { // Creates a user and the associated permissions
                 UserFunctions.createUser();
@@ -39,6 +32,10 @@ public class ServerLogic extends ServerVariables{
             }
             case "deleteUser": {
                 UserFunctions.deleteUser();
+                break;
+            }
+            case "listUsers": {
+                UserFunctions.listUsers();
                 break;
             }
             case "editPermission": {
@@ -68,16 +65,23 @@ public class ServerLogic extends ServerVariables{
             case "getBillboard":
                 BillboardFunctions.getBillboard();
                 break;
+            case "getColumns":
+                DatabaseFunctions.getColumns();
+                break;
         }
-        SendBackData(commandSucceeded, responseData, optionalMessage);
+        SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");
     }
 
     private static void resetServerVariables(){
          commandSucceeded = false;
         optionalMessage = "";
-        responseData = "";
-        stringArray = null;
+        outboundData = "";
+        if (outboundData2D != null){
+            outboundData2D = null;
+        }
+        outboundData1D = null;
+        inboundData = null;
         sessionTokenFromClient = "";
     }
 }

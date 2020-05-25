@@ -5,6 +5,7 @@ import BillboardServer.Database.DBInteract;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Random;
 
 import static BillboardServer.Misc.SessionToken.*;
@@ -21,15 +22,18 @@ public class UserFunctions extends ServerVariables{
     public static void createUser() {
         byte[] salt = GenerateSalt();
         //String placeHolderSalt = "11001";
-        sessionTokenFromClient = stringArray[7];
-        PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(stringArray[1], stringArray[2], salt);
-        String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(stringArray[3]), // The data comes in as part of a string array, so change it back to an int
-                Integer.parseInt(stringArray[4]),
-                Integer.parseInt(stringArray[5]),
-                Integer.parseInt(stringArray[6]));
+        sessionTokenFromClient = inboundData[7];
+        if (!isSessionTokenValid(sessionTokenFromClient)) { //If the session token is valid, then the query can attempt to run.
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(inboundData[1], inboundData[2], salt);
+        String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(inboundData[3]), // The data comes in as part of a string array, so change it back to an int
+                Integer.parseInt(inboundData[4]),
+                Integer.parseInt(inboundData[5]),
+                Integer.parseInt(inboundData[6]));
         System.out.println(QueryCreatePermission);
         System.out.println(QueryCreateUser.toString());
-        // No need to check the session token here because this is only run when a user is created, so there wont be a session token for them
         try {
             QueryCreateUser.execute();
             DBInteract.dbExecuteCommand(QueryCreatePermission);
@@ -46,8 +50,8 @@ public class UserFunctions extends ServerVariables{
     public static void deleteUser(){
         boolean user_exists = false;
         String user_id = "";
-        String username = stringArray[1];
-        sessionTokenFromClient = stringArray[2]; //Session tokens come from ServerRequest methods.
+        String username = inboundData[1];
+        sessionTokenFromClient = inboundData[2]; //Session tokens come from ServerRequest methods.
         if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
@@ -86,22 +90,49 @@ public class UserFunctions extends ServerVariables{
             }
     }
 
+    public static void listUsers() {
+        if(!isSessionTokenValid(inboundData[1])){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        String getUserDataQuery = DBInteract.selectUserJoinPermission();
+        System.out.println(getUserDataQuery);
+        String[][] results;
+        try{
+             results = DBInteract.getUserData(getUserDataQuery);
+        }
+        catch (SQLException e){
+            System.out.println(e.toString());
+            optionalMessage = "Failed to get user list:" + e.getMessage();
+            return;
+        }
+        commandSucceeded = true;
+        optionalMessage = "List of Users successfully returned";
+        outboundData2D = results;
+    }
+
     public static void editPermissions(){
         String user_id = "";
-        sessionTokenFromClient = stringArray[6];
+        sessionTokenFromClient = inboundData[6];
         if(isSessionTokenValid(sessionTokenFromClient)) {
             try {
-                user_id = DBInteract.getUserId(stringArray[1]); // Get the id from the given username
+                user_id = DBInteract.getUserId(inboundData[1]); // Get the id from the given username
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
                 optionalMessage = "User_id for supplied username not found: User doesn't exist";
             }
             if (!user_id.equals("")) {
-                String QueryEditPermission = DBInteract.updatePermission(user_id, Integer.parseInt(stringArray[2]), // The data comes in as part of a string array, so change it back to an int as the database stores tiny ints
-                        Integer.parseInt(stringArray[3]),
-                        Integer.parseInt(stringArray[4]),
-                        Integer.parseInt(stringArray[5]));
+                String QueryEditPermission;
+                if(Arrays.asList(inboundData).contains("-1")){ // Only a single permission is to be edited
+                    QueryEditPermission = editSinglePermission(user_id);
+                }
+                else {
+                    QueryEditPermission = DBInteract.updatePermission(user_id, Integer.parseInt(inboundData[2]), // The data comes in as part of a string array, so change it back to an int as the database stores tiny ints
+                            Integer.parseInt(inboundData[3]),
+                            Integer.parseInt(inboundData[4]),
+                            Integer.parseInt(inboundData[5]));
+                }
                 System.out.println(QueryEditPermission);
                 try {
                     DBInteract.dbExecuteCommand(QueryEditPermission);
@@ -119,9 +150,26 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
+    private static String editSinglePermission(String user_id){
+        if(!inboundData[2].equals("-1")){
+            System.out.println(inboundData[2]);
+            return DBInteract.updatePermissionCreateBillboard(user_id, inboundData[2]);
+        }
+        else if(!inboundData[3].equals("-1")){
+            return DBInteract.updatePermissionEditBillboard(user_id, inboundData[3]);
+        }
+        else if(!inboundData[4].equals("-1")){
+            return DBInteract.updatePermissionScheduleBillboard(user_id, inboundData[4]);
+        }
+        else if(!inboundData[5].equals("-1")){
+            return DBInteract.updatePermissionEditUser(user_id, inboundData[5]);
+        }
+        return null;
+    }
+
     public static void login(){
         String password = "";
-        String username = stringArray[1];
+        String username = inboundData[1];
         try {
             password = DBInteract.getPassword(username);
         } catch (SQLException e) {
@@ -130,14 +178,12 @@ public class UserFunctions extends ServerVariables{
             optionalMessage = "Password for supplied username not found: User doesn't exist";
         }
         if (!password.equals("")) { // This code will only run if a password was found in the database
-            if (password.equals(stringArray[2])) {
+            if (password.equals(inboundData[2])) {
                 commandSucceeded = true;
                 optionalMessage = "Password matches the supplied username";
-                responseData = createSessionToken();
-                usersSessionTokens.put(responseData, username);
+                outboundData = createSessionToken(username);
             } else {
                 optionalMessage = "Password does not match the supplied username";
-                System.out.println(optionalMessage);
             }
         }
     }

@@ -12,16 +12,16 @@ public class BillboardFunctions extends ServerVariables{
     public static void createBillboard(){
         String user_id = "1";
         String billboard_id = "";
-        sessionTokenFromClient = stringArray[3];
+        sessionTokenFromClient = inboundData[3];
         if (isSessionTokenValid(sessionTokenFromClient)) {
             // First see if the billboard actually exists
             try {
-                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
             }
             if (billboard_id.equals("")) { // Create billboard because no billboard exists
-                PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(user_id, stringArray[1], stringArray[2]); // There should be no schedule at the start for the billboard
+                PreparedStatement createBillboard = DBInteract.createBillboardPreparedStatement(user_id, inboundData[1], inboundData[2]); // There should be no schedule at the start for the billboard
                 System.out.println(createBillboard.toString());
                 try {
                     createBillboard.execute();
@@ -32,11 +32,11 @@ public class BillboardFunctions extends ServerVariables{
                     optionalMessage = "Error adding billboard to the database";
                 }
             } else { // Modify the existing billboard
-                String modifyBillboard = DBInteract.updateColumnWhereId("billboard", "xml_data", stringArray[2], billboard_id); // There should be no schedule at the start for the billboard
+                String modifyBillboard = DBInteract.updateColumnWhereId("billboard", "xml_data", inboundData[2], billboard_id); // There should be no schedule at the start for the billboard
                 System.out.println(modifyBillboard);
                 try {
                     DBInteract.dbExecuteCommand(modifyBillboard);
-                    optionalMessage = "Billboard " + stringArray[1] + " modified successfully";
+                    optionalMessage = "Billboard " + inboundData[1] + " modified successfully";
                     commandSucceeded = true;
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
@@ -51,10 +51,10 @@ public class BillboardFunctions extends ServerVariables{
 
     public static void deleteBillboard() {
         String billboard_id = "";
-        sessionTokenFromClient = stringArray[2];
+        sessionTokenFromClient = inboundData[2];
         if (isSessionTokenValid(sessionTokenFromClient)) {
             try {
-                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
@@ -73,7 +73,7 @@ public class BillboardFunctions extends ServerVariables{
                     DBInteract.dbExecuteCommand(QueryDeleteSchedule);// This has to be run first so it deletes the foreign key billboard_id in schedule
                     DBInteract.dbExecuteCommand(QueryDeleteBillboard);
                     commandSucceeded = true;
-                    optionalMessage = "Billboard " + stringArray[1] + " deleted successfully";
+                    optionalMessage = "Billboard " + inboundData[1] + " deleted successfully";
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
@@ -87,16 +87,16 @@ public class BillboardFunctions extends ServerVariables{
     }
 
     public static void getBillboard(){
-        sessionTokenFromClient = stringArray[2];
+        sessionTokenFromClient = inboundData[2];
         if (isSessionTokenValid(sessionTokenFromClient)) {
             try {
-                responseData = DBInteract.getValue("xml_data", "billboard", "billboard_name", stringArray[1]); // Get the billboard content from the billboard name
+                outboundData = DBInteract.getValue("xml_data", "billboard", "billboard_name", inboundData[1]); // Get the billboard content from the billboard name
                 commandSucceeded = true;
                 optionalMessage = "Billboard data for supplied Billboard successfully found";
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
-                responseData = "";
+                outboundData = "";
                 optionalMessage = "Billboard data for supplied Billboard name not found: Billboard doesn't exist";
             }
         }

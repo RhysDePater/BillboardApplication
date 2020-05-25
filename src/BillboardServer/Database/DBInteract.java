@@ -233,6 +233,25 @@ public class DBInteract {
                 + "' WHERE user_id=" + user_id;
     }
 
+    public static String updatePermissionCreateBillboard(String user_id, String value ) {
+        return "UPDATE permission SET create_billboard ='" + value
+                + "' WHERE user_id=" + user_id;
+    }
+
+    public static String updatePermissionEditBillboard(String user_id, String value ){
+        return "UPDATE permission SET edit_billboard ='" + value
+                + "' WHERE user_id=" + user_id;
+    }
+    public static String updatePermissionScheduleBillboard(String user_id, String value ) {
+        return "UPDATE permission SET schedule_billboard ='" + value
+                + "' WHERE user_id=" + user_id;
+    }
+
+    public static String updatePermissionEditUser(String user_id, String value ) {
+        return "UPDATE permission SET edit_user ='" + value
+                + "' WHERE user_id=" + user_id;
+    }
+
 
     //DELETE FUNCTIONS
     /**
@@ -280,12 +299,14 @@ public class DBInteract {
      * @param queryCommand TAKES A QUERY COMMAND FOR USER TABLE INNER JOINED WITH PERMISSIONS
      * @return ReturnType=String[][]: containing results from query
      */
-    public static String[][] getUserData(String queryCommand) throws NullPointerException {
-        try {
+    public static String[][] getUserData(String queryCommand) throws SQLException {
             ResultSet rs = dbQueryCommand(queryCommand);
             int rowCount = getRowCount(rs);
             int colCount = getColCount(rs);
             String[] colNames = getColNames(queryCommand);
+            if (colNames == null){
+                throw new SQLException("Internal server error, no column names found");
+            }
             rs.first();
             String[][] userList = new String[rowCount][colCount];
             for (int i = 0; i < rowCount; ++i) {
@@ -303,11 +324,6 @@ public class DBInteract {
                 rs.next();
             }
                 return userList;
-        } catch (SQLException e){
-            System.out.println(e);
-            return null;
-        }
-
     }
 
     /**
@@ -316,8 +332,7 @@ public class DBInteract {
      * @param commandToQuery an sql command to return the table which column names are to be retrieved from
      * @return ReturnType=String[]: containing column names
      */
-    public static String[] getColNames(String commandToQuery) throws NullPointerException {
-        try {
+    public static String[] getColNames(String commandToQuery) throws NullPointerException, SQLException {
             String formattedQuery = commandToQuery + " LIMIT 1";
             ResultSet rs = DBInteract.dbQueryCommand(formattedQuery);
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -327,10 +342,6 @@ public class DBInteract {
                 colNames[i - 1] = rsmd.getColumnName(i);
             }
             return colNames;
-        }catch (SQLException e){
-            System.err.println(e.getMessage());
-            return null;
-        }
     }
 
     /**
@@ -399,7 +410,7 @@ public class DBInteract {
             colCount = rsmd.getColumnCount();
             return colCount;
         }catch (SQLException e){
-            System.err.println(e);
+            System.err.println(e.toString());
             return 0;
         }
     }

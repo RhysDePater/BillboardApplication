@@ -15,10 +15,10 @@ public class ScheduleFunctions extends ServerVariables {
         //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
         String billboard_id = "";
         String user_id = "1";
-        sessionTokenFromClient = stringArray[4];
+        sessionTokenFromClient = inboundData[4];
         if(isSessionTokenValid(sessionTokenFromClient)) {
             try {
-                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
@@ -26,7 +26,7 @@ public class ScheduleFunctions extends ServerVariables {
             }
             if (!billboard_id.equals("")) {
                 // Add the new schedule to the schedule table, if the billboard exists
-                String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id, stringArray[2], stringArray[3]);
+                String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id, inboundData[2], inboundData[3]);
                 System.out.println(QueryAddSchedule);
                 try {
                     DBInteract.dbExecuteCommand(QueryAddSchedule);
@@ -59,11 +59,11 @@ public class ScheduleFunctions extends ServerVariables {
     public static void deleteSchedule() {
         String billboard_id = "";
         String schedule_id = "";
-        sessionTokenFromClient = stringArray[3];
+        sessionTokenFromClient = inboundData[3];
         if (isSessionTokenValid(sessionTokenFromClient)) {
             // First see if the billboard actually exists
             try {
-                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", stringArray[1]); // Get the billboard id from the billboard name
+                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
@@ -72,7 +72,7 @@ public class ScheduleFunctions extends ServerVariables {
             if (!billboard_id.equals("")) {
                 // Then find the schedule id to see if a schedule exists for the billboard at that time
                 try {
-                    schedule_id = DBInteract.getValueAnd("id", "schedule", "billboard_id", billboard_id, "start_time", stringArray[2]); // Get the schedule id from the billboard name and a time
+                    schedule_id = DBInteract.getValueAnd("id", "schedule", "billboard_id", billboard_id, "start_time", inboundData[2]); // Get the schedule id from the billboard name and a time
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
