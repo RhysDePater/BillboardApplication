@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -20,18 +21,23 @@ public class helper {
         return label;
     }
 
-    public static JTextArea JMultilineLabel(String text, Font font, int Height, int Width){
+    public static JTextPane JMultilineLabel(String text, Font font, int Height, int Width){
 
-        JTextArea textArea = new JTextArea();
+        JTextPane textArea = new JTextPane();
         textArea.setText(text);
-        textArea.setSize((int)((double)Width * 0.75),(int)((double)Height * 0.50));
+        textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75),(int)((double)Height * 0.50)));
         textArea.setEditable(false);
         textArea.setCursor(null);
         textArea.setOpaque(false);
         textArea.setFocusable(false);
         textArea.setFont(font);
-        textArea.setWrapStyleWord(true);
-        textArea.setLineWrap(true);
+//        textArea.setWrapStyleWord(true);
+//        textArea.setLineWrap(true);
+
+        StyledDocument doc = textArea.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
         return textArea;
     }
@@ -68,7 +74,7 @@ public class helper {
         System.out.println(label.getFontMetrics(labelFont).stringWidth(labelText));
     }
 
-    public static void setInformationFont(JLabel message, JTextArea info)
+    public static void setInformationFont(JLabel message, JTextPane info)
     {
         Font messageFont = message.getFont();
         Font infoFont = info.getFont();

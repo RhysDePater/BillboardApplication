@@ -18,9 +18,13 @@ public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 30);
 
-    public final String xmlText ="<billboard background=\"#6800C0\">\n" +
-            "<message colour=\"#FF9E3F\">All custom colours</message>\n" +
-            "<information colour=\"#3FFFC7\">All custom colours</information>\n" +
+    public final String xmlText ="<billboard background=\"#555555\">\n" +
+            "<message colour=\"#FFFFFF\">\n" +
+            "The information text is always smaller than the message text\n" +
+            "</message>\n" +
+            "<information colour=\"#DDDDDD\">\n" +
+            "The information text is always smaller than the message text test test test test test test test test test test test test test \n" +
+            "</information>\n" +
             "</billboard>";
 
     public mainView(String title) throws HeadlessException {
@@ -132,7 +136,7 @@ public class mainView extends JFrame implements Runnable{
     }
 
     private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, String Position, double scale) {
-        JTextArea infoLabel;
+        JTextPane infoLabel;
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridBagLayout());
         infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getHeight(), this.getWidth());

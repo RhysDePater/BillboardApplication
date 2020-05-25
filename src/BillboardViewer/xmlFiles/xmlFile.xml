@@ -1,4 +1,8 @@
-<billboard background="#6800C0">
-<message colour="#FF9E3F">All custom colours</message>
-<information colour="#3FFFC7">All custom colours</information>
+<billboard background="#555555">
+<message colour="#FFFFFF">
+The information text is always smaller than the message text
+</message>
+<information colour="#DDDDDD">
+The information text is always smaller than the message text test test test test test test test test test test test test test 
+</information>
 </billboard>
