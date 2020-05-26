@@ -301,6 +301,16 @@ public class DBInteract {
     }
 
     /**
+     * Inner joins user table and permission table and returns the joined table
+     *
+     * @return
+     */
+    public static String selectUserJoinBillboard() {
+        String selectQuery = "select username, billboard.billboard_name, billboard.xml_data, billboard.status FROM user INNER JOIN billboard ON user.id = billboard.user_id";
+        return (selectQuery);
+    }
+
+    /**
      * Selects a target from user inner joined permission and returns the target
      *
      * @param columnName column to match
@@ -428,6 +438,36 @@ public class DBInteract {
                 rs.next();
             }
                 return userList;
+    }
+
+    /**
+     * Gets the user who created a billboard and the billboard name
+     *
+     * @param queryCommand TAKES A QUERY COMMAND FROM selectUserJoinBillboard
+     * @return ReturnType=String[][]: containing results from query
+     */
+    public static String[][] getBillboardData(String queryCommand) throws SQLException {
+        ResultSet rs = dbQueryCommand(queryCommand);
+        int rowCount = getRowCount(rs);
+        int colCount = getColCount(rs);
+        String[] colNames = getColNames(queryCommand);
+        if (colNames == null){
+            throw new SQLException("Internal server error, no column names found");
+        }
+        rs.first();
+        String[][] billboardList = new String[rowCount][colCount];
+        for (int i = 0; i < rowCount; ++i) {
+            String username = rs.getString(colNames[0]);
+            String billboard_name = rs.getString(colNames[1]);
+            String xml_data = rs.getString(colNames[2]);
+            String status = rs.getString(colNames[3]);
+            String[] colItem = new String[]{username, billboard_name, xml_data, status};
+            for (int j = 0; j < colCount; ++j) {
+                billboardList[i][j] = colItem[j];
+            }
+            rs.next();
+        }
+        return billboardList;
     }
 
     /**

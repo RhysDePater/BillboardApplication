@@ -24,6 +24,10 @@ public class SessionToken {
         return sb.toString();
     }
 
+    public static String getUser(String token){
+        return usersSessionTokens.get(token);
+    }
+
     /**
      * Creates a session token, which is used to verify that the user currently logged in was logged in properly.
      * This session token is then used in each request to check that the user is still logged in.
