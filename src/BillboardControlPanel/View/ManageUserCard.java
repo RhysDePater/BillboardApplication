@@ -1,5 +1,8 @@
 package BillboardControlPanel.View;
 
+import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.Controller.LoginController;
+import BillboardControlPanel.Controller.MainController;
 import BillboardControlPanel.Helper.ViewHelper;
 import BillboardControlPanel.ModelOUTDATED.DBInteract;
 
@@ -16,13 +19,12 @@ public class ManageUserCard extends MasterView {
     private static JTextField emailField;
     private static JPasswordField passwordField;
     private static JRadioButton[] permissionField;
-    private static String[] colNames = DBInteract.getColNames(DBInteract.selectUserJoinPermission());
 
     private static JTextField updateTextField;
 
-    public ManageUserCard(){
+    public ManageUserCard(String[][] colData, String[] colNames){
         createNorthCard();
-        createCenterCard();
+        createCenterCard(colData, colNames);
         createSouthCard();
     }
 
@@ -33,11 +35,11 @@ public class ManageUserCard extends MasterView {
         return northCard;
     }
 
-    private JPanel createCenterCard(){
+    private JPanel createCenterCard(String[][] colData, String[] colNames){
         centerCard = ViewHelper.createPanel(Color.white);
         JLabel titleLabel = ViewHelper.createLabel("Manage Users", ViewHelper.TITLE_FONT);
         //get user table to display
-        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), colNames);
+        userTable = ViewHelper.createJTable(colData, colNames);
         centerCard.add(titleLabel);
         centerCard.add(ViewHelper.createLabel("Double click to edit cell", ViewHelper.TEXT_FONT));
         centerCard.add(new JScrollPane(userTable));

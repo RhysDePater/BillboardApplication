@@ -1,5 +1,6 @@
 package BillboardControlPanel.Controller;
 
+import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.ModelOUTDATED.DBInteract;
 import BillboardControlPanel.View.ManageUserCard;
@@ -17,12 +18,17 @@ public class ManageUserController {
     private int selectedCol = -1;
 
     public ManageUserController(){
-        initView();
-        initController(getManageUserCard());
+        try{
+            initView();
+            initController(getManageUserCard());
+        } catch (NullPointerException e){
+            System.out.println(e);
+        }
+
     }
 
     public void initView(){
-        manageUserCard = new ManageUserCard();
+            manageUserCard = new ManageUserCard(MainController.getUserData(), MainController.getUserColNames());
     }
 
     public void initController(ManageUserCard manageUserCard){
@@ -116,7 +122,7 @@ public class ManageUserController {
             String rowIdValue = manageUserCard.getUserTable().getValueAt(selectedRow, 0).toString();
             String colName = manageUserCard.getUserTable().getColumnName(selectedCol);
             String selectedValue = manageUserCard.getUserTable().getValueAt(selectedRow,selectedCol).toString();
-            if(rowIdValue.equals(MainController.getLoginController().getCurrentUserID())){
+            if(rowIdValue.equals(MainController.getLoggedUser())){
                 ControllerHelper.returnMessage("CANT EDIT OWN PRIVILEGES");
             } else{
                 switch (selectedValue){
@@ -168,13 +174,13 @@ public class ManageUserController {
             default:
                 String rowIdValue = manageUserCard.getUserTable().getValueAt(selectedRow, 0).toString();
                 String rowEmailValue = manageUserCard.getUserTable().getValueAt(selectedRow, 1).toString();
-                if (rowIdValue.equals(MainController.getLoginController().getCurrentUserID())) {
+                if (rowIdValue.equals(MainController.getLoggedUser())) {
                     ControllerHelper.returnMessage("CANT DELETE SELF");
                 } else {
                     int action = JOptionPane.showConfirmDialog(null, "DELETE USER " + rowIdValue, "ARE YOU SURE", JOptionPane.OK_CANCEL_OPTION);
                     switch (action) {
                         case (JOptionPane.OK_OPTION):
-                            DBInteract.dbExecuteCommand(DBInteract.deleteInnerJoin("user", "permission", "id", "user_id", "username", rowEmailValue));
+                            ServerRequest.deleteUser(rowEmailValue, MainController.getSessionToken());
                             break;
                         case (JOptionPane.CANCEL_OPTION):
                             break;

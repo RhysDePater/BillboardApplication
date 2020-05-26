@@ -71,26 +71,30 @@ public class ServerRequest {
 
     // Same as above but returns a string[][] for use in certain functions, like list users
     // result[0] will be the same as the normal return above, all extra indices will be the results
-    public static String[][] sendQueryAlt(String[] queryArray) throws IOException{
-        Socket socket = new Socket (ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
-        socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
-        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-        oos.writeObject(queryArray);
-        oos.flush();
-        // Now listen for a response, no loop is required because there will only be a single response from the server for now, then return the results
-        Object Response = null;
+    public static String[][] sendQueryAlt(String[] queryArray){
         try{
-            Response = ois.readObject();
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage());
-            return null;
-        }
-        try{
-            return (String[][])Response;
-        }
-        catch (Exception e ){
+            Socket socket = initServerConnect();
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            oos.writeObject(queryArray);
+            oos.flush();
+            // Now listen for a response, no loop is required because there will only be a single response from the server for now, then return the results
+            Object Response = null;
+            try{
+                Response = ois.readObject();
+            }
+            catch(Exception e){
+                System.out.println(e.getMessage());
+                return null;
+            }
+            try{
+                return (String[][])Response;
+            }
+            catch (Exception e ){
+                System.out.println(e.getMessage());
+                return null;
+            }
+        }catch (IOException e){
             System.out.println(e.getMessage());
             return null;
         }
@@ -111,9 +115,9 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[] createUser(String username, String password, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
-        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
-        return sendQuery(command);
+    public static String[] createUser(String username, String password, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken){
+            String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
+            return sendQuery(command);
     }
 
     /**
@@ -122,7 +126,7 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  deleteUser(String username, String sessionToken) throws IOException {
+    public static String[]  deleteUser(String username, String sessionToken){
         String[] command = {"deleteUser", username, sessionToken};
         return sendQuery(command);
     }
@@ -132,7 +136,7 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[][]  listUsers(String sessionToken) throws IOException {
+    public static String[][]  listUsers(String sessionToken){
         String[] command = {"listUsers", sessionToken};
         return sendQueryAlt(command);
     }
@@ -143,11 +147,12 @@ public class ServerRequest {
      * @param password The password, which has to match the stored password (only plaintext right now)
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  login(String username, String password) throws IOException {
+    public static String[]  login(String username, String password){
         String[] command = {"login", username, password};
         return sendQuery(command);
     }
 
+    //why do i have this i cant do anythign with this
     /**
      * Edit permissions associated with a username
      * @param username The user to edit permissions for
@@ -162,6 +167,7 @@ public class ServerRequest {
         return sendQuery(command);
     }
 
+    //this should be handled server side just let me send
     /**
      * This function makes use of the initial use of editing permissions by formatting it in such a way so only one value will be changed
      * @param username The user to edit permissions for
@@ -260,60 +266,56 @@ public class ServerRequest {
     // OTHER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static String[][] getColumns(String table_name, String sessionToken) throws IOException {
+    public static String[][] getColumnNames(String table_name, String sessionToken){
         String[] command = {"getColumns", table_name, sessionToken};
         return sendQueryAlt(command);
     }
 
-}
 
+    ////// helpers
 
-// Just ignore all this, it's from testing
-/*
-    public static void main(String[] args) throws IOException {
-        LocalDateTime startDate = LocalDateTime.of(2015, 2, 20, 6, 30);;
-        //the host and port here should be read from the network.props file.
-        Socket socket = new Socket (ReadNetworkProps.readNetworkPropsHost(), ReadNetworkProps.readNetworkPropsPort());
-        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-        //BufferedOutputStream bos = new BufferedOutputStream(MyOutputSteam);
-        //oos.writeUTF("add user");
-        String[] string_array = {"createUser", "testusername", "testpassword", "1", "1", "1", "1"};
-        //String[] string_array = {"deleteUser", "testusername"};
-        //String[] string_array = {"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
-        //String[] string_array = {"addSchedule", "billboardname", startDate.toString(), "120", "sessiontoken"};
-        //String[] string_array = {"login", "admin", "p1ass"};
-        String xmlString = XMLStringCreator.createXmlString(); // Here, a string is created from an xml file so that it can be sent to and stored in the database.
-        //String[] string_array = {"createBillboard", "BillboardName", xmlString}; // Command, billboard_name, xml_data
-        //String[] string_array = {"deleteBillboard", "billboardname"};
-        //String[] string_array = {"getBillboard", "billboardname"};
-        //String[] string_array = {"deleteSchedule", "billboardname", startDate.toString()};
-        oos.writeObject(string_array);
-        oos.flush();
-        //oos.close();
-        //ois.close();
-        //socket.close();
-        for (;;){ // Now listen for a response
-            Object Response = null;
-            String[] StringArray;
-            try{
-                Response = ois.readObject();
-            }
-            catch(Exception e){
-                System.out.println(e.getMessage());
-            }
-            try{
-                StringArray = (String[])Response;
-            }
-            catch (Exception e ){
-                System.out.println(e.getMessage());
-                return;
-            }
-            System.out.println(StringArray[0]);
-            System.out.println(StringArray[1]);
-            System.out.println(StringArray[2]);
-            //System.out.println(StringArray[0]);
+    //this function is really scuffed
+    public static String[] getFormatUserColumnNames(String sessionToken){
+        String[] user = parseColumnName(getColumnNames("user", sessionToken));
+        String[] perm = parseColumnName(getColumnNames("permission", sessionToken));
+        int lengthOfUserArray = user.length -1; //-1 becuase i dont want salt value
+        int LengthOfPermArray = perm.length -2; //-2 bceause i dont awnt id or user_id
+        int lengthOfArray = lengthOfUserArray + LengthOfPermArray;
+        String[] appendedArray = new String[lengthOfArray];
+        for(int i = 0; i < lengthOfUserArray; i++) {
+            appendedArray[i] = user[i];
         }
+        for(int i = lengthOfUserArray; i < lengthOfArray; i++){
+            appendedArray[i] = perm[i - lengthOfUserArray + 2]; //scuffed way of not getting first 2 values from an array
+        }
+        return appendedArray;
     }
-*/
 
+    private static String[] parseColumnName(String[][] columnsFromServer){
+        int lengthOfArray = columnsFromServer[1].length;
+        String[] parsedData = new String[lengthOfArray];
+        for(int i = 0; i < lengthOfArray; i++){
+            parsedData[i] = columnsFromServer[1][i];
+        }
+        return parsedData;
+    }
+
+    public static String[][] removeHeaderFromDoubleArray(String[][] userList){
+        int arrayLength = userList.length - 1; // -1 to compensate for removing header
+        int arrayItemLength = userList[1].length;
+        String[][] formattedList = new String[arrayLength][arrayItemLength];
+        for(int i = 0; i < arrayLength; i ++){
+//            System.out.println("Item: " + i);
+            for(int j = 0; j < arrayItemLength; j++){
+//                System.out.println("Body: " +j + " Data: " + userList[i+1][j]);
+                formattedList[i][j] = userList[i+1][j];               //i+1 to ignore header
+            }
+        }
+        return formattedList;
+    }
+
+//    public static String[] getPrivsForUser(String[][] formattedUserList){
+//
+//    }
+
+}

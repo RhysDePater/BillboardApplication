@@ -1,5 +1,8 @@
 package BillboardControlPanel.Helper;
 
+import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.Controller.MainController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -64,6 +67,8 @@ public class ViewHelper {
         return panel;
     }
 
+
+
 //    public static JPanel createFlowPanel(){
 //        JPanel panel = new JPanel(new FlowLayout());
 //
@@ -77,5 +82,7 @@ public class ViewHelper {
         constraints.gridheight = h;
         jp.add(c, constraints);
     }
+
+
 
 }

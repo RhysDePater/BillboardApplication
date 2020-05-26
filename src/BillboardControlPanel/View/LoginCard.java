@@ -51,6 +51,9 @@ public class LoginCard extends MasterView{
     }
 
     //
+
+
+
     public JButton getBtnLogIn() {
         return btnLogIn;
     }

@@ -30,18 +30,14 @@ public class HomeController{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //getCurrentUserPrivs[0=createbillboard:1=editbillboard:2=schedule:3=editUser]
-                if (MainController.getLoginController().getCurrentUserPrivs()[3]) {
-                    ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
-                } else {
-                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
-                }
-
+                ControllerHelper.refreshUsersTablePanel(); //run this to update before opening
+                ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
             }
         });
         homeCard.getManageBillboard().addActionListener((new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (MainController.getLoginController().getCurrentUserPrivs()[0]) {
+                if (MainController.getLoggedUserPrivs()[1] == "1") {
                     ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
                 } else {
                     ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");

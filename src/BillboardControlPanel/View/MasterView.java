@@ -1,5 +1,8 @@
 package BillboardControlPanel.View;
 
+import BillboardControlPanel.Controller.MainController;
+import com.sun.tools.javac.Main;
+
 import javax.swing.*;
 
 

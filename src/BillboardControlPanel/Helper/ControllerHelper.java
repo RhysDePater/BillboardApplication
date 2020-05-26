@@ -29,6 +29,8 @@ public class ControllerHelper {
     }
 
     public static void refreshUsersTablePanel(){
+        MainController.setUserData();
+        MainController.setUserColNames();
         MainController.getManageUserController().setSelectedCol(-1);
         MainController.getManageUserController().setSelectedRow(-1);
         MainController.getManageUserController().initView();
