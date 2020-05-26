@@ -50,4 +50,26 @@ public class DBConnection {
         return instance;
     }
 
-}
+    /**
+     * Method for returning just the name of the database entered in the db.props file. Ensures that the database can be any name,
+     *  and the program will still function as long as the name of the database created is the same as in the db.props file.
+     * @return
+     */
+    public static String getDatabaseName() {
+        Properties props = new Properties();
+        FileInputStream input = null;
+        String databaseName = "";
+        try {
+            input = new FileInputStream("./db.props");
+            props.load(input);
+            input.close();
+
+            databaseName = props.getProperty("jdbc.schema");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return databaseName;
+    }
+    }

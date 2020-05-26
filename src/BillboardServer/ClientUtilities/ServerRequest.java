@@ -242,6 +242,17 @@ public class ServerRequest {
         return sendQuery(command);
     }
 
+    /**
+     * Expires the currently logged in users session token.
+     * @param sessionToken The currently logged in users' session token.
+     * @return See ServerRequest.sendQuery
+     * @throws IOException
+     */
+    public static String[] logout(String sessionToken) throws IOException{
+        String[] command = {"logout", sessionToken};
+        return sendQuery(command);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // OTHER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
