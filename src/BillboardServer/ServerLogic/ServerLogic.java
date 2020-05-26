@@ -62,12 +62,18 @@ public class ServerLogic extends ServerVariables{
                 BillboardFunctions.deleteBillboard();
                 break;
             }
-            case "getBillboard":
+            case "getBillboard": {
                 BillboardFunctions.getBillboard();
                 break;
-            case "getColumns":
+            }
+            case "listBillboards": {
+                BillboardFunctions.listBillboards();
+                break;
+            }
+            case "getColumns": {
                 DatabaseFunctions.getColumns();
                 break;
+            }
         }
         SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");

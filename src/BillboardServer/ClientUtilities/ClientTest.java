@@ -28,17 +28,16 @@ public class ClientTest {
         // These are the functions to call if you want the server to perform stuff on the database. Hopefully they are straightforward, but there are java doc style comments available.
         // See ServerRequest.sendQuery (and below) for what they return.
         try{
-            responseArray = ServerRequest.login("ADMIN", "pass");
+            responseArray = ServerRequest.login("admin", "pass");
             sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", "testpassword", 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", xmlString);
+            //responseArray = ServerRequest.createOrEditBillboard("my billboard", xmlString, sessionToken);
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
             //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
             //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
             //responseArray = ServerRequest.editAllPermissions("testusername", 0,0,0,0, sessionToken);
-
         }
         catch (IOException e){
             System.out.println("Could not access server");
@@ -52,7 +51,7 @@ public class ClientTest {
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
             //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
-            responseArray2D = ServerRequest.getColumns("permission", sessionToken);
+            responseArray2D = ServerRequest.listUsers(sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
@@ -61,7 +60,7 @@ public class ClientTest {
         System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
-            responseArray2D = ServerRequest.listUsers(sessionToken);
+            responseArray2D = ServerRequest.listBillboards(sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
