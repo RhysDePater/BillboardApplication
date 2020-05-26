@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
@@ -27,10 +30,28 @@ public class mainView extends JFrame implements Runnable{
 
     public mainView(String title) throws HeadlessException {
         super(title);
+        final Boolean[] Loop = {true};
+
+        Thread timer = new Thread(() -> {
+            while(Loop[0])
+            {
+                System.out.println("15 seconds?");
+                getXMLElements();
+                try {
+                    Thread.sleep(15000);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        });
+
+        timer.start();
+
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent ke) {
                 if(ke.getKeyCode() == ke.VK_ESCAPE) {
                     mainView.this.dispose();
+                    Loop[0] = false;
                 }
             }
         });
@@ -39,13 +60,24 @@ public class mainView extends JFrame implements Runnable{
                 if (mouse.getButton() == MouseEvent.BUTTON1)
                 {
                     mainView.this.dispose();
+                    Loop[0] = false;
                 }
             }
         });
-
     }
 
-    public void createGUI() throws IOException {
+    public void createGUI() {
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        getXMLElements();
+    }
+
+    public void getXMLElements()
+    {
         String[] elements = xmlParser.parseXML(xmlText);
         String Message = elements[0];
         String Picture = elements[1];
@@ -55,12 +87,15 @@ public class mainView extends JFrame implements Runnable{
         String messageColour = elements[5];
         String infoColour = elements[6];
 
+        try {
+            drawElements(Message, Picture, Info, encodedPicture, backGroundColour, messageColour, infoColour);
+        } catch (Exception e)
+        {
+            System.out.println(e);
+        }
+    }
 
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(true);
-        setVisible(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+    public void drawElements(String Message, String Picture, String Info, String encodedPicture, String backGroundColour, String messageColour, String infoColour) throws IOException {
         getContentPane().setBackground(Color.decode(backGroundColour));
 
 
@@ -68,7 +103,6 @@ public class mainView extends JFrame implements Runnable{
         JLabel picLabel = null;
         JTextArea infoLabel = null;
 
-        //TODO - setup the conditions for when the viewer is only passed certain elements
         if (Message != "" && (Picture != "" || encodedPicture !="") && Info != "")
         {
             messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.35);
@@ -133,12 +167,13 @@ public class mainView extends JFrame implements Runnable{
         }
     }
 
+
     private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, String Position, double scale) {
         JTextPane infoLabel;
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridBagLayout());
         //pass the scale through
-        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getBounds().height, this.getBounds().width, scale);
+        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getBounds().width);
         infoLabel.setForeground(Color.decode(infoColour));
         infoPanel.setBackground(Color.decode(backGroundColour));
         infoPanel.add(infoLabel);
@@ -197,10 +232,6 @@ public class mainView extends JFrame implements Runnable{
 
     @Override
     public void run() {
-        try {
-            createGUI();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createGUI();
     }
 }
