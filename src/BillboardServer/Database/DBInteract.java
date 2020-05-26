@@ -424,6 +424,18 @@ public class DBInteract {
         return rs.getString(target_column);
     }
 
+    public static String[] getPermissions(String user_id) throws SQLException {
+        String getPermissionsdQuery = "SELECT create_billboard, edit_billboard, schedule_billboard, edit_user from permission WHERE user_id = '" + user_id + "'";
+        System.out.println(getPermissionsdQuery);
+        ResultSet rs = DBInteract.dbQueryCommand(getPermissionsdQuery);
+        int colCount = getColCount(rs);
+        if (!rs.isBeforeFirst() ) { // If block executes if there is no data "isBeforeFirst returns false if the cursor is not before the first record or if there are no rows in the ResultSet."
+            throw new SQLException ("User_id " + user_id + " has no permissions");
+        }
+        rs.next();
+        return new String[]{rs.getString("create_billboard"), rs.getString("edit_billboard"), rs.getString("schedule_billboard"), rs.getString("edit_user")};
+    }
+
     /**
      * Similar to getValue. Emulates the sql query: SELECT column FROM table WHERE column = value AND column2 = value2;
      */

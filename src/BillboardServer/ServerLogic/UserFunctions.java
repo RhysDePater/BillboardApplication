@@ -100,15 +100,14 @@ public class UserFunctions extends ServerVariables{
         String[][] results;
         try{
              results = DBInteract.getUserData(getUserDataQuery);
+             commandSucceeded = true;
+             optionalMessage = "List of Users successfully returned";
+             outboundData2D = results;
         }
         catch (SQLException e){
             System.out.println(e.toString());
             optionalMessage = "Failed to get user list:" + e.getMessage();
-            return;
         }
-        commandSucceeded = true;
-        optionalMessage = "List of Users successfully returned";
-        outboundData2D = results;
     }
 
     public static void editPermissions(){
@@ -147,6 +146,34 @@ public class UserFunctions extends ServerVariables{
         }
         else if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+        }
+    }
+
+    public static void getPermissions() {
+        String user_id;
+        sessionTokenFromClient = inboundData[2];
+        if(!isSessionTokenValid(sessionTokenFromClient)){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        try{
+            user_id = DBInteract.getUserId(inboundData[1]);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            optionalMessage = "Error getting the user id from the provided session token";
+            return;
+        }
+        String[] getUserPermissions;
+        try{
+            getUserPermissions = DBInteract.getPermissions(user_id);
+            commandSucceeded = true;
+            optionalMessage = "List of permissions successfully returned";
+            outboundData1D = getUserPermissions;
+        }
+        catch (SQLException e){
+            System.out.println(e.toString());
+            optionalMessage = "Failed to get permissions list:" + e.getMessage();
         }
     }
 

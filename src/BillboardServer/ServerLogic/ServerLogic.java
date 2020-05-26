@@ -42,6 +42,10 @@ public class ServerLogic extends ServerVariables{
                 UserFunctions.editPermissions();
                 break;
             }
+            case "getPermissions": {
+                UserFunctions.getPermissions();
+                break;
+            }
             case "login": {
                 UserFunctions.login();
                 break;

@@ -60,7 +60,7 @@ public class ClientTest {
         System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
-            responseArray2D = ServerRequest.listBillboards(sessionToken);
+            responseArray2D = ServerRequest.getPermissions("1", sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");

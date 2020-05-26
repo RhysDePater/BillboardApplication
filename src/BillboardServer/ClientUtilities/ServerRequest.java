@@ -148,6 +148,11 @@ public class ServerRequest {
         return sendQuery(command);
     }
 
+    public static String[][] getPermissions(String username, String sessionToken) throws IOException {
+        String[] command = {"getPermissions", username, sessionToken};
+        return sendQueryAlt(command);
+    }
+
     /**
      * This function makes use of the initial use of editing permissions by formatting it in such a way so only one value will be changed
      * @param username The user to edit permissions for
