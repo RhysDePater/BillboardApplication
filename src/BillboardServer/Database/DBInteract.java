@@ -1,10 +1,113 @@
 package BillboardServer.Database;
 
 import BillboardControlPanel.Model.DBConnection;
+import BillboardServer.Misc.SessionToken;
+import BillboardServer.ServerLogic.ServerLogic;
+import BillboardServer.ServerLogic.UserFunctions;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Random;
+
+import static BillboardServer.Misc.SessionToken.bytesToString;
 
 public class DBInteract {
+
+    private static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS user ("
+            + "id INT UNSIGNED AUTO_INCREMENT,"
+            + "username VARCHAR(255) UNIQUE NOT NULL,"
+            + "password VARCHAR(255) NOT NULL,"
+            + "salt VARCHAR(255) NOT NULL," //CHANGE BACK TO VARBINARY(32) IF I CAN't GET SaltString To work.
+            + "PRIMARY KEY (id),"
+            + "UNIQUE KEY (username));";
+
+    private static final String CREATE_PERMISSIONS_TABLE = "CREATE TABLE If NOT EXISTS permission("
+            + "id INT UNSIGNED AUTO_INCREMENT,"
+            + "user_id INT UNSIGNED NOT NULL,"
+            + "create_billboard TINYINT(1) NOT NULL,"
+            + "edit_billboard TINYINT(1) NOT NULL,"
+            + "schedule_billboard TINYINT(1) NOT NULL,"
+            + "edit_user TINYINT(1) NOT NULL,"
+            + "PRIMARY KEY (id),"
+            + "CONSTRAINT fk_permission_user FOREIGN KEY (user_id) REFERENCES user(id));";
+
+    private static final String CREATE_BILLBOARD_TABLE = "CREATE TABLE IF NOT EXISTS billboard("
+            + "id INT UNSIGNED AUTO_INCREMENT NOT NULL,"
+            + "user_id INT UNSIGNED NOT NULL,"
+            + "schedule_id INT UNSIGNED DEFAULT NULL,"
+            + "billboard_name VARCHAR(255) UNIQUE,"
+            + "xml_data TEXT NOT NULL,"
+            + "status BOOLEAN NOT NULL DEFAULT false,"
+            + "PRIMARY KEY (id),"
+            + "CONSTRAINT fk_billboard_user FOREIGN KEY (user_id) REFERENCES user(id));";
+
+    private static final String CREATE_SCHEDULE_TABLE = "CREATE TABLE IF NOT EXISTS schedule("
+            + "id INT UNSIGNED AUTO_INCREMENT NOT NULL,"
+            + "user_id INT UNSIGNED NOT NULL,"
+            + "billboard_id INT UNSIGNED NOT NULL,"
+            + "start_time timestamp default current_timestamp,"
+            + "duration INT default 60,"
+            + "PRIMARY KEY (id),"
+            + "CONSTRAINT fk_schedule_user FOREIGN KEY (user_id) REFERENCES user(id));";
+
+    // Based on material from cab302 week 9 assignment Q&A lecture.
+    private static String hashedPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256"); // The hashing algorithm.
+        byte[] hashedPassword = md.digest(password.getBytes());
+        String hashedPasswordString = SessionToken.bytesToString(hashedPassword);
+        return hashedPasswordString;
+    }
+
+    /**
+     * Creates the database tables if they do not exist in the database. Also inserts an admin with a hashed + salted password.
+     */
+    // CREATES THE DATABASE AND IT'S TABLES, ALONGSIDE THE ADMIN
+    public static void createDatabaseTables() {
+        Connection connection = DBConnection.getInstance();
+        try {
+            // Tables are created from strings of SQL commands.
+            dbExecuteCommand(CREATE_USER_TABLE);
+            dbExecuteCommand(CREATE_PERMISSIONS_TABLE);
+            dbExecuteCommand(CREATE_BILLBOARD_TABLE);
+            dbExecuteCommand(CREATE_SCHEDULE_TABLE);
+            // Successfully creates an ADMIN user if none exists in the database.
+            if (dbQueryForADMINUser("SELECT COUNT(id) FROM user WHERE username = 'ADMIN'") == 0){
+                String hashedPassword = hashedPassword("pass"); // This is the admin's password.
+                byte[] salt = UserFunctions.GenerateSalt();
+                String saltString = SessionToken.bytesToString(salt);
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                String hashAndSaltedPassword = bytesToString(md.digest((hashedPassword + saltString).getBytes()));
+
+                dbExecuteCommand("INSERT INTO user VALUES (1, 'ADMIN','" + hashAndSaltedPassword + "','" + saltString + "');");
+                dbExecuteCommand("INSERT INTO permission VALUES (1, 1, true, true, true, true);");
+                System.out.println("Created ADMIN user.");
+                System.out.println("hashed + salted pass: " + hashAndSaltedPassword);
+                System.out.println("hashed pass: " + hashedPassword);
+                System.out.println("salt: " + salt);
+                System.out.println("salt string: " + saltString);
+//                INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
+//                INSERT INTO permission VALUES (1, 1, true, true, true, true);
+            }
+        } catch (SQLException | NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param command Command entered to select the count of ID's with the username ADMIN in the database.
+     * @return existenceOfAdmin as an int. If 0, then no user with ADMIN username exists, and therefore no admin exists for database.
+     * @throws SQLException
+     */
+    public static int dbQueryForADMINUser(String command) throws SQLException {
+        Connection connection = DBConnection.getInstance();
+        Statement st = connection.createStatement();
+        ResultSet existenceOfADMIN = st.executeQuery(command);
+        st.close();
+        existenceOfADMIN.next();
+        return existenceOfADMIN.getInt(1);// Only returns one column, which is titled "COUNT(id)"; holds the number of users with username ADMIN.
+    }
 
     //RUN SQL COMMAND FUNCTIONS
     /**
@@ -14,7 +117,8 @@ public class DBInteract {
     public static void dbExecuteCommand(String command) throws SQLException {
             Connection connection = DBConnection.getInstance();
             Statement st = connection.createStatement();
-            st.execute("USE cab302");
+            // Method in st.execute gets the schema name from db.props. Ensures that the database with the name in that file is used.
+            st.execute("USE " + BillboardServer.Database.DBConnection.getDatabaseName());
             st.execute(command);
             st.close();
     }
@@ -58,7 +162,7 @@ public class DBInteract {
      * @param saltValue saltValue relative to user, as a byte array. This is why a prepared statement has to be used to insert the salt.
      * @return ReturnType=String: Insert User command
      */
-    public static PreparedStatement createUserPreparedStatement(String username, String password, byte[] saltValue) {
+    public static PreparedStatement createUserPreparedStatement(String username, String password, String saltValue) {
         String sql= "INSERT INTO user (username, password, salt) VALUES (" +
                 "'" + username + "'," +
                 " '" + password + "'," +
@@ -67,7 +171,7 @@ public class DBInteract {
         try{
             Connection connection =  DBConnection.getInstance(); // Get a new database connection
             ps = connection.prepareStatement(sql); // Create the prepared statement with the above string
-            ps.setBytes(1, saltValue); // Add the salt value where there is a ?
+            ps.setString(1, saltValue); // Add the salt value where there is a ?
         }
         catch(Exception e){
             System.out.println(e.getMessage());
