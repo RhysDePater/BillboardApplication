@@ -220,7 +220,7 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  getBillboard(String billboardName, String sessionToken) {
+    public static String[]  getBillboard(String billboardName, String sessionToken) throws IOException {
         String[] command = {"getBillboard", billboardName, sessionToken};
         return sendQuery(command);
     }

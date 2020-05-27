@@ -20,9 +20,11 @@ public class PreviewerCard {
     //Fonts for Message and Information
     private static final Font MsgFont = new Font("SansSerif", Font.BOLD, 3);
     private static final Font InfoFont = new Font("SansSerif", Font.BOLD, 30);
-    //messageLabel is used for the Billboard previewer.
+    //Billboard previewer (centerPanel components of the previewer)
     private static JLabel messageLabel = null;
-
+    private static JLabel pictureLabel = null;
+    private static JTextPane informationLabel = null;
+    //The previewer container
     protected static JFrame previewer;
     //Billboard Name components + background colour
     private static JLabel nameLabel;
@@ -41,16 +43,17 @@ public class PreviewerCard {
     protected static JTextArea infoField;
     //Generate preview and Upload to server buttons
     protected static JButton genBtn;
-    private static JButton uploadBtn;
+    protected static JButton uploadBtn;
     //Preview Panel
     protected static JPanel centerPanel;
     //Whether picture input is URL or not
-    private static boolean isURL;
+    protected static boolean isURL;
     //Picture related data
     protected static BufferedImage decodedImg;
 
     public static void PreviewerCard() {
         previewerFrame();
+        PreviewerController.initDefaultCol();
         PreviewerController.initListeners();
     }
 
@@ -69,16 +72,16 @@ public class PreviewerCard {
         gbc.insets = new Insets(2, 2, 2, 2);
 
         //Handle input data to generate a preview in the Center Panel.
-        genBtn = colorBtn(southPanel, gbc, "Generate Preview", 1, 4);
+        genBtn = colorUpBtn(southPanel, gbc, "Generate Preview", 1, 4);
         //Set everything below this to fill their grid horizontally
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         //Colour Buttons
-        billJCCbtn = colorBtn(southPanel, gbc, "Background Colour", 2, 0);
-        msgJCCbtn = colorBtn(southPanel, gbc, "Message Colour", 2, 1);
-        infoJCCbtn = colorBtn(southPanel, gbc, "Information Colour", 2, 3);
+        billJCCbtn = colorUpBtn(southPanel, gbc, "Background Colour", 2, 0);
+        msgJCCbtn = colorUpBtn(southPanel, gbc, "Message Colour", 2, 1);
+        infoJCCbtn = colorUpBtn(southPanel, gbc, "Information Colour", 2, 3);
         //Upload input data to server
-        uploadBtn = colorBtn(southPanel, gbc, "Upload to Server", 2, 4);
+        uploadBtn = colorUpBtn(southPanel, gbc, "Upload to Server", 2, 4);
 
         //billboard name
         billNameGrid(southPanel, gbc, 0, 0, 1, 0);
@@ -91,8 +94,17 @@ public class PreviewerCard {
 
         //Center Panel used to show the Preview
         centerPanel = new JPanel(new BorderLayout());
+
+        //centerPanel.setBackground(Color.WHITE);
+
+
+            //centerPanel.setBackground(Color.decode(xml_data[0][1]));
+
+
+        //JButton test = new JButton("hi");
+        //centerPanel.add(test);
         previewer.add(centerPanel, BorderLayout.CENTER);
-        //centerPanel.setBackground()
+        //centerPanel.setBackground(Color.decode(xml_data[0][1]));
 
         previewer.pack();
         previewer.setLocationRelativeTo(null);
@@ -125,7 +137,7 @@ public class PreviewerCard {
         component.add(msgField, c);
     }
 
-    private static JButton colorBtn(JPanel component, GridBagConstraints c, String btnName, int CCposx, int CCposy) {
+    private static JButton colorUpBtn(JPanel component, GridBagConstraints c, String btnName, int CCposx, int CCposy) {
         JButton btn = createButton(btnName);
         c.gridx = CCposx;
         c.gridy = CCposy;
@@ -179,7 +191,7 @@ public class PreviewerCard {
 
         // Set the label's font size to the newly determined size.
         label.setFont(new Font(labelFont.getName(), Font.BOLD, fontSizeToUse));
-        System.out.println(label.getFontMetrics(labelFont).stringWidth(labelText));
+        //System.out.println(label.getFontMetrics(labelFont).stringWidth(labelText));
     }
 
     public static int[] getImgDimensions(int height, int width, double scale, JPanel panel)
@@ -202,15 +214,31 @@ public class PreviewerCard {
         return (new int[]{newHeight, newWidth});
     }
 
+//    protected static JLabel drawMsg(String position, double scale){
+//        //JPanel msgPanel = new JPanel();
+//        messageLabel = new JLabel(xml_data[1][1]);
+//        messageLabel.setFont(MsgFont);
+//        setMessageFont(messageLabel, centerPanel);
+//        //msgPanel.add(messageLabel);
+//        messageLabel.setForeground(Color.decode(xml_data[1][2]));
+//        //msgPanel.setBackground(Color.decode(xml_data[0][1]));
+//        //msgPanel.setLayout(new GridBagLayout());
+//        messageLabel.setPreferredSize(new Dimension(centerPanel.getBounds().width, (int)((double)centerPanel.getBounds().height *scale)));
+//        centerPanel.add(messageLabel, position);
+//        return messageLabel;
+//    }
+
     protected static JLabel drawMsg(String position, double scale){
         JPanel msgPanel = new JPanel();
+        msgPanel.setLayout(new GridBagLayout());
         messageLabel = new JLabel(xml_data[1][1]);
         messageLabel.setFont(MsgFont);
-        setMessageFont(messageLabel, centerPanel);
-        msgPanel.add(messageLabel);
         messageLabel.setForeground(Color.decode(xml_data[1][2]));
         msgPanel.setBackground(Color.decode(xml_data[0][1]));
-        msgPanel.setLayout(new GridBagLayout());
+        setMessageFont(messageLabel, centerPanel);
+        msgPanel.add(messageLabel);
+        //GridBagConstraints gbc = new GridBagConstraints();
+        //gbc.fill = GridBagConstraints.BOTH;
         msgPanel.setPreferredSize(new Dimension(centerPanel.getBounds().width, (int)((double)centerPanel.getBounds().height *scale)));
         centerPanel.add(msgPanel, position);
         return messageLabel;
@@ -218,7 +246,7 @@ public class PreviewerCard {
 
     protected static void drawPic(String position, double imageScale, double scale) throws NullPointerException{
         JPanel picPanel = new JPanel();
-        JLabel picLabel = new JLabel();
+        pictureLabel = new JLabel();
         picPanel.setLayout(new GridBagLayout());
         picPanel.setBackground(Color.decode(xml_data[0][1]));
         //Check xml picture data, to see if it's a URL.
@@ -235,18 +263,18 @@ public class PreviewerCard {
                 decodedImg = Base64Handler(previewer, xml_data);
                 int[] imgDimensions = getImgDimensions(decodedImg.getHeight(), decodedImg.getWidth(), imageScale, centerPanel);
                 Image newImage = decodedImg.getScaledInstance(imgDimensions[1], imgDimensions[0], Image.SCALE_DEFAULT);
-                picLabel = new JLabel(new ImageIcon(newImage));
-                picPanel.setBackground(Color.decode(xml_data[0][1]));
-                picPanel.add(picLabel);
+                pictureLabel = new JLabel(new ImageIcon(newImage));
+               // picPanel.setBackground(Color.decode(xml_data[0][1]));
+                picPanel.add(pictureLabel);
                 picPanel.setPreferredSize(new Dimension(centerPanel.getBounds().width, (int) ((double) centerPanel.getBounds().height * scale)));
                 centerPanel.add(picPanel, position);
             } else if (isURL) {
                 BufferedImage URLImg = UrlHandler(previewer, xml_data);
                 int[] imgDimensions = getImgDimensions(URLImg.getHeight(), URLImg.getWidth(), imageScale, centerPanel);
                 Image newImage = URLImg.getScaledInstance(imgDimensions[1], imgDimensions[0], Image.SCALE_DEFAULT);
-                picLabel = new JLabel(new ImageIcon(newImage));
-                picPanel.setBackground(Color.decode(xml_data[0][1]));
-                picPanel.add(picLabel);
+                pictureLabel = new JLabel(new ImageIcon(newImage));
+                //picPanel.setBackground(Color.decode(xml_data[0][1]));
+                picPanel.add(pictureLabel);
                 picPanel.setPreferredSize(new Dimension(centerPanel.getBounds().width, (int) ((double) centerPanel.getBounds().height * scale)));
                 centerPanel.add(picPanel, position);
             }
@@ -255,15 +283,20 @@ public class PreviewerCard {
         }
     }
 
-    //IMPORT THIS FROM BILLBOARD VIEWER'S HELPER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public static JTextPane JMultilineLabel(String text, Font font, int Height, int Width){
+    //THIS IS NOW DIFFERENT TO THE VIEWER's!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public static JTextPane JMultilineLabel(String text, Font font, int Height, int Width, double scale){
 
         JTextPane textArea = new JTextPane();
         textArea.setText(text);
         textArea.setFont(font);
         //handle the scale
-        textArea.setSize((int)((double)Width * 0.75), Integer.MAX_VALUE);
-        textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75),textArea.getPreferredSize().height));
+        if (scale<=0.5)
+        {
+            textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75),(int)((double)Height * scale)));
+        }
+        else {
+            textArea.setPreferredSize(new Dimension((int) ((double) Width * 0.75), (int) ((double) Height * 0.50)));
+        }
 
         textArea.setEditable(false);
         textArea.setCursor(null);
@@ -290,28 +323,37 @@ public class PreviewerCard {
             infoFontSize = messageFont.getSize() / 2;
 
             info.setFont(new Font(infoFont.getName(), Font.BOLD, infoFontSize));
-            System.out.println("uh oh");
         } catch(NullPointerException e){
             //System.out.println("uh oh");
         }
     }
 
     protected static void drawInfo(String position, double scale){
-        JTextPane infoLabel;
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridBagLayout());
-        infoLabel = JMultilineLabel(xml_data[3][1], InfoFont, centerPanel.getBounds().height, centerPanel.getBounds().width);
-        infoLabel.setForeground(Color.decode(xml_data[3][2]));
+        informationLabel = JMultilineLabel(xml_data[3][1], InfoFont, centerPanel.getBounds().height, centerPanel.getBounds().width, scale);
+        informationLabel.setForeground(Color.decode(xml_data[3][2]));
         infoPanel.setBackground((Color.decode(xml_data[0][1])));
-        infoPanel.add(infoLabel);
+        infoPanel.add(informationLabel);
         String message = xml_data[1][1];
 
         if(message.isEmpty() == false && message != null){
-            setInformationFont(messageLabel, infoLabel);
+            setInformationFont(messageLabel, informationLabel);
         }
         infoPanel.setPreferredSize(new Dimension(centerPanel.getBounds().width, (int)((double)centerPanel.getBounds().height * scale)));
         centerPanel.add(infoPanel, position);
     }
+
+    public static JPanel getCenterPanel(){ return centerPanel; }
+
+    //Input fields
+    public static JTextField getNameField(){ return nameField; }
+    public static JTextField getMsgField(){ return msgField; }
+    public static JTextField getPicField(){ return picField; }
+    public static JTextArea getInfoField(){ return infoField; }
+
+    //Previewer labels
+    public static JLabel getMessageLabel(){ return messageLabel; }
+    public static JLabel getPictureLabel(){ return pictureLabel; }
+    public static JTextPane getInformationLabel(){ return informationLabel; }
 }
-
-

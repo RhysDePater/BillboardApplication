@@ -7,13 +7,13 @@ import javax.swing.*;
 
 
 public class MasterView {
-    protected JFrame mainFrame;
+    protected static JFrame mainFrame;
     protected JPanel northCard;
     protected JPanel centerCard;
     protected JPanel southCard;
     protected JButton btnHome;
 
-    public JFrame getMainFrame() {
+    public static JFrame getMainFrame() {
         return mainFrame;
     }
 

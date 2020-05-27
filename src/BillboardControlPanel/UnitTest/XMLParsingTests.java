@@ -133,7 +133,7 @@ public class XMLParsingTests {
     //This can be handled by wrapping method in an if-else statement, check whether is string is populate or not.
     @Test
     public void noString() throws ParserConfigurationException {
-            StrToXMLArray("");
+        StrToXMLArray("");
 
     }
     @Test

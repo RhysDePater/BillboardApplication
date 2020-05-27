@@ -59,7 +59,7 @@ public class XMLParsing {
         String xmlString = "";
         TransformerFactory tf = TransformerFactory.newInstance();
         try {
-            //Initiate new transformer instance to
+            //Initiate new transformer instance
             Transformer transformer = tf.newTransformer();
             //Direct to an existing XML file, then initiate the document factory and builder to make the doc.
             File xmlFile = new File(directory);

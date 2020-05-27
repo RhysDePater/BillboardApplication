@@ -46,9 +46,9 @@ public class MainController{
     }
 
     public static void setBillData(){
-            billData = ServerRequest.listBillboards(sessionToken);
-            billData = ServerRequest.removeHeaderFromDoubleArray(billData);
-            System.out.println(billData[0][1]);
+        billData = ServerRequest.listBillboards(sessionToken);
+        billData = ServerRequest.removeHeaderFromDoubleArray(billData);
+        //System.out.println(billData[0][1]);
     }
 
     public static void setUserColNames(){
@@ -115,7 +115,7 @@ public class MainController{
 
     public static HomeController getHomeController() {
         return homeController;
-}
+    }
 
     public static ManageUserController getManageUserController() {
         return manageUserController;
