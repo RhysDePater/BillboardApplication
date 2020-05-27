@@ -1,21 +1,25 @@
 package BillboardControlPanel.View;
 
+import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.Controller.MainController;
 import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.ModelOUTDATED.DBInteract;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class ManageBillboardCard extends MasterView {
-    //    private static JButton createBillboard;
-//    private static JButton deleteBillboard;
+    private static JButton btnCreate;
+    //    private static JButton deleteBillboard;
     private static JTable billboardTable;
-    private static String[] colNames = DBInteract.getColNames(DBInteract.selectAll("billboard"));
-//    private static String[] colNames = {"id", "user_id", "schedule_id", "billboard_name", "status"};
+    private static String[] colNames = new String[]{"User Name", "Billboard Name","XML Data", "Status"};
+//    private static String[][] bbTableResp;
+//    private static String[][] bbTableData;
 
-    public ManageBillboardCard() {
+
+    public ManageBillboardCard(String[][] colData){
         createNorthCard();
-        createCenterCard();
+        createCenterCard(colData);
         createSouthCard();
     }
 
@@ -25,16 +29,28 @@ public class ManageBillboardCard extends MasterView {
         northCard.add(btnHome);
         return northCard;
     }
-    private JPanel createCenterCard() {
+    private JPanel createCenterCard(String[][] colData){
         centerCard = ViewHelper.createPanel(Color.white);
-        billboardTable = ViewHelper.createJTable((DBInteract.getBillboardData(DBInteract.selectAll("billboard"))), colNames);
+        billboardTable = ViewHelper.createJTable(colData, colNames);
         centerCard.add(new JScrollPane(billboardTable));
         return centerCard;
     }
     private JPanel createSouthCard() {
         southCard = new JPanel(new FlowLayout());
-        JButton showPreview= ViewHelper.createButton("testPreview");
-        southCard.add(showPreview);
+        btnCreate= ViewHelper.createButton("Create");
+        southCard.add(btnCreate);
+
+        JButton btnEdit = ViewHelper.createButton("Edit");
+        southCard.add(btnEdit);
+
+        JButton btnDelete = ViewHelper.createButton("Delete");
+        southCard.add(btnDelete);
         return southCard;
     }
+
+    public JButton getBtnCreate() {
+        return btnCreate;
+    }
+
+
 }

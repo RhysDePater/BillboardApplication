@@ -1,10 +1,18 @@
 package BillboardServer;
 
+import BillboardServer.Database.DBInteract;
 import BillboardServer.ServerLogic.ServerLogic;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Arrays;
 
 
@@ -30,28 +38,23 @@ public class Networking {
         }
     }
 
-    public void Listen() throws IOException, ClassNotFoundException {
+    public void Listen() throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
         System.out.println("Starting listening on port: " + port_number );
         for (;;) {
             try{
                 InitialisedSocket = NetworkingSocket.accept(); // Accept the incoming connection
                 System.out.println("New connection from: " + InitialisedSocket.getInetAddress());
                 System.out.println("--------------------------------------------------------");
-
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
-            try {
-                ois = new ObjectInputStream(InitialisedSocket.getInputStream());
-                oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
-                Object data = ois.readObject();
-                ServerLogic.Parse(data);
-                // I don't know if these need to be closed every time
-                ois.close();
-                oos.close();
-            }catch(EOFException e){
-                System.out.println(e.getMessage());
-            }
+            ois = new ObjectInputStream(InitialisedSocket.getInputStream());
+            oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
+            Object data = ois.readObject();
+            ServerLogic.Parse(data);
+            // I don't know if these need to be closed every time
+            ois.close();
+            oos.close();
             InitialisedSocket.close();
         }
     }

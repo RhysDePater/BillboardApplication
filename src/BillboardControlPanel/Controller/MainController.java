@@ -4,6 +4,8 @@ import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
 
+import java.io.IOException;
+
 public class MainController{
     private static LoginController loginController;
     private static HomeController homeController;
@@ -16,6 +18,7 @@ public class MainController{
     private static String loggedUser;
     private static String[] loggedUserPrivs = {"1", "1","1","1"};
     private static String sessionToken;
+    private static String[][] billData = {};
 
     public MainController(){
         initController();
@@ -37,6 +40,15 @@ public class MainController{
         userData = ServerRequest.listUsers(sessionToken);
         userData = ServerRequest.removeHeaderFromDoubleArray(userData);
         System.out.println("set user data is called : " +userData[0][1]);
+    }
+
+    public static void setBillData(){
+        try{
+            billData = ServerRequest.listBillboards(MainController.getSessionToken());
+            billData = ServerRequest.removeHeaderFromDoubleArray(billData);
+        } catch(IOException e){
+            System.out.println(billData[0][2]);
+        }
     }
 
     public static void setUserColNames(){
@@ -72,6 +84,10 @@ public class MainController{
 
     public static String[][] getUserData(){
         return userData;
+    }
+
+    public static String[][] getBillData(){
+        return billData;
     }
 
     public static String[] getUserColNames(){

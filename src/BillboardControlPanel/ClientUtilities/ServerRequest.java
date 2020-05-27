@@ -231,6 +231,16 @@ public class ServerRequest {
         return sendQuery(command);
     }
 
+    /**
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[][]  listBillboards(String sessionToken) throws IOException {
+        String[] command = {"listBillboards", sessionToken};
+        return sendQueryAlt(command);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // SCHEDULE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
