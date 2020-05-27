@@ -135,6 +135,16 @@ public class ServerRequest {
     }
 
     /**
+     * Expires the currently logged in users session token.
+     * @param sessionToken The currently logged in users' session token.
+     * @return See ServerRequest.sendQuery
+     */
+    public static String[] logout(String sessionToken) throws IOException{
+        String[] command = {"logout", sessionToken};
+        return sendQuery(command);
+    }
+
+    /**
      * Edit permissions associated with a username
      * @param username The user to edit permissions for
      * @param create_billboard 0 or 1 for disabled or enabled
@@ -258,14 +268,13 @@ public class ServerRequest {
     }
 
     /**
-     * Expires the currently logged in users session token.
-     * @param sessionToken The currently logged in users' session token.
-     * @return See ServerRequest.sendQuery
-     * @throws IOException
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[] logout(String sessionToken) throws IOException{
-        String[] command = {"logout", sessionToken};
-        return sendQuery(command);
+    public static String[][]  listSchedules(String sessionToken) throws IOException {
+        String[] command = {"listSchedules", sessionToken};
+        return sendQueryAlt(command);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

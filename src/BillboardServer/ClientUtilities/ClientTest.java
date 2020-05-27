@@ -64,8 +64,8 @@ public class ClientTest {
 //        System.out.println("Hashed password on client: " + bytesToString(hashedPassword));
 //        String hashedPasswordString = bytesToString(hashedPassword);
 //        // This hashed password is sent across to the server.
-        String testPassword = hashedPassword("mypassword"); // USED TO TEST THAT HASHED PASSWORDS CAN BE AUTHENTICATED ON SERVER.
-        String ADMINPassword = hashedPassword("pass");
+            String testPassword = hashedPassword("testPassword"); // USED TO TEST THAT HASHED PASSWORDS CAN BE AUTHENTICATED ON SERVER.
+            String ADMINPassword = hashedPassword("pass");
 //        MessageDigest md = MessageDigest.getInstance("SHA-256"); // The hashing algorithm.
 //        String passwordTypedIntoControlPanel = "pass";
 //        String newHashedPassword = bytesToString(md.digest(passwordTypedIntoControlPanel.getBytes()));
@@ -77,14 +77,13 @@ public class ClientTest {
         // These are the functions to call if you want the server to perform stuff on the database. Hopefully they are straightforward, but there are java doc style comments available.
         // See ServerRequest.sendQuery (and below) for what they return.
         try {
-            responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
-            //responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
+            //responseArray = ServerRequest.login("testusername", testPassword); // Password for this user is myPassword2
+            responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
-            //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
             sessionToken = responseArray[1];
-            //responseArray = ServerRequest.createUser("testusername", "testpassword", 1,1,1,1, sessionToken);
+            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", xmlString);
+            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
             //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
@@ -103,7 +102,11 @@ public class ClientTest {
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
             //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
-            responseArray2D = ServerRequest.listUsers(sessionToken);
+            //responseArray2D = ServerRequest.listUsers(sessionToken);
+            //responseArray = ServerRequest.addSchedule("my billboard", startDate, 9290, sessionToken);
+            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
+            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
+            responseArray2D = ServerRequest.listSchedules(sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");

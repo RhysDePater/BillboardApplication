@@ -63,6 +63,10 @@ public class ServerLogic extends ServerVariables{
                 ScheduleFunctions.deleteSchedule();
                 break;
             }
+            case "listSchedules": {
+                ScheduleFunctions.listSchedules();
+                break;
+            }
             case "createBillboard": { // If the first element of the string array in clienttest.java is "createBillboard", then a prepared statement will be run.
                 BillboardFunctions.createBillboard(); // Will modify a billboard if the billboard name already exists
                 break;
