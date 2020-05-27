@@ -4,6 +4,7 @@ import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.View.HomeCard;
 import BillboardControlPanel.View.ManageBillboardCard;
+import com.sun.tools.javac.Main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,19 +36,23 @@ public class HomeController{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //getCurrentUserPrivs[0=createbillboard:1=editbillboard:2=schedule:3=editUser]
-                ControllerHelper.refreshUsersTablePanel(); //run this to update before opening
-//                ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
+                if(MainController.getLoggedUserPrivs()[3].equalsIgnoreCase("1")){
+                    ControllerHelper.refreshUsersTablePanel(); //run this to update before opening
+                } else {
+                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
+                }
+
             }
         });
         homeCard.getManageBillboard().addActionListener((new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if (MainController.getLoggedUserPrivs()[1] == "1") {
+                //RAYMOND u should implement this as per your specs
+                if (MainController.getLoggedUserPrivs()[0].equalsIgnoreCase("1")) {
                     ControllerHelper.refreshBillBoardTablePanel();
-//                    ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
-//                } else {
-//                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
-//                }
+                } else {
+                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED BILLBOARD MANAGEMENT PRIVILEGES");
+                }
                 //getBillTableData();
             }
         }));

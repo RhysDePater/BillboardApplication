@@ -93,7 +93,7 @@ class ServerRequestTest {
 
     @Test
     public void parseColumnNamesTest(){
-        String[] formattedColumnData = getFormatUserColumnNames(sessionToken);
+        String[] formattedColumnData = getFormattedUserColumnNames(sessionToken);
 //        for(String name: formattedColumnData){
 //            System.out.println(name);
 //        }
@@ -121,5 +121,15 @@ class ServerRequestTest {
         Assertions.assertEquals((postRes[0]), "true");
     }
 
+    @Test
+    public void getUserPermissionTest(){
+        String[][] userPerm = getPermissions(loginUsername, sessionToken);
+        Assertions.assertTrue(userPerm[0][0].equalsIgnoreCase("true"));
+    }
 
+    @Test
+    public void getFormattedUserPermissionTest(){
+        String[] userPerm = getFormattedUserPrivs(loginUsername, sessionToken);
+        System.out.println("perm 1" + userPerm[1]);
+    }
 }

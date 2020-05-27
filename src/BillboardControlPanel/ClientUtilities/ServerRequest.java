@@ -192,6 +192,11 @@ public class ServerRequest {
         return new String[]{"false", "", "column " + permission + " doesn't exist"};
     }
 
+    public static String[][] getPermissions(String username, String sessionToken) {
+        String[] command = {"getPermissions", username, sessionToken};
+        return sendQueryAlt(command);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // BILLBOARD
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,9 +290,9 @@ public class ServerRequest {
     ////// helpers
 
     //this function is really scuffed
-    public static String[] getFormatUserColumnNames(String sessionToken){
-        String[] user = parseColumnName(getColumnNames("user", sessionToken));
-        String[] perm = parseColumnName(getColumnNames("permission", sessionToken));
+    public static String[] getFormattedUserColumnNames(String sessionToken){
+        String[] user = getColumnNames("user", sessionToken)[1]; //value 0 is header 1 is reponse
+        String[] perm = getColumnNames("permission", sessionToken)[1];
         int lengthOfUserArray = user.length -1; //-1 becuase i dont want salt value
         int LengthOfPermArray = perm.length -2; //-2 bceause i dont awnt id or user_id
         int lengthOfArray = lengthOfUserArray + LengthOfPermArray;
@@ -301,13 +306,11 @@ public class ServerRequest {
         return appendedArray;
     }
 
-    private static String[] parseColumnName(String[][] columnsFromServer){
-        int lengthOfArray = columnsFromServer[1].length;
-        String[] parsedData = new String[lengthOfArray];
-        for(int i = 0; i < lengthOfArray; i++){
-            parsedData[i] = columnsFromServer[1][i];
-        }
-        return parsedData;
+    public static String[] getFormattedUserPrivs(String currentLoggedUser, String sessionToken){
+        String[][] userPerm = getPermissions(currentLoggedUser, sessionToken);
+        userPerm = removeHeaderFromDoubleArray(userPerm);
+        String[] formattedUserPerm = userPerm[0];
+        return formattedUserPerm;
     }
 
     public static String[][] removeHeaderFromDoubleArray(String[][] userList){
@@ -324,8 +327,5 @@ public class ServerRequest {
         return formattedList;
     }
 
-//    public static String[] getPrivsForUser(String[][] formattedUserList){
-//
-//    }
 
 }

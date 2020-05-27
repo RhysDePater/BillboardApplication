@@ -4,8 +4,6 @@ import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
 
-import java.io.IOException;
-
 public class MainController{
     private static LoginController loginController;
     private static HomeController homeController;
@@ -16,7 +14,7 @@ public class MainController{
     private static String[][] userData = {};
     private static String[] userColNames = {};
     private static String loggedUser;
-    private static String[] loggedUserPrivs = {"1", "1","1","1"};
+    private static String[] loggedUserPrivs;
     private static String sessionToken;
     //
     private static String[][] billData = {};
@@ -37,6 +35,9 @@ public class MainController{
         manageBillboardController = new ManageBillboardController();
     }
 
+
+    //this is a mess we should of had a MasterView similar to our view to handle all these variables
+    //but its to late to change or structure now, so lets stick with it, we can look at changing if we have enough time :O
     //sets
     public static void setUserData(){
         userData = ServerRequest.listUsers(sessionToken);
@@ -53,7 +54,7 @@ public class MainController{
     public static void setUserColNames(){
         System.out.println(userColNames.length);
         if(userColNames.length <= 0){
-            userColNames = ServerRequest.getFormatUserColumnNames(sessionToken);
+            userColNames = ServerRequest.getFormattedUserColumnNames(sessionToken);
             System.out.println("set user col is called");
         }
     }
@@ -64,7 +65,11 @@ public class MainController{
     }
 
     public static void setLoggedUserPrivs(){
-//        System.out.println("set logged user to: " + loggedUser);
+        loggedUserPrivs = ServerRequest.getFormattedUserPrivs(loggedUser, sessionToken);
+//        for (String priv: loggedUserPrivs
+//        ) {
+//            System.out.println("priv: " + priv);
+//        }
     }
 
     public static void setSessionToken(String newSessionToken){
@@ -74,7 +79,10 @@ public class MainController{
 
     //GETS
     public static String[] getLoggedUserPrivs() {
-//        System.out.println(loggedUserPrivs[3]);
+        for (String priv: loggedUserPrivs
+             ) {
+                System.out.println(priv);
+        }
         return loggedUserPrivs;
     }
 
