@@ -23,7 +23,7 @@ public class ClientTest {
         // These are the functions to call if you want the server to perform stuff on the database. Hopefully they are straightforward, but there are java doc style comments available.
         // See ServerRequest.sendQuery (and below) for what they return.
 
-            responseArray = ServerRequest.login("ADMIN", "pass");
+            responseArray = ServerRequest.login("ADMIN", "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1");
             sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", "testpassword", 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername", sessionToken);

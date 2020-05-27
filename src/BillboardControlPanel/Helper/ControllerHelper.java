@@ -38,6 +38,15 @@ public class ControllerHelper {
         ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
     }
 
+    public static void refreshBillBoardTablePanel(){
+        MainController.setBillData();
+        MainController.getManageBillboardController().setSelectedCol(-1);
+        MainController.getManageBillboardController().setSelectedRow(-1);
+        MainController.getManageBillboardController().initView();
+        MainController.getManageBillboardController().initController(MainController.getManageBillboardController().getManageBillboardCard());
+        ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
+    }
+
     public static int confirmPopUp(String message){
         int action = JOptionPane.showConfirmDialog(null, message, "confirm", JOptionPane.OK_CANCEL_OPTION);
         return action;

@@ -203,7 +203,7 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  createOrEditBillboard(String billboardName, String xml_string, String sessionToken) throws IOException {
+    public static String[]  createOrEditBillboard(String billboardName, String xml_string, String sessionToken) {
         String[] command = {"createBillboard", billboardName, xml_string, sessionToken};
         return sendQuery(command);
     }
@@ -215,7 +215,7 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  getBillboard(String billboardName, String sessionToken) throws IOException {
+    public static String[]  getBillboard(String billboardName, String sessionToken) {
         String[] command = {"getBillboard", billboardName, sessionToken};
         return sendQuery(command);
     }
@@ -226,9 +226,19 @@ public class ServerRequest {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  deleteBillboard(String billboardName, String sessionToken) throws IOException {
+    public static String[]  deleteBillboard(String billboardName, String sessionToken){
         String[] command = {"deleteBillboard", billboardName, sessionToken};
         return sendQuery(command);
+    }
+
+    /**
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[][]  listBillboards(String sessionToken){
+        String[] command = {"listBillboards", sessionToken};
+        return sendQueryAlt(command);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

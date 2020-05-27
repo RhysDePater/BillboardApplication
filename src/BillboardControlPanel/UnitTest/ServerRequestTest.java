@@ -1,3 +1,5 @@
+package BillboardControlPanel.UnitTest;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.platform.commons.util.StringUtils;
@@ -17,12 +19,13 @@ class ServerRequestTest {
     private static int TIMEOUT_DURATION = 2000;
     //login constants
     private static String loginUsername = "ADMIN";
-    private static String loginPassword = "pass";
+    private static String loginPassword = "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1";
     static String sessionToken;
     //new user constants
     private static String newUsername = "newUser1";
     private static String newPassword = "newPass1";
     private static int[] newUserPerm = {1,1,1,1};
+
     @BeforeAll
     public static void getHostTest(){
         String host = getHost();

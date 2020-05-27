@@ -1,7 +1,10 @@
 package BillboardServer.ServerLogic;
 
 import BillboardServer.Database.DBInteract;
+import BillboardServer.Misc.SessionToken;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,28 +15,34 @@ import static BillboardServer.Misc.SessionToken.*;
 
 public class UserFunctions extends ServerVariables{
 
-    private static byte[] GenerateSalt() { // Returns a random array of bytes with length 16
+    public static byte[] GenerateSalt() { // Returns a random array of bytes with length 16
         final Random r = new SecureRandom();
         byte[] salt = new byte[32];
         r.nextBytes(salt);
         return salt;
     }
 
-    public static void createUser() {
+    public static void createUser() throws NoSuchAlgorithmException {
         byte[] salt = GenerateSalt();
         //String placeHolderSalt = "11001";
         sessionTokenFromClient = inboundData[7];
+        hashedPassWordFromClient = inboundData[2];
+        saltString = bytesToString(salt);
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        // This is the hashed and salted password that is stored in the database.
+        hashAndSaltedPassword = bytesToString(md.digest((hashedPassWordFromClient + saltString).getBytes()));
         if (!isSessionTokenValid(sessionTokenFromClient)) { //If the session token is valid, then the query can attempt to run.
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
         }
-        PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(inboundData[1], inboundData[2], salt);
+        PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(inboundData[1], hashAndSaltedPassword, saltString);
         String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(inboundData[3]), // The data comes in as part of a string array, so change it back to an int
                 Integer.parseInt(inboundData[4]),
                 Integer.parseInt(inboundData[5]),
                 Integer.parseInt(inboundData[6]));
         System.out.println(QueryCreatePermission);
         System.out.println(QueryCreateUser.toString());
+
         try {
             QueryCreateUser.execute();
             DBInteract.dbExecuteCommand(QueryCreatePermission);
@@ -100,15 +109,14 @@ public class UserFunctions extends ServerVariables{
         String[][] results;
         try{
              results = DBInteract.getUserData(getUserDataQuery);
+             commandSucceeded = true;
+             optionalMessage = "List of Users successfully returned";
+             outboundData2D = results;
         }
         catch (SQLException e){
             System.out.println(e.toString());
             optionalMessage = "Failed to get user list:" + e.getMessage();
-            return;
         }
-        commandSucceeded = true;
-        optionalMessage = "List of Users successfully returned";
-        outboundData2D = results;
     }
 
     public static void editPermissions(){
@@ -150,6 +158,34 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
+    public static void getPermissions() {
+        String user_id;
+        sessionTokenFromClient = inboundData[2];
+        if(!isSessionTokenValid(sessionTokenFromClient)){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        try{
+            user_id = DBInteract.getUserId(inboundData[1]);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            optionalMessage = "Error getting the user id from the provided session token";
+            return;
+        }
+        String[] getUserPermissions;
+        try{
+            getUserPermissions = DBInteract.getPermissions(user_id);
+            commandSucceeded = true;
+            optionalMessage = "List of permissions successfully returned";
+            outboundData1D = getUserPermissions;
+        }
+        catch (SQLException e){
+            System.out.println(e.toString());
+            optionalMessage = "Failed to get permissions list:" + e.getMessage();
+        }
+    }
+
     private static String editSinglePermission(String user_id){
         if(!inboundData[2].equals("-1")){
             System.out.println(inboundData[2]);
@@ -167,24 +203,48 @@ public class UserFunctions extends ServerVariables{
         return null;
     }
 
-    public static void login(){
+    public static void login() throws NoSuchAlgorithmException {
         String password = "";
         String username = inboundData[1];
+        // Salt from the database.
+        String stringOfSaltFromDatabase = "";
+        hashedPassWordFromClient = inboundData[2];
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         try {
             password = DBInteract.getPassword(username);
+            stringOfSaltFromDatabase = (DBInteract.getValue("salt", "user", "username", username));
+
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             optionalMessage = "Password for supplied username not found: User doesn't exist";
         }
+
+        hashAndSaltedPassword = bytesToString(md.digest((hashedPassWordFromClient + stringOfSaltFromDatabase).getBytes()));
+
         if (!password.equals("")) { // This code will only run if a password was found in the database
-            if (password.equals(inboundData[2])) {
+            if (password.equals(hashAndSaltedPassword)) {
                 commandSucceeded = true;
                 optionalMessage = "Password matches the supplied username";
                 outboundData = createSessionToken(username);
             } else {
-                optionalMessage = "Password does not match the supplied username";
+                optionalMessage = "Password does not match the supplied username: " + hashAndSaltedPassword;
             }
+        }
+    }
+
+    public static void logout(){
+        String sessionToken = inboundData[1];
+        if(!isSessionTokenValid(sessionToken)){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+        }
+        try{
+            commandSucceeded = true;
+            optionalMessage = "User successfully logged out.";
+            sessionTokenStorage.remove(sessionToken);
+            usersSessionTokens.remove(sessionToken);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,18 +1,17 @@
 package BillboardServer.ServerLogic;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static BillboardServer.Networking.SendBackData;
 
 public class ServerLogic extends ServerVariables{
-
-
     /**
      * Takes the data from Listen() and translates it into commands to be run on the database, then runs them.
      * The main logic of the server
      * @param data the data received from the control panel or viewer
      */
-    public static void Parse(Object data){
+    public static void Parse(Object data) throws NoSuchAlgorithmException {
         resetServerVariables();
         try{
             inboundData = (String[])data;
@@ -42,8 +41,16 @@ public class ServerLogic extends ServerVariables{
                 UserFunctions.editPermissions();
                 break;
             }
+            case "getPermissions": {
+                UserFunctions.getPermissions();
+                break;
+            }
             case "login": {
                 UserFunctions.login();
+                break;
+            }
+            case "logout":{
+                UserFunctions.logout();
                 break;
             }
             case "addSchedule": {
@@ -62,12 +69,18 @@ public class ServerLogic extends ServerVariables{
                 BillboardFunctions.deleteBillboard();
                 break;
             }
-            case "getBillboard":
+            case "getBillboard": {
                 BillboardFunctions.getBillboard();
                 break;
-            case "getColumns":
+            }
+            case "listBillboards": {
+                BillboardFunctions.listBillboards();
+                break;
+            }
+            case "getColumns": {
                 DatabaseFunctions.getColumns();
                 break;
+            }
         }
         SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");

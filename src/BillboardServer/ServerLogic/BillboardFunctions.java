@@ -5,14 +5,23 @@ import BillboardServer.Database.DBInteract;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static BillboardServer.Misc.SessionToken.getUser;
 import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
 
 public class BillboardFunctions extends ServerVariables{
 
     public static void createBillboard(){
-        String user_id = "1";
         String billboard_id = "";
         sessionTokenFromClient = inboundData[3];
+        String user_id;
+        try{
+            user_id = DBInteract.getUserId(getUser(sessionTokenFromClient));
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            optionalMessage = "Error getting the user id from the provided session token";
+            return;
+        }
         if (isSessionTokenValid(sessionTokenFromClient)) {
             // First see if the billboard actually exists
             try {
@@ -104,4 +113,25 @@ public class BillboardFunctions extends ServerVariables{
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
         }
     }
+    public static void listBillboards() {
+        if(!isSessionTokenValid(inboundData[1])){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        String getBillboardDataQuery = DBInteract.selectUserJoinBillboard();
+        System.out.println(getBillboardDataQuery);
+        String[][] results;
+        try{
+            results = DBInteract.getBillboardData(getBillboardDataQuery);
+        }
+        catch (SQLException e){
+            System.out.println(e.toString());
+            optionalMessage = "Failed to get billboard list:" + e.getMessage();
+            return;
+        }
+        commandSucceeded = true;
+        optionalMessage = "List of billboards successfully returned";
+        outboundData2D = results;
+    }
+
 }

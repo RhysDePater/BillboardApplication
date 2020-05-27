@@ -1,9 +1,14 @@
+package BillboardControlPanel.UnitTest;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -12,11 +17,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;   //Don't remove required for the commented tests below
+import java.sql.SQLException;       //Don't remove required for the commented tests below
+import java.util.Base64;
 
-import static BillboardControlPanel.ModelOUTDATED.DBInteract.*;
-import static BillboardControlPanel.ModelOUTDATED.XMLParsing.*;
+import static BillboardControlPanel.Model.XMLParsing.*;
+import static BillboardControlPanel.ModelOUTDATED.DBInteract.selectTarget;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -29,6 +38,10 @@ public class XMLParsingTests {
     static ResultSet rs;
     private final String expectedStr = "SELECT xml_data FROM billboard WHERE id = '1';";
 
+//Assertions.assertTrue(StringUtils.isNotBlank("true"));
+//Assertions.assertTrue(someString.includes(someOtherStringValue));
+
+    //QueryOnExisting and QueryOnNonExisting is used for the commented tests.
     private final String QueryOnExisting = selectTarget("billboard", "xml_data", "id", "1");
     private final String QueryOnNonExisting = selectTarget("billboard", "xml_data", "id", "0");
 
@@ -47,7 +60,11 @@ public class XMLParsingTests {
             "    <information colour=\"#60B9FF\">Custom-coloured information text</information>\n" +
             "</billboard>";
     private final String mixtureSameLine ="<?xml version=\"1.0\" encoding=\"UTF-8\"?><billboard><message>Default-coloured message</message><picture url=\"https://cloudstor.aarnet.edu.au/plus/s/X79GyWIbLEWG4Us/download\" /><information colour=\"#60B9FF\">Custom-coloured information text</information></billboard>";
-
+    private final String dataPic = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<billboard>\n" +
+            "    <message>Billboard with message and picture with data attribute</message>\n" +
+            "    <picture data=\"iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAIAAAD4YuoOAAAAKXRFWHRDcmVhdGlvbiBUaW1lAJCFIDI1IDMgMjAyMCAwOTowMjoxNyArMDkwMHlQ1XMAAAAHdElNRQfkAxkAAyQ8nibjAAAACXBIWXMAAAsSAAALEgHS3X78AAAABGdBTUEAALGPC/xhBQAAAS5JREFUeNq1kb9KxEAQxmcgcGhhJ4cnFwP6CIIiPoZwD+ALXGFxj6BgYeU7BO4tToSDFHYWZxFipeksbMf5s26WnAkJki2+/c03OzPZDRJNYcgVwfsU42cmKi5YjS1s4p4DCrkBPc0wTlkdX6bsG4hZQOj3HRDLHqh08U4Adb/zgEMtq5RuH3Axd45PbftdB2wO5OsWc7pOYaOeOk63wYfdFtL5qldB34W094ZfJ+4RlFldTrmW/ZNbn2g0of1vLHdZq77qSDCaSAsLf9kXh9w44PNoR/YSPHycEmbIOs5QzBJsmDHrWLPeF24ZkCe6ZxDCOqHcmxmsr+hsicahss+n8vYb8NHZPTJxi/RGC5IqbRwqH6uxVTX+5LvHtvT/V/R6PGh/iF4GHoBAwz7RD26spwq6Amh/AAAAAElFTkSuQmCC\" />\n" +
+            "</billboard>";
 
     private final String msgXMLFile = "/Users/Ray/Desktop/CAB302/Practicals/CAB302Assignment/XMLs/1.xml";
     private final String nonFile = "/Users/Ray/Desktop/CAB302/Practicals/CAB302Assignment/XMLs/nothing.xml";
@@ -56,6 +73,9 @@ public class XMLParsingTests {
     private final String newFileDir = "/Users/Ray/Desktop/CAB302/Practicals/CAB302Assignment/XMLs";
     private final String newFileName = "new2";
     private final String emptyStr = "";
+    private final JFrame testFrame = null;
+    private final String dataImg = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAIAAAD4YuoOAAAAKXRFWHRDcmVhdGlvbiBUaW1lAJCFIDI1IDMgMjAyMCAwOTowMjoxNyArMDkwMHlQ1XMAAAAHdElNRQfkAxkAAyQ8nibjAAAACXBIWXMAAAsSAAALEgHS3X78AAAABGdBTUEAALGPC/xhBQAAAS5JREFUeNq1kb9KxEAQxmcgcGhhJ4cnFwP6CIIiPoZwD+ALXGFxj6BgYeU7BO4tToSDFHYWZxFipeksbMf5s26WnAkJki2+/c03OzPZDRJNYcgVwfsU42cmKi5YjS1s4p4DCrkBPc0wTlkdX6bsG4hZQOj3HRDLHqh08U4Adb/zgEMtq5RuH3Axd45PbftdB2wO5OsWc7pOYaOeOk63wYfdFtL5qldB34W094ZfJ+4RlFldTrmW/ZNbn2g0of1vLHdZq77qSDCaSAsLf9kXh9w44PNoR/YSPHycEmbIOs5QzBJsmDHrWLPeF24ZkCe6ZxDCOqHcmxmsr+hsicahss+n8vYb8NHZPTJxi/RGC5IqbRwqH6uxVTX+5LvHtvT/V/R6PGh/iF4GHoBAwz7RD26spwq6Amh/AAAAAElFTkSuQmCC";
+
     //Tests string format of SQL command from retrieving xml_data as a string
     @Test
     public void strFormat() {
@@ -63,8 +83,8 @@ public class XMLParsingTests {
         assertEquals(expectedStr, actualStr);
     }
 
-//    Uncomment the following commented tests if connected to a local database from testing.
-//    Testing to make getXMLData() using existing billboard ID
+    //Uncomment the following commented tests if connected to a local database from testing.
+    //Testing to make getXMLData() using existing billboard ID
 //    @Test
 //    public void shouldReturn() throws SQLException {
 //        rs = dbQueryCommand(QueryOnExisting);
@@ -114,6 +134,7 @@ public class XMLParsingTests {
     @Test
     public void noString() throws ParserConfigurationException {
             StrToXMLArray("");
+
     }
     @Test
     public void parseURLOnly() throws ParserConfigurationException {
@@ -134,6 +155,12 @@ public class XMLParsingTests {
     @Test
     public void MixtureSameLine() throws ParserConfigurationException {
         StrToXMLArray(mixtureSameLine);
+    }
+    //Throws NullPointerException unless dealt with in the method.
+    //Method needs to accomodate for both data and url form of the picture.
+    @Test
+    public void StoreDataPic() throws ParserConfigurationException {
+        StrToXMLArray(dataPic);
     }
 
     //Test for converting input XML file to XML string for use in StrToXMLArray() mainly for Importing.
@@ -212,5 +239,25 @@ public class XMLParsingTests {
     @Test
     public void noName(){
         StrToXMLFile(msgOnly, newFileDir, emptyStr);
+    }
+
+    //Tests below are for the imgHandler()
+    @Test
+    public void dataImg() throws IOException {
+        String encodedImg = dataImg;
+        byte[] decodedImg = Base64.getDecoder().decode(encodedImg);
+        BufferedImage Img = ImageIO.read(new ByteArrayInputStream(decodedImg));
+    }
+    //Test with an array with a url type picture.
+    @Test
+    public void urlImg() throws IOException, ParserConfigurationException {
+        String[][] exampleArr = StrToXMLArray(mixture);
+        Base64Handler(testFrame, exampleArr);
+    }
+    //Test with an array with a data type picture.
+    @Test
+    public void dataImgArr() throws ParserConfigurationException, IOException {
+        String[][] exampleArr = StrToXMLArray(dataPic);
+        Base64Handler(testFrame, exampleArr);
     }
 }
