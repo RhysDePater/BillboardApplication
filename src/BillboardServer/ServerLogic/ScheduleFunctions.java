@@ -112,7 +112,6 @@ public class ScheduleFunctions extends ServerVariables {
         catch (SQLException e){
             System.out.println(e.toString());
             optionalMessage = "Failed to get schedule list:" + e.getMessage();
-            outboundData1D = new String[]{""};
             return;
         }
         commandSucceeded = true;

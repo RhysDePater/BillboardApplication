@@ -2,8 +2,13 @@ package BillboardServer.ServerLogic;
 
 import BillboardServer.Database.DBInteract;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 import static BillboardServer.Misc.SessionToken.getUser;
 import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
@@ -133,8 +138,58 @@ public class BillboardFunctions extends ServerVariables{
         optionalMessage = "List of billboards successfully returned";
         outboundData2D = results;
     }
+
+    /**
+     * First all all the scheduled billboards are queried (essentially the same as listSchedules without session token checking)
+     * Iterate through these to find if any should be scheduled, prioritise the last created
+     * Send back the data or placeholder billboard
+     */
     public static void getCurrentBillboard() {
-
+        String getScheduleDataQuery = DBInteract.selectScheduleJoinUserAndBillboard();
+        System.out.println(getScheduleDataQuery);
+        String[][] scheduledBillboards;
+        try{
+            scheduledBillboards = DBInteract.getScheduleData(getScheduleDataQuery);
+        }
+        catch (SQLException e){
+            System.out.println(e.toString());
+            optionalMessage = "Failed to get schedule list:" + e.getMessage();
+            return;
+        }
+        boolean billboardCurrentlyScheduled = false;
+        int indexOfCurrentBillboard = 0;
+        // Defines the format that the date will come from the database as8
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String startDateString;
+        int duration;
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+        LocalDateTime currentDate = LocalDateTime.now();
+        System.out.println("Scheduled Billboards: " + Arrays.deepToString(scheduledBillboards));
+        for (int i = 0; i < scheduledBillboards.length; i++){ // Iterate over the array and see if each billboard should be currently displayed
+            startDateString = scheduledBillboards[i][2];
+            duration = Integer.parseInt(scheduledBillboards[i][3]);
+            startDate = LocalDateTime.parse(startDateString, formatter);
+            endDate = startDate.plusSeconds(duration);
+            if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)){ // The billboard should be currently displayed
+                billboardCurrentlyScheduled = true;
+                indexOfCurrentBillboard = i;
+            }
+        }
+        if(billboardCurrentlyScheduled){
+            // Get the xml data from the billboard using the billboard name
+            try {
+                outboundData = DBInteract.getValue("xml_data", "billboard", "billboard_name", scheduledBillboards[indexOfCurrentBillboard][1]); // Get the billboard content from the billboard name
+                commandSucceeded = true;
+                optionalMessage = "Billboard data for currently scheduled Billboard successfully found";
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        else{
+            commandSucceeded = true;
+            outboundData = placeholderBillboard;
+        }
     }
-
 }

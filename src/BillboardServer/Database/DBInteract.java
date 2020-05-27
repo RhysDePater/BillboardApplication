@@ -506,9 +506,9 @@ public class DBInteract {
         for (int i = 0; i < rowCount; ++i) {
             String username = rs.getString(colNames[0]);
             String billboard_name = rs.getString(colNames[1]);
-            String start_time = rs.getString(colNames[2]);
+            String start_time = rs.getTimestamp(colNames[2]).toString();
             String duration = rs.getString(colNames[3]);
-            String[] colItem = new String[]{username, billboard_name, start_time, duration};
+            String[] colItem = new String[]{username, billboard_name, start_time.substring(0,start_time.length()-2), duration}; // timestamps store less then a second which is not part of our formatting, so cut if off
             for (int j = 0; j < colCount; ++j) {
                 billboardList[i][j] = colItem[j];
             }

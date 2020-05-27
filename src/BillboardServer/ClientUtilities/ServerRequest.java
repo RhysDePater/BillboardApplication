@@ -249,6 +249,15 @@ public class ServerRequest {
         return sendQueryAlt(command);
     }
 
+    /**
+     * Get the contents of the currently scheduled billboard, or a placeholder
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[]  getCurrentBillboard() throws IOException {
+        String[] command = {"getCurrentBillboard"};
+        return sendQuery(command);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // SCHEDULE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

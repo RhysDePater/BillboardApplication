@@ -94,32 +94,23 @@ public class ClientTest {
         System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
-            //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
-            responseArray2D = ServerRequest.listUsers("test");
-            //responseArray = ServerRequest.addSchedule("my billboard", startDate, 9290, sessionToken);
-            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
-            //responseArray = ServerRequest.setUserPassword("admin", NewADMINPassword, sessionToken);
-            //responseArray2D = ServerRequest.listSchedules(sessionToken);
+            //responseArray = ServerRequest.addSchedule("my billboard", LocalDateTime.now(), 60, sessionToken); // This will schedule this billboard for one minute, starting now
+            responseArray = ServerRequest.getCurrentBillboard();
         }
         catch (IOException e){
             System.out.println("Could not access server");
             return; // Can't really do much if we can't access the server
         }
-        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
+        System.out.println(Arrays.deepToString(responseArray)); // Entire output
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
-            responseArray2D = ServerRequest.getPermissions("1", sessionToken);
+            responseArray2D = ServerRequest.getPermissions("admin", sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
             return; // Can't really do much if we can't access the server
         }
-
-        // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
-        System.out.println(responseArray[0]); // true or false if the sql query ran okay
-        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
-        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+        System.out.println(Arrays.deepToString(responseArray2D));
 //        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        try{
 //            //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
