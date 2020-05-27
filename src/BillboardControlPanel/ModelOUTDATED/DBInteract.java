@@ -39,7 +39,9 @@ public class DBInteract {
         }
     }
 
+
     //CREATE FUNCTIONS
+
     /**
      * SQL COMMAND to Create new user and Insert into database
      *
