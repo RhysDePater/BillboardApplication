@@ -73,8 +73,16 @@ public class ServerRequest {
             System.out.println(e.getMessage());
             return null;
         }
-        try{
+        try{ // The returned object from the server will be a double string array if the command was executed successfully
             return (String[][])Response;
+        }
+        catch (Exception e ){
+            //System.out.println(e.getMessage());
+        }
+        try{ // The returned object from the server will be a single array if the command failed, so it needs to be formatted properly to be returned to the client
+            String[] returnedErrorArray =  (String[])Response;
+            String[] emptyArray = new String[]{""};
+            return new String[][]{returnedErrorArray,emptyArray};
         }
         catch (Exception e ){
             System.out.println(e.getMessage());

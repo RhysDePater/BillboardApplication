@@ -133,5 +133,8 @@ public class BillboardFunctions extends ServerVariables{
         optionalMessage = "List of billboards successfully returned";
         outboundData2D = results;
     }
+    public static void getCurrentBillboard() {
+
+    }
 
 }

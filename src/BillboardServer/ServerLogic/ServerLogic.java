@@ -91,13 +91,17 @@ public class ServerLogic extends ServerVariables{
                 UserFunctions.setUserPassword();
                 break;
             }
+            case "getCurrentBillboard":{
+                BillboardFunctions.getCurrentBillboard();
+                break;
+            }
         }
         SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");
     }
 
     private static void resetServerVariables(){
-         commandSucceeded = false;
+        commandSucceeded = false;
         optionalMessage = "";
         outboundData = "";
         if (outboundData2D != null){

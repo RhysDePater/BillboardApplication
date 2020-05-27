@@ -59,9 +59,7 @@ public class Networking {
             }
             catch (EOFException e) {
                 System.out.println(e.getMessage());
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
+            } catch (ClassNotFoundException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
             InitialisedSocket.close();

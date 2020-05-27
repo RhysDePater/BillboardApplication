@@ -171,7 +171,6 @@ public class UserFunctions extends ServerVariables{
         catch (Exception e){
             System.out.println(e.getMessage());
             optionalMessage = "Error getting the user id from the provided session token";
-            outboundData1D = new String[]{""};
             return;
         }
         String[] getUserPermissions;

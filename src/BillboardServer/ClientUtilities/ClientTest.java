@@ -70,7 +70,7 @@ public class ClientTest {
             //responseArray = ServerRequest.setUserPassword("ADMIN", NewADMINPassword, sessionToken);
 
             //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
-            responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
+            responseArray = ServerRequest.login("ADMIN", NewADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
             sessionToken = responseArray[1];
@@ -95,11 +95,12 @@ public class ClientTest {
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         try{
             //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
-            //responseArray2D = ServerRequest.listUsers(sessionToken);
+            responseArray2D = ServerRequest.listUsers("test");
             //responseArray = ServerRequest.addSchedule("my billboard", startDate, 9290, sessionToken);
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
-            responseArray2D = ServerRequest.listSchedules(sessionToken);
+            //responseArray = ServerRequest.setUserPassword("admin", NewADMINPassword, sessionToken);
+            //responseArray2D = ServerRequest.listSchedules(sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
