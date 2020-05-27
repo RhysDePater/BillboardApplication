@@ -87,6 +87,10 @@ public class ServerLogic extends ServerVariables{
                 DatabaseFunctions.getColumns();
                 break;
             }
+            case "setUserPassword":{
+                UserFunctions.setUserPassword();
+                break;
+            }
         }
         SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");

@@ -187,6 +187,11 @@ public class ServerRequest {
         return new String[]{"false", "", "column " + permission + " doesn't exist"};
     }
 
+    public static String[] setUserPassword(String username, String password, String sessionToken) throws IOException {
+        String[] command = {"setUserPassword", username, password, sessionToken};
+        return sendQuery(command);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // BILLBOARD
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

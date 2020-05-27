@@ -248,4 +248,47 @@ public class UserFunctions extends ServerVariables{
             e.printStackTrace();
         }
     }
+
+    public static void setUserPassword() throws NoSuchAlgorithmException {
+        String sessionToken = inboundData[3];
+        String username = inboundData[1];
+        hashedPassWordFromClient = inboundData[2];
+        // Check if the session token is has the same username as the one entered (with the usersSessionTokens). If it does, then
+        // the user is trying to update their own password, and they should be allowed to do so with no permission check.
+        if(!isSessionTokenValid(sessionToken)){
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+
+        byte[] salt = GenerateSalt();
+        saltString = bytesToString(salt);
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        // This is the hashed and salted password that is stored in the database.
+        hashAndSaltedPassword = bytesToString(md.digest((hashedPassWordFromClient + saltString).getBytes()));
+
+        // If the user is trying to change their own password, no further permission check necessary.
+        if(doesUserMatchSessionTokenFromClient(sessionToken, username)){
+            try{
+                String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
+                DBInteract.dbExecuteCommand(setUserPassword);
+                commandSucceeded = true;
+                optionalMessage = "You have successfully changed your password.";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Need to query the database to find the current users' permissions in here, to see if they are allowed to change another
+        // user's password.
+        else if(!doesUserMatchSessionTokenFromClient(sessionToken, username)){
+            try{
+                String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
+                DBInteract.dbExecuteCommand(setUserPassword);
+                commandSucceeded = true;
+                optionalMessage = "You have successfully changed the user's password.";
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

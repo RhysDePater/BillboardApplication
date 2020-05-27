@@ -244,6 +244,11 @@ public class DBInteract {
         return ps;
     }
 
+    public static String setUserPassword(String username, String password, String saltValue){
+        String sql = "UPDATE user SET password ='" + password + "', salt ='" + saltValue + "' WHERE username ='" + username + "';";
+        return sql;
+    }
+
     //SELECT FUNCTIONS
     /**
      * SQL QUERY to select all Rows from Table

@@ -48,13 +48,22 @@ public class Networking {
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
-            ois = new ObjectInputStream(InitialisedSocket.getInputStream());
-            oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
-            Object data = ois.readObject();
-            ServerLogic.Parse(data);
-            // I don't know if these need to be closed every time
-            ois.close();
-            oos.close();
+            try {
+                ois = new ObjectInputStream(InitialisedSocket.getInputStream());
+                oos = new ObjectOutputStream(InitialisedSocket.getOutputStream());
+                Object data = ois.readObject();
+                ServerLogic.Parse(data);
+                // I don't know if these need to be closed every time
+                ois.close();
+                oos.close();
+            }
+            catch (EOFException e) {
+                System.out.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
             InitialisedSocket.close();
         }
     }

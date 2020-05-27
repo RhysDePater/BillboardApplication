@@ -56,20 +56,10 @@ public class ClientTest {
 
 
         //--------------------------------------------------------------------------------------------------//
-
-//        MessageDigest md = MessageDigest.getInstance("SHA-256"); // The hashing algorithm.
-//        String input = "myPassword2";
-//        byte[] hashedPassword = md.digest(input.getBytes());
-//
-//        System.out.println("Hashed password on client: " + bytesToString(hashedPassword));
-//        String hashedPasswordString = bytesToString(hashedPassword);
 //        // This hashed password is sent across to the server.
-            String testPassword = hashedPassword("testPassword"); // USED TO TEST THAT HASHED PASSWORDS CAN BE AUTHENTICATED ON SERVER.
-            String ADMINPassword = hashedPassword("pass");
-//        MessageDigest md = MessageDigest.getInstance("SHA-256"); // The hashing algorithm.
-//        String passwordTypedIntoControlPanel = "pass";
-//        String newHashedPassword = bytesToString(md.digest(passwordTypedIntoControlPanel.getBytes()));
-//        System.out.println("Hashed password being sent to server: " + newHashedPassword);
+        String testPassword = hashedPassword("mypassword"); // USED TO TEST THAT HASHED PASSWORDS CAN BE AUTHENTICATED ON SERVER.
+        String ADMINPassword = hashedPassword("pass");
+        String NewADMINPassword = hashedPassword("pass2");
 
         // THE CONTROL PANEL NEEDS TO HASH ITS PASSWORD WHEN ENTERED LIKE ABOVE IN ORDER FOR THE SERVER TO AUTHENTICATE THE USER.
         //--------------------------------------------------------------------------------------------------//
@@ -77,9 +67,12 @@ public class ClientTest {
         // These are the functions to call if you want the server to perform stuff on the database. Hopefully they are straightforward, but there are java doc style comments available.
         // See ServerRequest.sendQuery (and below) for what they return.
         try {
-            //responseArray = ServerRequest.login("testusername", testPassword); // Password for this user is myPassword2
+            //responseArray = ServerRequest.setUserPassword("ADMIN", NewADMINPassword, sessionToken);
+
+            //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
             responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
+            //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
             sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
@@ -121,7 +114,30 @@ public class ClientTest {
             System.out.println("Could not access server");
             return; // Can't really do much if we can't access the server
         }
-        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
-    }
-}
+
+        // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
+        System.out.println(responseArray[0]); // true or false if the sql query ran okay
+        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
+        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+//        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        try{
+//            //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
+//            responseArray2D = ServerRequest.listUsers(sessionToken);
+//        }
+//        catch (IOException e){
+//            System.out.println("Could not access server");
+//            return; // Can't really do much if we can't access the server
+//        }
+//        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
+//        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        try{
+//            responseArray2D = ServerRequest.listBillboards(sessionToken);
+//        }
+//        catch (IOException e){
+//            System.out.println("Could not access server");
+//            return; // Can't really do much if we can't access the server
+//        }
+//        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
+//    }
+}}
 
