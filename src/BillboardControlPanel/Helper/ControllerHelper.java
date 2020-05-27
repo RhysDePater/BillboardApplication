@@ -68,6 +68,7 @@ public class ControllerHelper {
         return boolPrivilges;
     }
 
+
     public static String createSecurePassword(String passwordToHash) {
         String securePassword = null;
         try {
@@ -83,23 +84,5 @@ public class ControllerHelper {
         }
 
         return securePassword;
-    }
-
-    public static byte[] createSalt(String userEmailInput){
-        try{
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            byte[] salt = new byte[16];
-            sr.nextBytes(salt);
-            DBInteract.dbExecuteCommand(DBInteract.createSalt(salt, userEmailInput));
-            return salt;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static byte[] getSalt(String userEmailInput){
-        return null;
     }
 }

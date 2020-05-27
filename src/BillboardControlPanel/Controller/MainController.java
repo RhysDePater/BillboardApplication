@@ -37,10 +37,6 @@ public class MainController{
         manageBillboardController = new ManageBillboardController();
     }
 
-
-
-
-
     //sets
     public static void setUserData(){
         userData = ServerRequest.listUsers(sessionToken);
@@ -55,8 +51,11 @@ public class MainController{
     }
 
     public static void setUserColNames(){
-        userColNames = ServerRequest.getFormatUserColumnNames(sessionToken);
-//        System.out.println("set user col is called : " + userColNames[0]);
+        System.out.println(userColNames.length);
+        if(userColNames.length <= 0){
+            userColNames = ServerRequest.getFormatUserColumnNames(sessionToken);
+            System.out.println("set user col is called");
+        }
     }
 
     public static void setLoggedUser(String user){

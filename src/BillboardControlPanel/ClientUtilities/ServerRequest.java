@@ -162,7 +162,7 @@ public class ServerRequest {
      * @param edit_user 0 or 1 for disabled or enabled
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  editAllPermissions(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
+    public static String[]  editAllPermissions(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken){
         String[] command = {"editPermission", username, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
         return sendQuery(command);
     }
@@ -174,7 +174,7 @@ public class ServerRequest {
      * @param permission Either create_billboard, edit_billboard, schedule_billboard, or edit_user
      * @param value 1 or 0
      */
-    public static String[] editPermission(String username, String permission, Integer value, String sessionToken) throws IOException{
+    public static String[] editPermission(String username, String permission, Integer value, String sessionToken){
         switch (permission) {
             case "create_billboard":
                 return editAllPermissions(username, value, -1, -1, -1, sessionToken); // -1 is so the value doesn't change on the server side

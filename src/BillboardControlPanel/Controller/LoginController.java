@@ -38,10 +38,12 @@ public class LoginController{
     }
 
 
-    //LOGIN TOKEN AUTHENTICATION - TO BE DONE
     private void loginToken() {
+        //get input values
         String usernameInput = loginCard.getUserEmailTextField().getText();
         String userPasswordInput = loginCard.getPasswordTextField().getText();
+        //hash password
+        String hashedPassword = ControllerHelper.createSecurePassword(userPasswordInput);
         //input error handling "NO username"
         if (usernameInput.length() <= 0) {
             ControllerHelper.returnMessage("please input a username");
@@ -49,8 +51,10 @@ public class LoginController{
         } else if (userPasswordInput.length() <= 0) {
             ControllerHelper.returnMessage("Password cannot be null");
         } else {
-            String[] res = ServerRequest.login(usernameInput, userPasswordInput);
+            //on valid values request login token from server
+            String[] res = ServerRequest.login(usernameInput, hashedPassword);
             System.out.println(res[0]);
+            //on success
             if(Boolean.parseBoolean(res[0]) == true){
                 System.out.println("success");
                 MainController.setSessionToken(res[1]);
@@ -61,13 +65,14 @@ public class LoginController{
                 MainController.setLoggedUserPrivs();
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
             } else {
+                //on failure
                 System.out.println("Failure");
                 ControllerHelper.returnMessage("Username and password do not match");
             }
         }
     }
 
-
+    //DEV FUNC REMOVE LATER
     private void bypassLogin(){
         String usernameInput = "Admin";
         String userPasswordInput = "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1";

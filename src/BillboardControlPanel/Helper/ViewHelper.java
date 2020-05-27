@@ -23,6 +23,7 @@ public class ViewHelper {
 
     public static JTable createJTable(String[][] tableContents, String[] colNames){
         JTable jTable = new JTable(tableContents, colNames);
+        jTable.getTableHeader().setReorderingAllowed(false);
         jTable.setDefaultEditor(Object.class, null);
         return jTable;
     }

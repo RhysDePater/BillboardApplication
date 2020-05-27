@@ -42,12 +42,12 @@ public class HomeController{
         homeCard.getManageBillboard().addActionListener((new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (MainController.getLoggedUserPrivs()[1] == "1") {
+//                if (MainController.getLoggedUserPrivs()[1] == "1") {
                     ControllerHelper.refreshBillBoardTablePanel();
 //                    ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
-                } else {
-                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
-                }
+//                } else {
+//                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED USER MANAGEMENT PRIVILEGES");
+//                }
                 //getBillTableData();
             }
         }));
