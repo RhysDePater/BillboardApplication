@@ -60,40 +60,41 @@ public class ScheduleFunctions extends ServerVariables {
         String billboard_id = "";
         String schedule_id = "";
         sessionTokenFromClient = inboundData[3];
-        if (isSessionTokenValid(sessionTokenFromClient)) {
-            // First see if the billboard actually exists
+        if (!isSessionTokenValid(sessionTokenFromClient)) {
+            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        // First see if the billboard actually exists
+        try {
+            billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            optionalMessage = "Billboard id for supplied Billboard name not found: Billboard doesn't exist";
+            return;
+        }
+        if (!billboard_id.equals("")) {
+            // Then find the schedule id to see if a schedule exists for the billboard at that time
             try {
-                billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
+                schedule_id = DBInteract.getValueAnd("id", "schedule", "billboard_id", billboard_id, "start_time", inboundData[2]); // Get the schedule id from the billboard name and a time
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
-                optionalMessage = "Billboard id for supplied Billboard name not found: Billboard doesn't exist";
+                optionalMessage = "Schedule id for supplied billboard name and time not found: Schedule doesn't exist";
             }
-            if (!billboard_id.equals("")) {
-                // Then find the schedule id to see if a schedule exists for the billboard at that time
+            // Finally, delete the entry from the database
+            if (!schedule_id.equals("")) {
+                String QueryDeleteSchedule = DBInteract.deleteTarget("schedule", "id", schedule_id); // Delete the row where the billboard name and time is as specified
                 try {
-                    schedule_id = DBInteract.getValueAnd("id", "schedule", "billboard_id", billboard_id, "start_time", inboundData[2]); // Get the schedule id from the billboard name and a time
+                    DBInteract.dbExecuteCommand(QueryDeleteSchedule);
+                    commandSucceeded = true;
+                    optionalMessage = "Schedule deleted successfully";
                 } catch (SQLException e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
-                    optionalMessage = "Schedule id for supplied billboard name and time not found: Schedule doesn't exist";
-                }
-                // Finally, delete the entry from the database
-                if (!schedule_id.equals("")) {
-                    String QueryDeleteSchedule = DBInteract.deleteTarget("schedule", "id", schedule_id); // Delete the row where the billboard name and time is as specified
-                    try {
-                        DBInteract.dbExecuteCommand(QueryDeleteSchedule);
-                        commandSucceeded = true;
-                        optionalMessage = "Schedule deleted successfully";
-                    } catch (SQLException e) {
-                        System.err.println(e.getMessage());
-                        e.printStackTrace();
-                        optionalMessage = "Error deleting the schedule: " + e.getMessage();
-                    }
+                    optionalMessage = "Error deleting the schedule: " + e.getMessage();
                 }
             }
-        } else if (!isSessionTokenValid(sessionTokenFromClient)) {
-            optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
         }
     }
 

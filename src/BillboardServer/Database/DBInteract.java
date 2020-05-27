@@ -1,6 +1,6 @@
 package BillboardServer.Database;
 
-import BillboardControlPanel.Model.DBConnection;
+import BillboardServer.Database.DBConnection;
 import BillboardServer.Misc.SessionToken;
 import BillboardServer.ServerLogic.ServerLogic;
 import BillboardServer.ServerLogic.UserFunctions;
@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.Random;
 
 import static BillboardServer.Misc.SessionToken.bytesToString;
+import static java.lang.System.exit;
 
 public class DBInteract {
 
@@ -88,8 +89,10 @@ public class DBInteract {
 //                INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
 //                INSERT INTO permission VALUES (1, 1, true, true, true, true);
             }
-        } catch (SQLException | NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Fatal error: could not create tables");
+            e.printStackTrace();
+            exit(0);
         }
     }
 
