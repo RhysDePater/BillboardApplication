@@ -73,7 +73,6 @@ public class helper {
 
 // Set the label's font size to the newly determined size.
         label.setFont(new Font(labelFont.getName(), Font.BOLD, fontSizeToUse));
-        System.out.println(label.getFontMetrics(labelFont).stringWidth(labelText));
     }
 
     public static void setInformationFont(JLabel message, JTextPane info)

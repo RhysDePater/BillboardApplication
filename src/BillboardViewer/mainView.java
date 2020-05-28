@@ -22,12 +22,6 @@ public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 30);
 
-    public final String xmlText ="<billboard>\n" +
-            "<picture url=\"https://cloudstor.aarnet.edu.au/plus/s/vYipYcT3VHa1uNt/download\"/>\n" +
-            "<information>\n" +
-            "Billboard with picture (with URL attribute) and information text only. The picture is now centred within the top 2/3 of the image and the information text is centred in the remaining space below the image.\n" +
-            "</information>\n" +
-            "</billboard>";
 
     public mainView(String title) throws HeadlessException {
         super(title);
@@ -37,16 +31,20 @@ public class mainView extends JFrame implements Runnable{
         Thread timer = new Thread(() -> {
             while(Loop[0])
             {
-                System.out.println("15 seconds?");
+                //get the data and draw it on screen
                 try {
+                    //get the xmldata for the billboard that should be displayed from the server
                     String[] xmlData = ServerRequest.getCurrentBillboard();
                     System.out.println(xmlData[1]);
+                    //send the xml string the xmlparser to be drawn on screen
                     getXMLElements(xmlData[1]);
                 }
                 catch(Exception e)
                 {
                     System.out.println(e);
                 }
+
+                //sleep for 15 seconds
                 try {
                     Thread.sleep(15000);
                 } catch (Exception e) {
@@ -61,6 +59,9 @@ public class mainView extends JFrame implements Runnable{
             public void keyPressed(KeyEvent ke) {
                 if(ke.getKeyCode() == ke.VK_ESCAPE) {
                     mainView.this.dispose();
+                    //break the timer thread out of sleep, so that the app can close right away
+                    timer.interrupt();
+                    //stop the timer thread
                     Loop[0] = false;
                 }
             }
@@ -70,6 +71,9 @@ public class mainView extends JFrame implements Runnable{
                 if (mouse.getButton() == MouseEvent.BUTTON1)
                 {
                     mainView.this.dispose();
+                    //break the timer thread out of sleep, so that the app can close right away.
+                    timer.interrupt();
+                    //stop the timer thread
                     Loop[0] = false;
                 }
             }
