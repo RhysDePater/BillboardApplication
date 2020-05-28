@@ -1,6 +1,6 @@
 package BillboardServer.ClientUtilities;
 
-import BillboardServer.ReadNetworkProps;
+import BillboardServer.Misc.ReadNetworkProps;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,6 +55,45 @@ public class ServerRequest {
         }
     }
 
+    // Same as above but returns a string[][] for use in certain functions, like list users
+    // result[0] will be the same as the normal return above, all extra indices will be the results
+    public static String[][] sendQueryAlt(String[] queryArray) throws IOException{
+        Socket socket = new Socket (ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
+        socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+        oos.writeObject(queryArray);
+        oos.flush();
+        // Now listen for a response, no loop is required because there will only be a single response from the server for now, then return the results
+        Object Response = null;
+        try{
+            Response = ois.readObject();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+        try{ // The returned object from the server will be a double string array if the command was executed successfully
+            return (String[][])Response;
+        }
+        catch (Exception e ){
+            //System.out.println(e.getMessage());
+        }
+        try{ // The returned object from the server will be a single array if the command failed, so it needs to be formatted properly to be returned to the client
+            String[] returnedErrorArray =  (String[])Response;
+            String[] emptyArray = new String[]{""};
+            return new String[][]{returnedErrorArray,emptyArray};
+        }
+        catch (Exception e ){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // USERS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Creates a user in the database, and associated permissions in the permission table
      * @param username username for the new user
@@ -67,7 +106,7 @@ public class ServerRequest {
      * @return See ServerRequest.sendQuery
      */
     public static String[] createUser(String username, String password, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
-        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString()};
+        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
         return sendQuery(command);
     }
 
@@ -78,9 +117,92 @@ public class ServerRequest {
      * @return See ServerRequest.sendQuery
      */
     public static String[]  deleteUser(String username, String sessionToken) throws IOException {
-        String[] command = {"deleteUser", username};
+        String[] command = {"deleteUser", username, sessionToken};
         return sendQuery(command);
     }
+
+    /**
+     * Lists all users in the DB
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[][]  listUsers(String sessionToken) throws IOException {
+        String[] command = {"listUsers", sessionToken};
+        return sendQueryAlt(command);
+    }
+
+    /**
+     * Allows you to login to access other functions
+     * @param username The username the password is for
+     * @param password The password, which has to match the stored password (only plaintext right now)
+     * @return See ServerRequest.sendQuery
+     */
+    public static String[]  login(String username, String password) throws IOException {
+        String[] command = {"login", username, password};
+        return sendQuery(command);
+    }
+
+    /**
+     * Expires the currently logged in users session token.
+     * @param sessionToken The currently logged in users' session token.
+     * @return See ServerRequest.sendQuery
+     */
+    public static String[] logout(String sessionToken) throws IOException{
+        String[] command = {"logout", sessionToken};
+        return sendQuery(command);
+    }
+
+    /**
+     * Edit permissions associated with a username
+     * @param username The user to edit permissions for
+     * @param create_billboard 0 or 1 for disabled or enabled
+     * @param edit_billboard 0 or 1 for disabled or enabled
+     * @param schedule_billboard 0 or 1 for disabled or enabled
+     * @param edit_user 0 or 1 for disabled or enabled
+     * @return See ServerRequest.sendQuery
+     */
+    public static String[]  editAllPermissions(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
+        String[] command = {"editPermission", username, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
+        return sendQuery(command);
+    }
+
+    public static String[][] getPermissions(String username, String sessionToken) throws IOException {
+        String[] command = {"getPermissions", username, sessionToken};
+        return sendQueryAlt(command);
+    }
+
+    /**
+     * This function makes use of the initial use of editing permissions by formatting it in such a way so only one value will be changed
+     * @param username The user to edit permissions for
+     * @param permission Either create_billboard, edit_billboard, schedule_billboard, or edit_user
+     * @param value 1 or 0
+     */
+    public static String[] editPermission(String username, String permission, Integer value, String sessionToken) throws IOException{
+        switch (permission) {
+            case "create_billboard":
+                return editAllPermissions(username, value, -1, -1, -1, sessionToken); // -1 is so the value doesn't change on the server side
+
+            case "edit_billboard":
+                return editAllPermissions(username, -1, value, -1, -1, sessionToken);
+
+            case "schedule_billboard":
+                return editAllPermissions(username, -1, -1, value, -1, sessionToken);
+
+            case "edit_user":
+                return editAllPermissions(username, -1, -1, -1, value, sessionToken);
+
+        }
+        return new String[]{"false", "", "column " + permission + " doesn't exist"};
+    }
+
+    public static String[] setUserPassword(String username, String password, String sessionToken) throws IOException {
+        String[] command = {"setUserPassword", username, password, sessionToken};
+        return sendQuery(command);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // BILLBOARD
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Creates a billboard if none exists, edits existing billboard otherwise.
@@ -118,6 +240,29 @@ public class ServerRequest {
     }
 
     /**
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[][]  listBillboards(String sessionToken) throws IOException {
+        String[] command = {"listBillboards", sessionToken};
+        return sendQueryAlt(command);
+    }
+
+    /**
+     * Get the contents of the currently scheduled billboard, or a placeholder
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[]  getCurrentBillboard() throws IOException {
+        String[] command = {"getCurrentBillboard"};
+        return sendQuery(command);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // SCHEDULE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      * Adds one schedule to the database for one billboard
      * @param billboardName The billboard to associate the schedule with
      * @param startTime When the billboard should start displaying, currently a LocalDateTime object
@@ -145,29 +290,24 @@ public class ServerRequest {
     }
 
     /**
-     * Edit permissions associated with a username
-     * @param username The user to edit permissions for
-     * @param create_billboard 0 or 1 for disabled or enabled
-     * @param edit_billboard 0 or 1 for disabled or enabled
-     * @param schedule_billboard 0 or 1 for disabled or enabled
-     * @param edit_user 0 or 1 for disabled or enabled
-     * @return See ServerRequest.sendQuery
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[]  editPermission(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) throws IOException {
-        String[] command = {"editPermission", username, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
-        return sendQuery(command);
+    public static String[][]  listSchedules(String sessionToken) throws IOException {
+        String[] command = {"listSchedules", sessionToken};
+        return sendQueryAlt(command);
     }
 
-    /**
-     * Allows you to login to access other functions
-     * @param username The username the password is for
-     * @param password The password, which has to match the stored password (only plaintext right now)
-     * @return See ServerRequest.sendQuery
-     */
-    public static String[]  login(String username, String password) throws IOException {
-        String[] command = {"login", username, password};
-        return sendQuery(command);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OTHER
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static String[][] getColumns(String table_name, String sessionToken) throws IOException {
+        String[] command = {"getColumns", table_name, sessionToken};
+        return sendQueryAlt(command);
     }
+
 }
 
 
