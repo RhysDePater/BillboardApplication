@@ -1,6 +1,7 @@
 package BillboardViewer;
 
 import BillboardViewer.helper;
+import BillboardViewer.ClientUtilities.ServerRequest;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -32,11 +33,20 @@ public class mainView extends JFrame implements Runnable{
         super(title);
         final Boolean[] Loop = {true};
 
+
         Thread timer = new Thread(() -> {
             while(Loop[0])
             {
                 System.out.println("15 seconds?");
-                getXMLElements();
+                try {
+                    String[] xmlData = ServerRequest.getCurrentBillboard();
+                    System.out.println(xmlData[1]);
+                    getXMLElements(xmlData[1]);
+                }
+                catch(Exception e)
+                {
+                    System.out.println(e);
+                }
                 try {
                     Thread.sleep(15000);
                 } catch (Exception e) {
@@ -73,10 +83,18 @@ public class mainView extends JFrame implements Runnable{
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        getXMLElements();
+        try {
+            String[] xmlData = ServerRequest.getCurrentBillboard();
+            System.out.println(xmlData[1]);
+            getXMLElements(xmlData[1]);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
     }
 
-    public void getXMLElements()
+    public void getXMLElements(String xmlText)
     {
         String[] elements = xmlParser.parseXML(xmlText);
         String Message = elements[0];
@@ -118,6 +136,7 @@ public class mainView extends JFrame implements Runnable{
         }
         else if ((Picture != "" || encodedPicture !="") && Info != "")
         {
+            this.getContentPane().add(null,BorderLayout.NORTH);
             if (Picture != "")
             {
                 drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
@@ -131,7 +150,7 @@ public class mainView extends JFrame implements Runnable{
         else if (Message != "" && Info != "")
         {
             messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.5);
-
+            this.getContentPane().add(null,BorderLayout.CENTER);
             drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.SOUTH,0.5);
         }
         else if (Message != "" && (Picture != "" || encodedPicture !="") )
@@ -145,6 +164,7 @@ public class mainView extends JFrame implements Runnable{
             {
                 drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
             }
+            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
         else if ( Info != "")
         {
@@ -152,6 +172,7 @@ public class mainView extends JFrame implements Runnable{
         }
         else if ((Picture != "" || encodedPicture !=""))
         {
+            this.getContentPane().add(null,BorderLayout.NORTH);
             if (Picture != "")
             {
                 drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 1);
@@ -160,10 +181,13 @@ public class mainView extends JFrame implements Runnable{
             {
                 drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER,1);
             }
+            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
         else if (Message != "")
         {
+            this.getContentPane().add(null,BorderLayout.NORTH);
             messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.CENTER, 1);
+            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
     }
 
