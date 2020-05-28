@@ -1,7 +1,5 @@
 package BillboardServer.Database;
 
-import BillboardControlPanel.Helper.ControllerHelper;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,14 +30,11 @@ public class DBConnection {
 
             instance = DriverManager.getConnection(url + "/" +  schema, username, password);
 
-        } catch(SQLException sqle) {
-            System.err.print(sqle);
-            ControllerHelper.returnMessage("Cannot connect");
-        } catch(FileNotFoundException fnfe){
-            System.err.println(fnfe);
-            ControllerHelper.returnMessage("file not found");
-        } catch(IOException ex) {
-            System.err.println(ex);
+        }
+        catch (Exception e) {
+            System.err.println("Fatal error: could not connect to the database");
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 

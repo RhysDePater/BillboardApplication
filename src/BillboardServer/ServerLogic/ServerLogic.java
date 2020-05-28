@@ -61,6 +61,10 @@ public class ServerLogic extends ServerVariables{
                 ScheduleFunctions.deleteSchedule();
                 break;
             }
+            case "listSchedules": {
+                ScheduleFunctions.listSchedules();
+                break;
+            }
             case "createBillboard": { // If the first element of the string array in clienttest.java is "createBillboard", then a prepared statement will be run.
                 BillboardFunctions.createBillboard(); // Will modify a billboard if the billboard name already exists
                 break;
@@ -81,13 +85,21 @@ public class ServerLogic extends ServerVariables{
                 DatabaseFunctions.getColumns();
                 break;
             }
+            case "setUserPassword":{
+                UserFunctions.setUserPassword();
+                break;
+            }
+            case "getCurrentBillboard":{
+                BillboardFunctions.getCurrentBillboard();
+                break;
+            }
         }
         SendBackData(commandSucceeded, outboundData, optionalMessage, outboundData2D, outboundData1D);
         System.out.println("--------------------------------------------------------");
     }
 
     private static void resetServerVariables(){
-         commandSucceeded = false;
+        commandSucceeded = false;
         optionalMessage = "";
         outboundData = "";
         if (outboundData2D != null){

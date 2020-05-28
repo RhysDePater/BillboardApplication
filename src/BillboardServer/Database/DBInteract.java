@@ -1,6 +1,6 @@
 package BillboardServer.Database;
 
-import BillboardControlPanel.ModelOUTDATED.DBConnection;
+import BillboardServer.Database.DBConnection;
 import BillboardServer.Misc.SessionToken;
 import BillboardServer.ServerLogic.ServerLogic;
 import BillboardServer.ServerLogic.UserFunctions;
@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.Random;
 
 import static BillboardServer.Misc.SessionToken.bytesToString;
+import static java.lang.System.exit;
 
 public class DBInteract {
 
@@ -64,7 +65,6 @@ public class DBInteract {
      */
     // CREATES THE DATABASE AND IT'S TABLES, ALONGSIDE THE ADMIN
     public static void createDatabaseTables() {
-        Connection connection = DBConnection.getInstance();
         try {
             // Tables are created from strings of SQL commands.
             dbExecuteCommand(CREATE_USER_TABLE);
@@ -89,8 +89,10 @@ public class DBInteract {
 //                INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
 //                INSERT INTO permission VALUES (1, 1, true, true, true, true);
             }
-        } catch (SQLException | NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Fatal error: could not create tables");
+            e.printStackTrace();
+            exit(0);
         }
     }
 
@@ -242,6 +244,11 @@ public class DBInteract {
         return ps;
     }
 
+    public static String setUserPassword(String username, String password, String saltValue){
+        String sql = "UPDATE user SET password ='" + password + "', salt ='" + saltValue + "' WHERE username ='" + username + "';";
+        return sql;
+    }
+
     //SELECT FUNCTIONS
     /**
      * SQL QUERY to select all Rows from Table
@@ -307,6 +314,16 @@ public class DBInteract {
      */
     public static String selectUserJoinBillboard() {
         String selectQuery = "select username, billboard.billboard_name, billboard.xml_data, billboard.status FROM user INNER JOIN billboard ON user.id = billboard.user_id";
+        return (selectQuery);
+    }
+
+    /**
+     * Inner joins user table and permission table and returns the joined table
+     *
+     * @return
+     */
+    public static String selectScheduleJoinUserAndBillboard() {
+        String selectQuery = "SELECT username, billboard.billboard_name, start_time, duration from schedule INNER JOIN billboard on schedule.billboard_id = billboard.id INNER JOIN user on schedule.user_id = user.id";
         return (selectQuery);
     }
 
@@ -462,6 +479,36 @@ public class DBInteract {
             String xml_data = rs.getString(colNames[2]);
             String status = rs.getString(colNames[3]);
             String[] colItem = new String[]{username, billboard_name, xml_data, status};
+            for (int j = 0; j < colCount; ++j) {
+                billboardList[i][j] = colItem[j];
+            }
+            rs.next();
+        }
+        return billboardList;
+    }
+
+    /**
+     * Gets the scheduled billboards, the user who created them, and the duration and start time
+     *
+     * @param queryCommand TAKES A QUERY COMMAND FROM selectScheduleJoinUserAndBillboard
+     * @return ReturnType=String[][]: containing results from query
+     */
+    public static String[][] getScheduleData(String queryCommand) throws SQLException {
+        ResultSet rs = dbQueryCommand(queryCommand);
+        int rowCount = getRowCount(rs);
+        int colCount = getColCount(rs);
+        String[] colNames = getColNames(queryCommand);
+        if (colNames == null){
+            throw new SQLException("Internal server error, no column names found");
+        }
+        rs.first();
+        String[][] billboardList = new String[rowCount][colCount];
+        for (int i = 0; i < rowCount; ++i) {
+            String username = rs.getString(colNames[0]);
+            String billboard_name = rs.getString(colNames[1]);
+            String start_time = rs.getTimestamp(colNames[2]).toString();
+            String duration = rs.getString(colNames[3]);
+            String[] colItem = new String[]{username, billboard_name, start_time.substring(0,start_time.length()-2), duration}; // timestamps store less then a second which is not part of our formatting, so cut if off
             for (int j = 0; j < colCount; ++j) {
                 billboardList[i][j] = colItem[j];
             }

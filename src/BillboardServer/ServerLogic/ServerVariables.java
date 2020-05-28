@@ -8,7 +8,7 @@ public class ServerVariables { // A class to be inherited by lots of other class
     static String outboundData;
     static String[] outboundData1D; // Used to store the for example column names to turn into a String[][] to be sent to the client
     static String[][] outboundData2D; // For functions that are required to return a String[][]
-
+    static String placeholderBillboard = "<xml> placeholder billboard </xml>";
 
 
     static String hashedPassWordFromClient; // Used in createUser and login.
