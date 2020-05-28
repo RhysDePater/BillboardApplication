@@ -60,6 +60,7 @@ public class ClientTest {
         String testPassword = hashedPassword("mypassword"); // USED TO TEST THAT HASHED PASSWORDS CAN BE AUTHENTICATED ON SERVER.
         String ADMINPassword = hashedPassword("pass");
         String NewADMINPassword = hashedPassword("pass2");
+        String NewtestPassword = hashedPassword("mypassword2");
 
         // THE CONTROL PANEL NEEDS TO HASH ITS PASSWORD WHEN ENTERED LIKE ABOVE IN ORDER FOR THE SERVER TO AUTHENTICATE THE USER.
         //--------------------------------------------------------------------------------------------------//
@@ -69,8 +70,8 @@ public class ClientTest {
         try {
             //responseArray = ServerRequest.setUserPassword("ADMIN", NewADMINPassword, sessionToken);
 
-            //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
-            responseArray = ServerRequest.login("ADMIN", NewADMINPassword); // Password for this user is myPassword2
+            //responseArray = ServerRequest.login("testusername1", NewtestPassword); // Password for this user is myPassword2
+            responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
             sessionToken = responseArray[1];
@@ -92,44 +93,62 @@ public class ClientTest {
         System.out.println(responseArray[0]); // true or false if the sql query ran okay
         System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
         System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-        try{
-            //responseArray = ServerRequest.addSchedule("my billboard", LocalDateTime.now(), 60, sessionToken); // This will schedule this billboard for one minute, starting now
-            responseArray = ServerRequest.getCurrentBillboard();
+
+                try {
+            //responseArray = ServerRequest.setUserPassword("testusername1", NewtestPassword, sessionToken)
+                    responseArray = ServerRequest.setUserPassword("ADMIN", ADMINPassword, sessionToken);
+            //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
+            //responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
+            //sessionToken = responseArray[1];
+            //responseArray = ServerRequest.createUser("testusername2", testPassword, 1,1,1,0, sessionToken);
+            //sessionToken = responseArray[1];
+            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
+            //responseArray = ServerRequest.deleteUser("testusername2", sessionToken);
+            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
+            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
+            //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
+            //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
+            //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
+            //responseArray = ServerRequest.editAllPermissions("testusername", 0,0,0,0, sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
             return; // Can't really do much if we can't access the server
         }
-        System.out.println(Arrays.deepToString(responseArray)); // Entire output
+
+        // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
+        System.out.println(responseArray[0]); // true or false if the sql query ran okay
+        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
+        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-        try{
-            responseArray2D = ServerRequest.getPermissions("admin", sessionToken);
-        }
-        catch (IOException e){
-            System.out.println("Could not access server");
-            return; // Can't really do much if we can't access the server
-        }
-        System.out.println(Arrays.deepToString(responseArray2D));
-//        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        try{
 //            //responseArray = ServerRequest.editPermission("testusername", "edit_billboard", 0, sessionToken);
-//            responseArray2D = ServerRequest.listUsers(sessionToken);
+//            //responseArray2D = ServerRequest.listUsers(sessionToken);
+//            //responseArray = ServerRequest.addSchedule("my billboard", LocalDateTime.now(), 60, sessionToken); // This will schedule this billboard for one minute, starting now
+//            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
+//            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
+//            //responseArray2D = ServerRequest.listSchedules(sessionToken);
+//            //responseArray = ServerRequest.getCurrentBillboard();
 //        }
 //        catch (IOException e){
 //            System.out.println("Could not access server");
 //            return; // Can't really do much if we can't access the server
 //        }
-//        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
+//        System.out.println(Arrays.deepToString(responseArray)); // Entire output
+
 //        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        try{
-//            responseArray2D = ServerRequest.listBillboards(sessionToken);
+//            //responseArray2D = ServerRequest.listBillboards(sessionToken);
+//        //responseArray2D = ServerRequest.listUsers(sessionToken);
+//        //responseArray2D = ServerRequest.getPermissions("testusername1", sessionToken);
+//        //responseArray2D = ServerRequest.listSchedules(sessionToken);
 //        }
 //        catch (IOException e){
 //            System.out.println("Could not access server");
 //            return; // Can't really do much if we can't access the server
 //        }
 //        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
-//    }
-}}
+    }
+}
 

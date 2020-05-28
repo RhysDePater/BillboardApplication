@@ -61,6 +61,8 @@ public class Networking {
                 System.out.println(e.getMessage());
             } catch (ClassNotFoundException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
             InitialisedSocket.close();
         }

@@ -50,7 +50,8 @@ public class DBInteract {
             + "start_time timestamp default current_timestamp,"
             + "duration INT default 60,"
             + "PRIMARY KEY (id),"
-            + "CONSTRAINT fk_schedule_user FOREIGN KEY (user_id) REFERENCES user(id));";
+            + "CONSTRAINT fk_schedule_user FOREIGN KEY (user_id) REFERENCES user(id),"
+            + "CONSTRAINT fk_schedule_billboard FOREIGN KEY (billboard_id) REFERENCES billboard (id));";
 
     // Based on material from cab302 week 9 assignment Q&A lecture.
     private static String hashedPassword(String password) throws NoSuchAlgorithmException {
@@ -82,12 +83,6 @@ public class DBInteract {
                 dbExecuteCommand("INSERT INTO user VALUES (1, 'ADMIN','" + hashAndSaltedPassword + "','" + saltString + "');");
                 dbExecuteCommand("INSERT INTO permission VALUES (1, 1, true, true, true, true);");
                 System.out.println("Created ADMIN user.");
-                System.out.println("hashed + salted pass: " + hashAndSaltedPassword);
-                System.out.println("hashed pass: " + hashedPassword);
-                System.out.println("salt: " + salt);
-                System.out.println("salt string: " + saltString);
-//                INSERT INTO user VALUES (1, 'ADMIN', 'pass', '' );
-//                INSERT INTO permission VALUES (1, 1, true, true, true, true);
             }
         } catch (Exception e) {
             System.err.println("Fatal error: could not create tables");

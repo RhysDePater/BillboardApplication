@@ -14,4 +14,5 @@ public class ServerVariables { // A class to be inherited by lots of other class
     static String hashedPassWordFromClient; // Used in createUser and login.
     static String saltString; // Used in createUser and login function.
     static String hashAndSaltedPassword; // Used in createUser and login function.
+    static boolean doesUserHavePermissions;
 }
