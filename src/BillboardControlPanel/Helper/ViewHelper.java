@@ -1,8 +1,5 @@
 package BillboardControlPanel.Helper;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
-import BillboardControlPanel.Controller.MainController;
-
 import javax.swing.*;
 import java.awt.*;
 

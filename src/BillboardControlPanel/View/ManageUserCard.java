@@ -1,10 +1,6 @@
 package BillboardControlPanel.View;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
-import BillboardControlPanel.Controller.LoginController;
-import BillboardControlPanel.Controller.MainController;
 import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.ModelOUTDATED.DBInteract;
 
 import javax.swing.*;
 import java.awt.*;

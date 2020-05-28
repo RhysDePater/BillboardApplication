@@ -1,9 +1,9 @@
 package BillboardControlPanel.Helper;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.Controller.MainController;
-import BillboardControlPanel.ModelOUTDATED.DBInteract;
 import BillboardControlPanel.View.MainView;
+import BillboardControlPanel.View.ManageUserCard;
 import BillboardControlPanel.View.MasterView;
 
 import java.awt.event.ActionEvent;
@@ -95,7 +95,7 @@ public class ControllerHelper {
             Boolean check = false;
             int timesFailed = 0;
             while(!check) {
-                Socket socket = ServerRequest.initServerConnect();
+                Socket socket = ServerRequestClient.initServerConnect();
                 if(socket == null){
                     timesFailed++;
                 } else {
@@ -114,17 +114,23 @@ public class ControllerHelper {
     }
 
     //USER RELATED HELPERS
-    public static Boolean[] checkUserPrivileges(String userID){
-        int amountOfPrivliges = 4;
-        Boolean[] boolPrivilges = new Boolean[amountOfPrivliges];
-        String[][] userInfo = DBInteract.getUserData(DBInteract.selectTargetUserJoinPermission("user.id", userID));
-        //userInfo[row of info][columns from row] -> userInfo[row][0=id:1=email: 2=password: 3=createbillboard: 4=editbillboard: 5=scheduel: 6=edituser]
-        for(int i =0; i < amountOfPrivliges; ++i){
-            boolPrivilges[i] = Boolean.valueOf(userInfo[0][i + 3]);
-        }
-        return boolPrivilges;
-    }
 
+    public static void setNewPassword(String userToUpdate, ManageUserCard manageUserCard, String sessionToken){
+        int passwordBox = ManageUserCard.createFrameTextInputBox(userToUpdate, "password");
+        switch (passwordBox) {
+            case (JOptionPane.OK_OPTION):
+                String newPassword = manageUserCard.getUpdateTextField().getText();
+                String newHashedPassword = ControllerHelper.createSecurePassword(newPassword);
+                ControllerHelper.confirmPopUp("Password changed to: " + newPassword);
+                String[] res = ServerRequestClient.setUserPassword(userToUpdate, newHashedPassword, sessionToken);
+                if(res[0].equalsIgnoreCase("false")){
+                    System.out.println("failed");
+                }
+                break;
+            case (JOptionPane.CANCEL_OPTION):
+                break;
+        }
+    }
 
     public static String createSecurePassword(String passwordToHash) {
         String securePassword = null;

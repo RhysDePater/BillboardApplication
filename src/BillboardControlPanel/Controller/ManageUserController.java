@@ -1,8 +1,7 @@
 package BillboardControlPanel.Controller;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.Helper.ControllerHelper;
-import BillboardControlPanel.ModelOUTDATED.DBInteract;
 import BillboardControlPanel.View.ManageUserCard;
 import com.sun.tools.javac.Main;
 
@@ -108,7 +107,7 @@ public class ManageUserController {
                 } else {
                     //hash password and send request to db to create user
                     String hashedPassword = ControllerHelper.createSecurePassword(fieldStringArray[1]);
-                    ServerRequest.createUser( fieldStringArray[0],
+                    ServerRequestClient.createUser( fieldStringArray[0],
                             hashedPassword, permissions[0], permissions[1], permissions[2], permissions[3], MainController.getSessionToken());
                     ControllerHelper.resetJTextFields(fieldArray);
                 }
@@ -139,7 +138,7 @@ public class ManageUserController {
                     ControllerHelper.returnMessage("cant edit username");
                     break;
                 case ("password"):
-                    ControllerHelper.returnMessage("implement passwrod change for user");
+                    ControllerHelper.setNewPassword(selectedUser, manageUserCard, MainController.getSessionToken());
                     break;
                 default:
                     //check to prevent changing of own edit user privs
@@ -149,20 +148,23 @@ public class ManageUserController {
                     } else {
                         //get updated permission values
                         String selectedValue = userTable.getValueAt(selectedRow,selectedCol).toString();
+                        String boolValue = ""; // boolean cant parse 1 or 0 but database wont accept true or false as a boolean value becuase of an error with the updated mariadb client
                         switch (selectedValue){
                             case("false"):
                                 selectedValue = "1";
+                                boolValue = "true";
                                 break;
                             case("true"):
                                 selectedValue = "0";
+                                boolValue = "false";
                                 break;
                         }
                         //confirm input
-                        int action = ControllerHelper.confirmPopUp("Update " + columnHeader + " to " + Boolean.valueOf(selectedValue).toString().toUpperCase() + "?");
+                        int action = ControllerHelper.confirmPopUp("Update " + columnHeader + " to " + boolValue + "?");
                         switch (action) {
                             case (JOptionPane.OK_OPTION):
                                 //update permissions
-                                ServerRequest.editPermission(selectedUser, columnHeader, Integer.parseInt(selectedValue), MainController.getSessionToken());
+                                ServerRequestClient.editPermission(selectedUser, columnHeader, Integer.parseInt(selectedValue), MainController.getSessionToken());
                                 break;
                             case (JOptionPane.CANCEL_OPTION):
                                 break;
@@ -195,7 +197,7 @@ public class ManageUserController {
                     switch (action) {
                         case (JOptionPane.OK_OPTION):
                             //request server for delte of user
-                            ServerRequest.deleteUser(rowEmailValue, MainController.getSessionToken());
+                            ServerRequestClient.deleteUser(rowEmailValue, MainController.getSessionToken());
                             break;
                         case (JOptionPane.CANCEL_OPTION):
                             break;
@@ -204,7 +206,6 @@ public class ManageUserController {
         }
         ControllerHelper.refreshUsersTablePanel();
     }
-
 
     public ManageUserCard getManageUserCard() {
         return manageUserCard;

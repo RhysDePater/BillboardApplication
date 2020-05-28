@@ -1,6 +1,6 @@
 package BillboardControlPanel.Controller;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.Model.XMLParsing;
 import BillboardControlPanel.View.ManageBillboardCard;
@@ -10,9 +10,7 @@ import static BillboardControlPanel.Controller.PreviewerController.xml_data;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 
 public class ManageBillboardController {
@@ -81,7 +79,7 @@ public class ManageBillboardController {
                 }
                 else {
                     String bbName = manageBillboardCard.getBillTable().getValueAt(selectedRow, 1).toString();
-                    ServerRequest.deleteBillboard(bbName, MainController.getSessionToken());
+                    ServerRequestClient.deleteBillboard(bbName, MainController.getSessionToken());
                     ControllerHelper.refreshBillBoardTablePanel();
                 }
 

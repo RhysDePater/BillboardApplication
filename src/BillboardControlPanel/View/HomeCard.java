@@ -10,6 +10,7 @@ public class HomeCard extends MasterView{
     private static JButton btnManageBillboard;
     private static JButton btnManageUser;
     private static JButton btnManageSchedule;
+    private static JButton btnChangePassword;
 
     public HomeCard(){
         createCenterCard();
@@ -31,6 +32,8 @@ public class HomeCard extends MasterView{
 
     private JPanel createSouthCard(){
         southCard = ViewHelper.createPanel(Color.gray);
+        btnChangePassword = ViewHelper.createButton("set New Password");
+        southCard.add(btnChangePassword);
         return southCard;
     }
 
@@ -58,4 +61,6 @@ public class HomeCard extends MasterView{
     public void setManageSchedule() {
         this.btnManageSchedule = btnManageSchedule;
     }
+
+    public JButton getBtnChangePassword(){return btnChangePassword;}
 }

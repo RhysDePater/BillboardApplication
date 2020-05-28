@@ -1,15 +1,14 @@
 package BillboardControlPanel.Controller;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.Helper.ControllerHelper;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.View.HomeCard;
-import BillboardControlPanel.View.ManageBillboardCard;
-import BillboardControlPanel.View.MasterView;
+import BillboardControlPanel.View.ManageUserCard;
 import com.sun.tools.javac.Main;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class HomeController{
     protected HomeCard homeCard;
@@ -25,6 +24,18 @@ public class HomeController{
 
     private void initController(HomeCard homeCard) {
         ControllerHelper.enableGlobalButtons(homeCard);
+        homeCard.getBtnChangePassword().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!MainController.getLoggedUser().equalsIgnoreCase("Admin")){
+                    ControllerHelper.setNewPassword(MainController.getLoggedUser(), MainController.getManageUserController().getManageUserCard(), MainController.getSessionToken());
+                } else {
+                    ControllerHelper.returnMessage("Primary Admin User Cannot be edited.");
+                }
+
+            }
+        });
+
         homeCard.getManageUser().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

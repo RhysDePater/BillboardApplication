@@ -1,13 +1,8 @@
 package BillboardControlPanel.Controller;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
-import BillboardControlPanel.Helper.ControllerHelper;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainController{
     private static LoginController loginController;
@@ -53,50 +48,36 @@ public class MainController{
     //but its to late to change or structure now, so lets stick with it, we can look at changing if we have enough time :O
     //sets
     public static void setUserData(){
-        userData = ServerRequest.listUsers(sessionToken);
-        userData = ServerRequest.removeHeaderFromDoubleArray(userData);
-//        System.out.println("set user data is called : " + userData[0][1]);
+        userData = ServerRequestClient.listUsers(sessionToken);
+        userData = ServerRequestClient.removeHeaderFromDoubleArray(userData);
     }
 
     public static void setBillData(){
-        billData = ServerRequest.listBillboards(sessionToken);
-        billData = ServerRequest.removeHeaderFromDoubleArray(billData);
-        //System.out.println(billData[0][1]);
+        billData = ServerRequestClient.listBillboards(sessionToken);
+        billData = ServerRequestClient.removeHeaderFromDoubleArray(billData);
+
     }
 
     public static void setUserColNames(){
-        System.out.println(userColNames.length);
         if(userColNames.length <= 0){
-            userColNames = ServerRequest.getFormattedUserColumnNames(sessionToken);
-            System.out.println("set user col is called");
+            userColNames = ServerRequestClient.getFormattedUserColumnNames(sessionToken);
         }
     }
 
     public static void setLoggedUser(String user){
         loggedUser = user;
-//        System.out.println("set logged user to: " + loggedUser);
     }
 
     public static void setLoggedUserPrivs(String[] newPrivileges){
         loggedUserPrivs = newPrivileges;
-//        loggedUserPrivs = ServerRequest.getFormattedUserPrivs(loggedUser, sessionToken);
-//        for (String priv: loggedUserPrivs
-//        ) {
-//            System.out.println("priv: " + priv);
-//        }
     }
 
     public static void setSessionToken(String newSessionToken){
         sessionToken = newSessionToken;
-//        System.out.println("token set called: " + sessionToken);
     };
 
     //GETS
     public static String[] getLoggedUserPrivs() {
-        for (String priv: loggedUserPrivs
-             ) {
-                System.out.println(priv);
-        }
         return loggedUserPrivs;
     }
 
@@ -111,7 +92,7 @@ public class MainController{
     }
 
     public static String[][] getBillData(){
-//        System.out.println(billData[0][0]);
+
         return billData;
     }
 

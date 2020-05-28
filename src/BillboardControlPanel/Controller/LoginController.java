@@ -1,6 +1,6 @@
 package BillboardControlPanel.Controller;
 
-import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.View.LoginCard;
 
@@ -53,15 +53,14 @@ public class LoginController{
             ControllerHelper.returnMessage("Password cannot be null");
         } else {
             //on valid values request login token from server
-            String[] res = ServerRequest.login(usernameInput, hashedPassword);
-            System.out.println(res[0]);
+            String[] res = ServerRequestClient.login(usernameInput, hashedPassword);
             //on success
             if(Boolean.parseBoolean(res[0]) == true){
-                System.out.println("success");
+                System.out.println("Login success");
                 //user
                 MainController.setSessionToken(res[1]);
                 MainController.setLoggedUser(usernameInput);
-                MainController.setLoggedUserPrivs(ServerRequest.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
+                MainController.setLoggedUserPrivs(ServerRequestClient.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
                 //data
                 MainController.setUserData();
                 MainController.setBillData();
@@ -71,7 +70,7 @@ public class LoginController{
                 ControllerHelper.resetJTextFields(new JTextField[]{loginCard.getUserEmailTextField(), loginCard.getPasswordTextField()});
             } else {
                 //on failure
-                System.out.println("Failure");
+                System.out.println("Login Failure");
                 ControllerHelper.returnMessage("Username and password do not match");
             }
         }
@@ -88,14 +87,14 @@ public class LoginController{
         } else if (userPasswordInput.length() <= 0) {
             ControllerHelper.returnMessage("Password cannot be null");
         } else {
-            String[] res = ServerRequest.login(usernameInput, userPasswordInput);
+            String[] res = ServerRequestClient.login(usernameInput, userPasswordInput);
             System.out.println(res[0]);
             if(Boolean.parseBoolean(res[0]) == true){
                 System.out.println("success");
                 //user
                 MainController.setSessionToken(res[1]);
                 MainController.setLoggedUser(usernameInput);
-                MainController.setLoggedUserPrivs(ServerRequest.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
+                MainController.setLoggedUserPrivs(ServerRequestClient.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
                 //data
                 MainController.setUserData();
                 MainController.setBillData();

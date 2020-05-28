@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static BillboardControlPanel.ClientUtilities.ServerRequest.createOrEditBillboard;
+import static BillboardControlPanel.ServerUtilities.ServerRequestClient.createOrEditBillboard;
 import static BillboardControlPanel.Helper.ControllerHelper.refreshBillBoardTablePanel;
 
 
