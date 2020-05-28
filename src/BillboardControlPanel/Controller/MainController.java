@@ -1,8 +1,13 @@
 package BillboardControlPanel.Controller;
 
 import BillboardControlPanel.ClientUtilities.ServerRequest;
+import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.MasterView;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainController{
     private static LoginController loginController;
@@ -10,16 +15,24 @@ public class MainController{
     private static ManageUserController manageUserController;
     private static MainView mainView;
     private static ManageBillboardController manageBillboardController;
+
     //
     private static String[][] userData = {};
     private static String[] userColNames = {};
+    private static String[][] billData = {};
+    //
     private static String loggedUser;
     private static String[] loggedUserPrivs;
     private static String sessionToken;
     //
-    private static String[][] billData = {};
+
 
     public MainController(){
+        //this is a server connection test to run before launching application, bandaid check, implement better later
+//        if(!ControllerHelper.checkConnection()) {
+//            ControllerHelper.returnMessage("cannot connect to server");
+//            System.exit(1);
+//        }
         initController();
         initView(loginController.getLoginCard());
     }
@@ -64,8 +77,9 @@ public class MainController{
 //        System.out.println("set logged user to: " + loggedUser);
     }
 
-    public static void setLoggedUserPrivs(){
-        loggedUserPrivs = ServerRequest.getFormattedUserPrivs(loggedUser, sessionToken);
+    public static void setLoggedUserPrivs(String[] newPrivileges){
+        loggedUserPrivs = newPrivileges;
+//        loggedUserPrivs = ServerRequest.getFormattedUserPrivs(loggedUser, sessionToken);
 //        for (String priv: loggedUserPrivs
 //        ) {
 //            System.out.println("priv: " + priv);
@@ -122,4 +136,5 @@ public class MainController{
     }
 
     public static ManageBillboardController getManageBillboardController() {return manageBillboardController;}
+
 }

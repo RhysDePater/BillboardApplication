@@ -23,16 +23,8 @@ public class ManageUserCard extends MasterView {
     private static JTextField updateTextField;
 
     public ManageUserCard(String[][] colData, String[] colNames){
-        createNorthCard();
         createCenterCard(colData, colNames);
         createSouthCard();
-    }
-
-    private JPanel createNorthCard(){
-        northCard = ViewHelper.createPanel(Color.gray);
-        btnHome = ViewHelper.createButton("Home");
-        northCard.add(btnHome);
-        return northCard;
     }
 
     private JPanel createCenterCard(String[][] colData, String[] colNames){

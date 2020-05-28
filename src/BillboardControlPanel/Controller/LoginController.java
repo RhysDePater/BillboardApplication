@@ -4,6 +4,7 @@ import BillboardControlPanel.ClientUtilities.ServerRequest;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.View.LoginCard;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -32,7 +33,7 @@ public class LoginController{
         loginCard.getBypassLogIn().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               bypassLogin();
+                bypassLogin();
             }
         });
     }
@@ -57,13 +58,17 @@ public class LoginController{
             //on success
             if(Boolean.parseBoolean(res[0]) == true){
                 System.out.println("success");
+                //user
                 MainController.setSessionToken(res[1]);
+                MainController.setLoggedUser(usernameInput);
+                MainController.setLoggedUserPrivs(ServerRequest.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
+                //data
                 MainController.setUserData();
                 MainController.setBillData();
                 MainController.setUserColNames();
-                MainController.setLoggedUser(usernameInput);
-                MainController.setLoggedUserPrivs();
+                //update
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
+                ControllerHelper.resetJTextFields(new JTextField[]{loginCard.getUserEmailTextField(), loginCard.getPasswordTextField()});
             } else {
                 //on failure
                 System.out.println("Failure");
@@ -87,13 +92,17 @@ public class LoginController{
             System.out.println(res[0]);
             if(Boolean.parseBoolean(res[0]) == true){
                 System.out.println("success");
+                //user
                 MainController.setSessionToken(res[1]);
+                MainController.setLoggedUser(usernameInput);
+                MainController.setLoggedUserPrivs(ServerRequest.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
+                //data
                 MainController.setUserData();
                 MainController.setBillData();
                 MainController.setUserColNames();
-                MainController.setLoggedUser(usernameInput);
-                MainController.setLoggedUserPrivs();
+                //update
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
+                ControllerHelper.resetJTextFields(new JTextField[]{loginCard.getUserEmailTextField(), loginCard.getPasswordTextField()});
             } else {
                 System.out.println("Failure");
                 ControllerHelper.returnMessage("Username and password do not match");

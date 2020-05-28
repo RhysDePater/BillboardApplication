@@ -12,16 +12,8 @@ public class HomeCard extends MasterView{
     private static JButton btnManageSchedule;
 
     public HomeCard(){
-        createNorthCard();
         createCenterCard();
         createSouthCard();
-    }
-
-    private JPanel createNorthCard(){
-        northCard = ViewHelper.createPanel(Color.gray);
-        btnHome = ViewHelper.createButton("Home");
-        northCard.add(btnHome);
-        return northCard;
     }
 
     private JPanel createCenterCard(){

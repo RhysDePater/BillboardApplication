@@ -16,17 +16,10 @@ public class ManageBillboardCard extends MasterView {
     private static String[] colNames = new String[]{"User Name", "Billboard Name","XML Data", "Status"};
 
     public ManageBillboardCard(String[][] colData){
-        createNorthCard();
         createCenterCard(colData);
         createSouthCard();
     }
 
-    private JPanel createNorthCard() {
-        northCard = ViewHelper.createPanel(Color.gray);
-        btnHome = ViewHelper.createButton("Home");
-        northCard.add(btnHome);
-        return northCard;
-    }
     private JPanel createCenterCard(String[][] colData){
         centerCard = ViewHelper.createPanel(Color.white);
         billboardTable = ViewHelper.createJTable(colData, colNames);

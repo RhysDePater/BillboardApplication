@@ -20,8 +20,9 @@ public class LoginCard extends MasterView{
         createSouthCard();
     }
 
-    private JPanel createNorthCard(){
-        northCard = ViewHelper.createPanel(Color.gray);
+    @Override
+    protected JPanel createNorthCard(){
+        northCard = ViewHelper.createPanel(Color.GRAY);
         return northCard;
     }
 

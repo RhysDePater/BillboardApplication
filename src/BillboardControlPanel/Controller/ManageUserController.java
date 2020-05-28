@@ -33,12 +33,7 @@ public class ManageUserController {
     }
 
     public void initController(ManageUserCard manageUserCard){
-        manageUserCard.getBtnHome().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
-            }
-        });
+        ControllerHelper.enableGlobalButtons(manageUserCard);
         manageUserCard.getUserTable().addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {

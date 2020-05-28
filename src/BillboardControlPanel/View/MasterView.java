@@ -1,9 +1,9 @@
 package BillboardControlPanel.View;
 
-import BillboardControlPanel.Controller.MainController;
-import com.sun.tools.javac.Main;
+import BillboardControlPanel.Helper.ViewHelper;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 public class MasterView {
@@ -11,7 +11,21 @@ public class MasterView {
     protected JPanel northCard;
     protected JPanel centerCard;
     protected JPanel southCard;
-    protected JButton btnHome;
+    private JButton btnHome;
+    private JButton logOut;
+
+    public MasterView(){
+        createNorthCard();
+    }
+
+    protected JPanel createNorthCard(){
+        northCard = ViewHelper.createPanel(Color.gray);
+        btnHome = ViewHelper.createButton("Home");
+        logOut = ViewHelper.createButton("Log-out");
+        northCard.add(btnHome);
+        northCard.add(logOut);
+        return northCard;
+    }
 
     public static JFrame getMainFrame() {
         return mainFrame;
@@ -32,5 +46,7 @@ public class MasterView {
     public JButton getBtnHome(){
         return btnHome;
     }
+
+    public JButton getBtnLogOut(){return logOut;}
 
 }

@@ -31,12 +31,7 @@ public class ManageBillboardController {
     }
 
     public void initController(ManageBillboardCard manageBillboardCard) {
-        manageBillboardCard.getBtnHome().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
-            }
-        });
+        ControllerHelper.enableGlobalButtons(manageBillboardCard);
         manageBillboardCard.getBtnCreate().addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
