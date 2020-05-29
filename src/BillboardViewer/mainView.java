@@ -41,7 +41,13 @@ public class mainView extends JFrame implements Runnable{
                 }
                 catch(Exception e)
                 {
-                    System.out.println(e);
+                    try {
+                        drawElements("Unable to connect to billboard server.", "", "", "", "#FFFFFF", "#000000", "");
+                    }
+                    catch(Exception ex)
+                    {
+                        System.out.println(ex);
+                    }
                 }
 
                 //sleep for 15 seconds
@@ -94,7 +100,13 @@ public class mainView extends JFrame implements Runnable{
         }
         catch(Exception e)
         {
-            System.out.println(e);
+            try {
+                drawElements("Unable to connect to billboard server.", "", "", "", "#FFFFFF", "#000000", "");
+            }
+            catch(Exception ex)
+            {
+                System.out.println(ex);
+            }
         }
     }
 
@@ -120,6 +132,7 @@ public class mainView extends JFrame implements Runnable{
     public void drawElements(String Message, String Picture, String Info, String encodedPicture, String backGroundColour, String messageColour, String infoColour) throws IOException {
         getContentPane().setBackground(Color.decode(backGroundColour));
 
+        removeBillboardContent();
 
         JLabel messageLabel = null;
         JLabel picLabel = null;
@@ -140,7 +153,6 @@ public class mainView extends JFrame implements Runnable{
         }
         else if ((Picture != "" || encodedPicture !="") && Info != "")
         {
-            this.getContentPane().add(null,BorderLayout.NORTH);
             if (Picture != "")
             {
                 drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
@@ -154,7 +166,6 @@ public class mainView extends JFrame implements Runnable{
         else if (Message != "" && Info != "")
         {
             messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.5);
-            this.getContentPane().add(null,BorderLayout.CENTER);
             drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.SOUTH,0.5);
         }
         else if (Message != "" && (Picture != "" || encodedPicture !="") )
@@ -168,7 +179,6 @@ public class mainView extends JFrame implements Runnable{
             {
                 drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
             }
-            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
         else if ( Info != "")
         {
@@ -176,7 +186,6 @@ public class mainView extends JFrame implements Runnable{
         }
         else if ((Picture != "" || encodedPicture !=""))
         {
-            this.getContentPane().add(null,BorderLayout.NORTH);
             if (Picture != "")
             {
                 drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 1);
@@ -185,14 +194,26 @@ public class mainView extends JFrame implements Runnable{
             {
                 drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER,1);
             }
-            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
         else if (Message != "")
         {
-            this.getContentPane().add(null,BorderLayout.NORTH);
             messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.CENTER, 1);
-            this.getContentPane().add(null,BorderLayout.SOUTH);
         }
+    }
+
+    private void removeBillboardContent()
+    {
+        JPanel North = new JPanel();
+        JPanel Center = new JPanel();
+        JPanel South = new JPanel();
+
+        this.getContentPane().add(North,BorderLayout.NORTH);
+        this.getContentPane().add(Center,BorderLayout.CENTER);
+        this.getContentPane().add(South,BorderLayout.SOUTH);
+
+        this.remove(North);
+        this.remove(Center);
+        this.remove(South);
     }
 
 
