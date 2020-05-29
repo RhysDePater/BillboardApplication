@@ -62,9 +62,11 @@ public class LoginController{
                 MainController.setLoggedUser(usernameInput);
                 MainController.setLoggedUserPrivs(ServerRequestClient.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
                 //data
+                MainController.setScheduleData();
                 MainController.setUserData();
                 MainController.setBillData();
                 MainController.setUserColNames();
+                MainController.setAmountOfSchedulesPerDay();
                 //update
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
                 ControllerHelper.resetJTextFields(new JTextField[]{loginCard.getUserEmailTextField(), loginCard.getPasswordTextField()});
@@ -96,9 +98,11 @@ public class LoginController{
                 MainController.setLoggedUser(usernameInput);
                 MainController.setLoggedUserPrivs(ServerRequestClient.getFormattedUserPrivs(MainController.getLoggedUser(), MainController.getSessionToken()));
                 //data
+                MainController.setScheduleData();
                 MainController.setUserData();
                 MainController.setBillData();
                 MainController.setUserColNames();
+                MainController.setAmountOfSchedulesPerDay();
                 //update
                 ControllerHelper.updateFrame(MainController.getMainView(), MainController.getHomeController().getHomeCard());
                 ControllerHelper.resetJTextFields(new JTextField[]{loginCard.getUserEmailTextField(), loginCard.getPasswordTextField()});

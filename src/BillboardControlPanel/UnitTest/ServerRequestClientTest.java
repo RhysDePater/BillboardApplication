@@ -7,6 +7,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import static java.time.Duration.ofMillis;
 
 import static BillboardControlPanel.ServerUtilities.ServerRequestClient.*;
@@ -28,6 +32,10 @@ class ServerRequestClientTest {
     private static String setNewHashPass = "a853eb9056f559430f61147acdd07c0a94630b93ac5baae39c64bb91034a46a6";
     private static String newPassword = "newPass1";
     private static int[] newUserPerm = {1,1,1,1};
+    //billboard
+    private static String newBillboard = "newBillboard";
+    private static String newXmlData = "XMLDATA";
+
 
     @BeforeAll
     public static void getHostTest(){
@@ -55,6 +63,12 @@ class ServerRequestClientTest {
             socket = initServerConnect();
             socket.close();
         }, "Connection to server failed");
+    }
+
+    @AfterAll
+    public static void logoutTest(){
+        String[] res = logout(sessionToken);
+        Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
     //Test with a simple Post to confirm that a response is received from the server
@@ -129,4 +143,36 @@ class ServerRequestClientTest {
         String[] userPerm = getFormattedUserPrivs(loginUsername, sessionToken);
         Assertions.assertNotNull(userPerm);
     }
+
+    @Test
+    @Order(4)
+    public void createBillboardTest(){
+        String[] res = createOrEditBillboard(newBillboard, newXmlData, sessionToken);
+    }
+
+    @Test
+    @Order(5)
+    public void createScheduleTest(){
+        String[] res = ServerRequestClient.createSchedule(newBillboard, LocalDateTime.now(), 60, sessionToken);
+        Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
+    }
+
+    @Test
+    @Order(6)
+    public void listScheduleTest(){
+        String[][] res = listSchedules(sessionToken);
+        Assertions.assertTrue(res[0][0].equalsIgnoreCase("true"));
+    }
+
+
+//    @Test
+//    @Order(6)
+//    public void deleteBillboardTest(){
+//        String[] res = deleteBillboard(newBillboard, sessionToken);
+//    }
+//
+//    @Test
+//    public void deleteScheduleTest(){
+////        String[] res = deleteSchedule(newBillboard, );
+//    }
 }

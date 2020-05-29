@@ -1,5 +1,6 @@
 package BillboardControlPanel.ServerUtilities;
 
+import javax.print.attribute.standard.NumberUp;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -152,7 +153,16 @@ public class ServerRequestClient {
         return sendQuery(command);
     }
 
-    //why do i have this i cant do anythign with this
+    /**
+     * Expires the currently logged in users session token.
+     * @param sessionToken The currently logged in users' session token.
+     * @return See ServerRequest.sendQuery
+     */
+    public static String[] logout(String sessionToken){
+        String[] command = {"logout", sessionToken};
+        return sendQuery(command);
+    }
+
     /**
      * Edit permissions associated with a username
      * @param username The user to edit permissions for
@@ -258,12 +268,12 @@ public class ServerRequestClient {
      * Adds one schedule to the database for one billboard
      * @param billboardName The billboard to associate the schedule with
      * @param startTime When the billboard should start displaying, currently a LocalDateTime object
-     * @param duration Duration in seconds to be displayed from the startTime
+     * @param durationSec Duration in seconds to be displayed from the startTime
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  addSchedule(String billboardName, LocalDateTime startTime, Integer duration, String sessionToken) throws IOException {
-        String[] command = {"addSchedule", billboardName, startTime.toString(), duration.toString(), sessionToken};
+    public static String[] createSchedule(String billboardName, LocalDateTime startTime, Integer durationSec, String sessionToken) {
+        String[] command = {"addSchedule", billboardName, startTime.toString(), durationSec.toString(), sessionToken};
         return sendQuery(command);
     }
 
@@ -276,9 +286,19 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  deleteSchedule(String billboardName, LocalDateTime startTime, String sessionToken) throws IOException {
+    public static String[]  deleteSchedule(String billboardName, LocalDateTime startTime, String sessionToken) {
         String[] command = {"deleteSchedule", billboardName, startTime.toString(), sessionToken};
         return sendQuery(command);
+    }
+
+    /**
+     * Lists all billboards in the DB with creator name
+     * @param sessionToken A session token so the server can authenticate the request
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[][]  listSchedules(String sessionToken){
+        String[] command = {"listSchedules", sessionToken};
+        return sendQueryAlt(command);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,17 +338,23 @@ public class ServerRequestClient {
     }
 
     public static String[][] removeHeaderFromDoubleArray(String[][] userList){
-        int arrayLength = userList.length - 1; // -1 to compensate for removing header
-        int arrayItemLength = userList[1].length;
-        String[][] formattedList = new String[arrayLength][arrayItemLength];
-        for(int i = 0; i < arrayLength; i ++){
+        try{
+            int arrayLength = userList.length - 1; // -1 to compensate for removing header
+            int arrayItemLength = userList[1].length;
+            String[][] formattedList = new String[arrayLength][arrayItemLength];
+            for(int i = 0; i < arrayLength; i ++){
 //            System.out.println("Item: " + i);
-            for(int j = 0; j < arrayItemLength; j++){
+                for(int j = 0; j < arrayItemLength; j++){
 //                System.out.println("Body: " +j + " Data: " + userList[i+1][j]);
-                formattedList[i][j] = userList[i+1][j];               //i+1 to ignore header
+                    formattedList[i][j] = userList[i+1][j];               //i+1 to ignore header
+                }
             }
+            return formattedList;
+        } catch (NullPointerException e){
+            System.err.println(e);
+            return userList;
         }
-        return formattedList;
+
     }
 
 

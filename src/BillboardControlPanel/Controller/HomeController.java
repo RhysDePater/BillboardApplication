@@ -1,14 +1,15 @@
 package BillboardControlPanel.Controller;
 
 import BillboardControlPanel.Helper.ControllerHelper;
-import BillboardControlPanel.ServerUtilities.ServerRequestClient;
+
 import BillboardControlPanel.View.HomeCard;
-import BillboardControlPanel.View.ManageUserCard;
-import com.sun.tools.javac.Main;
+
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+
 
 public class HomeController{
     protected HomeCard homeCard;
@@ -60,6 +61,12 @@ public class HomeController{
                 //getBillTableData();
             }
         }));
+        homeCard.getManageSchedule().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ControllerHelper.refreshScheduleTablePanel();
+            }
+        });
     }
 
     public HomeCard getHomeCard() {
