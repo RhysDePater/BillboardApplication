@@ -71,6 +71,9 @@ class ServerRequestClientTest {
         Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
+
+
+
     //Test with a simple Post to confirm that a response is received from the server
     @Test
     public void sendQueryTest() {
@@ -112,21 +115,19 @@ class ServerRequestClientTest {
 
     //For post test if the response at res[0] is true then the command succeeded
     @Test
-    @Order(1)
     public void createUserTest(){
         String[] postRes = createUser(newUsername, newPassword, newUserPerm[0], newUserPerm[1],newUserPerm[2], newUserPerm[3], sessionToken);
         Assertions.assertEquals(postRes[0], "true");
     }
 
+
     @Test
-    @Order(2)
     public void changeUserPasswordTest(){
         String[] res = setUserPassword(newUsername, setNewHashPass, sessionToken );
         Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
     @Test
-    @Order(3)
     public void deleteUserTest(){
         String[] postRes = deleteUser(newUsername, sessionToken);
         Assertions.assertEquals((postRes[0]), "true");
