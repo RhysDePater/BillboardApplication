@@ -453,7 +453,7 @@ public class DBInteract {
     }
 
     /**
-     * Gets the user who created a billboard and the billboard name
+     * Gets the user who created a billboard and the billboard name plus other stuff
      *
      * @param queryCommand TAKES A QUERY COMMAND FROM selectUserJoinBillboard
      * @return ReturnType=String[][]: containing results from query

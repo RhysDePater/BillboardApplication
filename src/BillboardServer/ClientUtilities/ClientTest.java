@@ -70,7 +70,7 @@ public class ClientTest {
         try {
             //responseArray = ServerRequest.setUserPassword("ADMIN", NewADMINPassword, sessionToken);
 
-            //responseArray = ServerRequest.login("testusername1", NewtestPassword); // Password for this user is myPassword2
+            //responseArray = ServerRequest.login("testusername", testPassword); // Password for this user is myPassword2
             responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
@@ -94,9 +94,9 @@ public class ClientTest {
         System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
         System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
 
-                try {
+        try {
             //responseArray = ServerRequest.setUserPassword("testusername1", NewtestPassword, sessionToken)
-                    responseArray = ServerRequest.setUserPassword("ADMIN", ADMINPassword, sessionToken);
+            //responseArray = ServerRequest.setUserPassword("ADMIN", ADMINPassword, sessionToken);
             //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
             //responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
             //sessionToken = responseArray[1];
@@ -104,12 +104,14 @@ public class ClientTest {
             //sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername2", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("my billboard", "example data", sessionToken);
+            //responseArray = ServerRequest.createOrEditBillboard("admin bill", "example data", sessionToken);
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
-            //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
-            //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
-            //responseArray = ServerRequest.editAllPermissions("testusername", 0,0,0,0, sessionToken);
+            //responseArray = ServerRequest.addSchedule("my billboard4", startDate, 120, sessionToken);
+            //responseArray = ServerRequest.deleteSchedule("my billboard", startDate, sessionToken);
+            //responseArray = ServerRequest.editAllPermissions("testusername", 1,1,0,1, sessionToken);
+            responseArray2D = ServerRequest.listSchedules(sessionToken);
+            //responseArray2D = ServerRequest.listBillboards(sessionToken);
         }
         catch (IOException e){
             System.out.println("Could not access server");
@@ -120,6 +122,7 @@ public class ClientTest {
         System.out.println(responseArray[0]); // true or false if the sql query ran okay
         System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
         System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+        System.out.print(Arrays.deepToString(responseArray2D));
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        try{
