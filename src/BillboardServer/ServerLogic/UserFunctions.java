@@ -22,7 +22,7 @@ public class UserFunctions extends ServerVariables{
         return salt;
     }
 
-    public static void createUser() throws NoSuchAlgorithmException {
+    public static void createUser() throws NoSuchAlgorithmException, SQLException {
         byte[] salt = GenerateSalt();
         //String placeHolderSalt = "11001";
         sessionTokenFromClient = inboundData[7];
@@ -35,6 +35,12 @@ public class UserFunctions extends ServerVariables{
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
         }
+        // Checks if the current user has the permission to create a user.
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "createUser"))){
+            optionalMessage = "User does not have permission to create users (need edit_users permission)";
+            return;
+        }
+
         PreparedStatement QueryCreateUser = DBInteract.createUserPreparedStatement(inboundData[1], hashAndSaltedPassword, saltString);
         String QueryCreatePermission = DBInteract.createPermission(Integer.parseInt(inboundData[3]), // The data comes in as part of a string array, so change it back to an int
                 Integer.parseInt(inboundData[4]),
@@ -56,13 +62,17 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
-    public static void deleteUser(){
+    public static void deleteUser() throws SQLException {
         boolean user_exists = false;
         String user_id = "";
         String username = inboundData[1];
         sessionTokenFromClient = inboundData[2]; //Session tokens come from ServerRequest methods.
         if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "deleteUser"))){
+            optionalMessage = "User does not have permission to delete users (need edit_users permission).";
             return;
         }
         if (doesUserMatchSessionTokenFromClient(sessionTokenFromClient, username)){
@@ -99,9 +109,13 @@ public class UserFunctions extends ServerVariables{
             }
     }
 
-    public static void listUsers() {
+    public static void listUsers() throws SQLException {
         if(!isSessionTokenValid(inboundData[1])){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        if(!(CheckPermissions.checkUserPermissions(inboundData[1], "listUsers"))){
+            optionalMessage = "User does not have permission to list users (need edit_users permission).";
             return;
         }
         String getUserDataQuery = DBInteract.selectUserJoinPermission();
@@ -119,10 +133,14 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
-    public static void editPermissions(){
+    public static void editPermissions() throws SQLException {
         String user_id = "";
         sessionTokenFromClient = inboundData[6];
         if(isSessionTokenValid(sessionTokenFromClient)) {
+            if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "editPermissions"))){
+                optionalMessage = "User does not have permission to edit permissions (need edit_users permission).";
+                return;
+            }
             try {
                 user_id = DBInteract.getUserId(inboundData[1]); // Get the id from the given username
             } catch (SQLException e) {
@@ -158,7 +176,7 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
-    public static void getPermissions() {
+    public static void getPermissions() throws SQLException {
         String user_id;
         sessionTokenFromClient = inboundData[2];
         if(!isSessionTokenValid(sessionTokenFromClient)){
@@ -174,15 +192,33 @@ public class UserFunctions extends ServerVariables{
             return;
         }
         String[] getUserPermissions;
-        try{
-            getUserPermissions = DBInteract.getPermissions(user_id);
-            commandSucceeded = true;
-            optionalMessage = "List of permissions successfully returned";
-            outboundData1D = getUserPermissions;
+        // If user is requesting own permissions, then no permission check required.
+        if(doesUserMatchSessionTokenFromClient(sessionTokenFromClient, inboundData[1])) {
+            try {
+                getUserPermissions = DBInteract.getPermissions(user_id);
+                commandSucceeded = true;
+                optionalMessage = "List of permissions successfully returned";
+                outboundData1D = getUserPermissions;
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+                optionalMessage = "Failed to get permissions list:" + e.getMessage();
+            }
         }
-        catch (SQLException e){
-            System.out.println(e.toString());
-            optionalMessage = "Failed to get permissions list:" + e.getMessage();
+        // Else if user is requesting another user's permissions, the user needs the edit_users permission.
+        else if (!(doesUserMatchSessionTokenFromClient(sessionTokenFromClient, inboundData[1]))){
+            if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "getPermissions"))){
+                optionalMessage = "User does not have permission to edit permissions (need edit_users permission).";
+                return;
+            }
+            try {
+                getUserPermissions = DBInteract.getPermissions(user_id);
+                commandSucceeded = true;
+                optionalMessage = "List of permissions successfully returned";
+                outboundData1D = getUserPermissions;
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+                optionalMessage = "Failed to get permissions list:" + e.getMessage();
+            }
         }
     }
 
@@ -251,12 +287,21 @@ public class UserFunctions extends ServerVariables{
     public static void setUserPassword() throws NoSuchAlgorithmException {
         String sessionToken = inboundData[3];
         String username = inboundData[1];
+        String user_id = "";
         hashedPassWordFromClient = inboundData[2];
         // Check if the session token is has the same username as the one entered (with the usersSessionTokens). If it does, then
         // the user is trying to update their own password, and they should be allowed to do so with no permission check.
         if(!isSessionTokenValid(sessionToken)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
+        }
+
+        try {
+            user_id = DBInteract.getUserId(username); // Get the id from the given username
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            optionalMessage = "User_id for supplied username not found: User doesn't exist";
         }
 
         byte[] salt = GenerateSalt();
@@ -268,22 +313,32 @@ public class UserFunctions extends ServerVariables{
         // If the user is trying to change their own password, no further permission check necessary.
         if(doesUserMatchSessionTokenFromClient(sessionToken, username)){
             try{
-                String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
-                DBInteract.dbExecuteCommand(setUserPassword);
-                commandSucceeded = true;
-                optionalMessage = "You have successfully changed your password.";
+                // Need to see if the username entered even exists first, then if it does, set their password.
+                if(!(user_id.equals(""))) {
+                    String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
+                    DBInteract.dbExecuteCommand(setUserPassword);
+                    commandSucceeded = true;
+                    optionalMessage = "You have successfully changed your password.";
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        // Need to query the database to find the current users' permissions in here, to see if they are allowed to change another
-        // user's password.
+        // Checks if a user is trying to change another user's password by matching the username from their sessionToken to the username they entered.
         else if(!doesUserMatchSessionTokenFromClient(sessionToken, username)){
             try{
-                String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
-                DBInteract.dbExecuteCommand(setUserPassword);
-                commandSucceeded = true;
-                optionalMessage = "You have successfully changed the user's password.";
+                // Checks that the current user has the permission to change another user's password.
+                if(!(CheckPermissions.checkUserPermissions(sessionToken, "setUserPassword"))){
+                    optionalMessage = "User does not have permission to change another user's password (need edit_users permission).";
+                    return;
+                }
+                // Checks that the username having it's password changed actually exists. If it does, then their password is changed.
+                if(!(user_id.equals(""))) {
+                    String setUserPassword = DBInteract.setUserPassword(username, hashAndSaltedPassword, saltString);
+                    DBInteract.dbExecuteCommand(setUserPassword);
+                    commandSucceeded = true;
+                    optionalMessage = "You have successfully changed the user's password.";
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -1,6 +1,7 @@
 package BillboardServer.ServerLogic;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static BillboardServer.Networking.SendBackData;
@@ -11,7 +12,7 @@ public class ServerLogic extends ServerVariables{
      * The main logic of the server
      * @param data the data received from the control panel or viewer
      */
-    public static void Parse(Object data) throws NoSuchAlgorithmException {
+    public static void Parse(Object data) throws NoSuchAlgorithmException, SQLException {
         resetServerVariables();
         try{
             inboundData = (String[])data;
@@ -108,5 +109,6 @@ public class ServerLogic extends ServerVariables{
         outboundData1D = null;
         inboundData = null;
         sessionTokenFromClient = "";
+        doesUserHavePermissions = false;
     }
 }
