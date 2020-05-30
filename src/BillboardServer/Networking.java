@@ -79,7 +79,8 @@ public class Networking {
     public static void SendBackData(boolean status, String responseDataSmall, String optionalMessage, String[][] responseData2D, String[] outboundData1D){
         String[] ServerResponse = {String.valueOf(status), responseDataSmall, optionalMessage};
         String[][] ServerResponse2D;
-        if(responseData2D != null){ // Compose a specific string[][] to send back to the client
+        if(responseData2D != null && responseData2D.length != 0){ // Compose a specific string[][] to send back to the client
+            System.out.println(Arrays.deepToString(responseData2D));
             ServerResponse2D = new String[responseData2D.length + 1][responseData2D[0].length] ; // Add an extra row for the ServeResponse to go at ServerResponse[0]
             ServerResponse2D[0] = ServerResponse;
             for (int i = 0; i < responseData2D.length; i++ ){

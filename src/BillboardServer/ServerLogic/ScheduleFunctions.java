@@ -4,6 +4,7 @@ import BillboardServer.Database.DBInteract;
 import BillboardServer.Misc.SessionToken;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
 
@@ -19,6 +20,11 @@ public class ScheduleFunctions extends ServerVariables {
         sessionTokenFromClient = inboundData[4];
         if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        // Checks if the current user has the permission to add schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to add a schedule (need schedule_billboard permission)";
             return;
         }
         try {
@@ -64,6 +70,11 @@ public class ScheduleFunctions extends ServerVariables {
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
         }
+        // Checks if the current user has the permission to remove schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to remove a schedule (need schedule_billboard permission)";
+            return;
+        }
         // First see if the billboard actually exists
         try {
             billboard_id = DBInteract.getValue("id", "billboard", "billboard_name", inboundData[1]); // Get the billboard id from the billboard name
@@ -99,10 +110,17 @@ public class ScheduleFunctions extends ServerVariables {
     }
 
     public static void listSchedules(){
-        if(!isSessionTokenValid(inboundData[1])){
+        sessionTokenFromClient = inboundData[1];
+        if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
         }
+        // Checks if the current user has the permission to list schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to list schedule (need schedule_billboard permission)";
+            return;
+        }
+
         String getScheduleDataQuery = DBInteract.selectScheduleJoinUserAndBillboard();
         System.out.println(getScheduleDataQuery);
         String[][] results;
@@ -114,6 +132,7 @@ public class ScheduleFunctions extends ServerVariables {
             optionalMessage = "Failed to get schedule list:" + e.getMessage();
             return;
         }
+        System.out.println("RESULTS ARE " + Arrays.deepToString(results));
         commandSucceeded = true;
         optionalMessage = "List of schedules successfully returned";
         outboundData2D = results;

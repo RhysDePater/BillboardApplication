@@ -22,7 +22,7 @@ public class UserFunctions extends ServerVariables{
         return salt;
     }
 
-    public static void createUser() throws NoSuchAlgorithmException, SQLException {
+    public static void createUser() throws NoSuchAlgorithmException {
         byte[] salt = GenerateSalt();
         //String placeHolderSalt = "11001";
         sessionTokenFromClient = inboundData[7];
@@ -62,7 +62,7 @@ public class UserFunctions extends ServerVariables{
         }
     }
 
-    public static void deleteUser() throws SQLException {
+    public static void deleteUser() {
         boolean user_exists = false;
         String user_id = "";
         String username = inboundData[1];
@@ -92,8 +92,7 @@ public class UserFunctions extends ServerVariables{
                 String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
                 //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
                 // TODO
-                // Change these to be a transaction so that they are guaranteed to both run together.
-                // Otherwise it could be deleted from the user table without deleting the permissions
+                // Delete orphaned billboards and schedules
                 System.out.println(QueryDeletePermissions);
                 System.out.println(QueryDeleteUser);
                 try {
@@ -109,7 +108,7 @@ public class UserFunctions extends ServerVariables{
             }
     }
 
-    public static void listUsers() throws SQLException {
+    public static void listUsers() {
         if(!isSessionTokenValid(inboundData[1])){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
