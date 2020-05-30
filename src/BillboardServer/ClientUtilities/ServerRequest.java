@@ -283,11 +283,12 @@ public class ServerRequest  {
      * @param billboardName The billboard to associate the schedule with
      * @param startTime When the billboard should start displaying, currently a LocalDateTime object
      * @param durationSec Duration in seconds to be displayed from the startTime
+     * @param timeToRecur The time in seconds after which the schedule should repeat
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[] createSchedule(String billboardName, LocalDateTime startTime, Integer durationSec, String sessionToken) {
-        String[] command = {"addSchedule", billboardName, startTime.toString(), durationSec.toString(), sessionToken};
+    public static String[] createSchedule(String billboardName, LocalDateTime startTime, Integer durationSec, Integer timeToRecur, String sessionToken) {
+        String[] command = {"addSchedule", billboardName, startTime.toString(), durationSec.toString(), timeToRecur.toString(), sessionToken};
         return sendQuery(command);
     }
 

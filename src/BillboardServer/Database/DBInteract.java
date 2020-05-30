@@ -38,7 +38,7 @@ public class DBInteract {
             + "user_id INT UNSIGNED NOT NULL,"
             + "schedule_id INT UNSIGNED DEFAULT NULL,"
             + "billboard_name VARCHAR(255) UNIQUE,"
-            + "xml_data TEXT NOT NULL,"
+            + "xml_data MEDIUMTEXT NOT NULL,"
             + "status BOOLEAN NOT NULL DEFAULT false,"
             + "PRIMARY KEY (id),"
             + "CONSTRAINT fk_billboard_user FOREIGN KEY (user_id) REFERENCES user(id));";
@@ -46,9 +46,10 @@ public class DBInteract {
     private static final String CREATE_SCHEDULE_TABLE = "CREATE TABLE IF NOT EXISTS schedule("
             + "id INT UNSIGNED AUTO_INCREMENT NOT NULL,"
             + "user_id INT UNSIGNED NOT NULL,"
-            + "billboard_id INT UNSIGNED NOT NULL,"
+            + "billboard_id INT UNSIGNED UNIQUE NOT NULL,"
             + "start_time timestamp default current_timestamp,"
-            + "duration INT default 60,"
+            + "duration INT UNSIGNED,"
+            + "recur_after INT UNSIGNED default 0,"
             + "PRIMARY KEY (id),"
             + "CONSTRAINT fk_schedule_user FOREIGN KEY (user_id) REFERENCES user(id),"
             + "CONSTRAINT fk_schedule_billboard FOREIGN KEY (billboard_id) REFERENCES billboard (id));";
@@ -193,12 +194,13 @@ public class DBInteract {
                 " " + edit_user + ")";
     }
 
-    public static String addSchedule(String user_id, String billboard_id, String start_time, String duration){
-        return "INSERT INTO schedule (user_id, billboard_id, start_time, duration) VALUES (" +
+    public static String addSchedule(String user_id, String billboard_id, String start_time, String duration, String time_to_recur){
+        return "INSERT INTO schedule (user_id, billboard_id, start_time, duration, recur_after) VALUES (" +
                 user_id + ", " +
                 "'" + billboard_id + "'," +
                 " '" + start_time + "'," +
-                "'" + duration + "')";
+                " '" + duration + "'," +
+                "'" + time_to_recur + "')";
     }
 
     /**
@@ -318,7 +320,7 @@ public class DBInteract {
      * @return
      */
     public static String selectScheduleJoinUserAndBillboard() {
-        String selectQuery = "SELECT username, billboard.billboard_name, start_time, duration from schedule INNER JOIN billboard on schedule.billboard_id = billboard.id INNER JOIN user on schedule.user_id = user.id";
+        String selectQuery = "SELECT username, billboard.billboard_name, start_time, duration, recur_after from schedule INNER JOIN billboard on schedule.billboard_id = billboard.id INNER JOIN user on schedule.user_id = user.id";
         return (selectQuery);
     }
 
@@ -349,6 +351,19 @@ public class DBInteract {
     public static String updateColumnWhereId(String tableName, String columnName, String newValue, String id) {
         String updateColumn = "UPDATE " + tableName + " SET " + columnName + "='" + newValue + "' WHERE id=" + id;
         return updateColumn;
+    }
+
+    public static PreparedStatement updateColumnWhereIdToNull(String tableName, String columnName, String id) {
+        String updateColumn = "UPDATE " + tableName + " SET " + columnName + "=? WHERE id=" + id;
+        PreparedStatement ps = null;
+        try {
+            Connection connection = DBConnection.getInstance(); // Get a new database connection
+            ps = connection.prepareStatement(updateColumn); // Create the prepared statement with the above string
+            ps.setString(1, null); // Add the salt value where there is a ?
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return ps;
     }
 
     public static String updatePermission(String user_id, int create_billboard, int edit_billboard, int schedule_billboard, int edit_user ) {
@@ -503,7 +518,8 @@ public class DBInteract {
             String billboard_name = rs.getString(colNames[1]);
             String start_time = rs.getTimestamp(colNames[2]).toString();
             String duration = rs.getString(colNames[3]);
-            String[] colItem = new String[]{username, billboard_name, start_time.substring(0,start_time.length()-2), duration}; // timestamps store less then a second which is not part of our formatting, so cut if off
+            String recur_after = rs.getString(colNames[4]);
+            String[] colItem = new String[]{username, billboard_name, start_time.substring(0,start_time.length()-2), duration, recur_after}; // timestamps store less then a second which is not part of our formatting, so cut if off
             for (int j = 0; j < colCount; ++j) {
                 billboardList[i][j] = colItem[j];
             }

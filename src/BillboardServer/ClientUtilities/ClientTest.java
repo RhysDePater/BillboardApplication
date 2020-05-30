@@ -68,8 +68,7 @@ public class ClientTest {
 
             //responseArray = ServerRequest.login("testusername", testPassword); // Password for this user is myPassword2
             responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
-            //sessionToken = responseArray[1];
-            //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
+            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
             sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
             //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
@@ -93,21 +92,26 @@ public class ClientTest {
             //responseArray = ServerRequest.createUser("testusername2", testPassword, 1,1,1,0, sessionToken);
             //sessionToken = responseArray[1];
             //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
-            //responseArray = ServerRequest.deleteUser("testusername2", sessionToken);
-            //responseArray = ServerRequest.createOrEditBillboard("admin bill", "example data", sessionToken);
+            //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
+            //responseArray = ServerRequest.createOrEditBillboard("testbillboard", "example data", sessionToken);
+            //ServerRequest.createOrEditBillboard("bill1", "example data1", sessionToken);
+            //ServerRequest.createOrEditBillboard("bill2", "example data2", sessionToken);
+
             //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
             //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
-            //responseArray = ServerRequest.addSchedule("my billboard4", startDate, 120, sessionToken);
-            //responseArray = ServerRequest.deleteSchedule("my billboard", startDate, sessionToken);
+            //responseArray = ServerRequest.createSchedule("testbillboard", startDate, 30, 60, sessionToken);
+            //responseArray = ServerRequest.createSchedule("bill2", LocalDateTime.now().plusSeconds(45), 30, 60, sessionToken);
+            responseArray = ServerRequest.deleteSchedule("testbillboard", startDate, sessionToken);
             //responseArray = ServerRequest.editAllPermissions("testusername", 1,1,0,1, sessionToken);
-            responseArray2D = ServerRequest.listSchedules(sessionToken);
+            //responseArray2D = ServerRequest.listSchedules(sessionToken);
             //responseArray2D = ServerRequest.listBillboards(sessionToken);
+        //responseArray = ServerRequest.getCurrentBillboard();
 
         // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
         //System.out.println(responseArray[0]); // true or false if the sql query ran okay
         //System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
         //System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
-        System.out.print(Arrays.deepToString(responseArray2D));
+        System.out.print(Arrays.deepToString(responseArray));
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        try{
