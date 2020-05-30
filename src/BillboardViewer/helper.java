@@ -27,8 +27,6 @@ public class helper {
         textArea.setText(text);
         textArea.setFont(font);
 
-
-
         textArea.setEditable(false);
         textArea.setCursor(null);
         textArea.setOpaque(false);
