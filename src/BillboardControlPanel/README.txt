@@ -2,8 +2,6 @@ Control Panel is separated as per MVC file structure.
 
 **not everything is commented as of yet however most function should be understandable i hope**
 
-So far implementation of of UserCreation and Management is completed
-Session tokens and slated hash passwords are yet to be completed properly
 
 
 **VIEW**
@@ -25,11 +23,15 @@ The controller accesses each element of the card through gets and sets(can be fo
 
 +MAINCONTROLLER calls and instantiates all controllers aswell as MAINVIEW
 
+**SERVER UTILITIES**
+handles all communication with the server
 
+
+
+//outdated
 **MODEL**
 Model contains all database related commands aswell as the database model itself
 +DBConnection initiates a database connection instance and is called in DBInteract
 +DBInteract manages all command and queries towards the database
 +models.sql is the file used to create the database. U HAVE TO GIVE YOURSELF(ROOTUSER) ADMIN PRIVILEGES OR U WILL GET A FAILED CONNECTION ERROR. i did this through console
 
-EIDTED HERE

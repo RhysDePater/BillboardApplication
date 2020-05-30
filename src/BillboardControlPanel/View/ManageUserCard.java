@@ -1,7 +1,6 @@
 package BillboardControlPanel.View;
 
 import BillboardControlPanel.Helper.ViewHelper;
-import BillboardControlPanel.Model.DBInteract;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,27 +16,18 @@ public class ManageUserCard extends MasterView {
     private static JPasswordField passwordField;
     private static JRadioButton[] permissionField;
 
-
     private static JTextField updateTextField;
 
-    public ManageUserCard(){
-        createNorthCard();
-        createCenterCard();
+    public ManageUserCard(String[][] colData, String[] colNames){
+        createCenterCard(colData, colNames);
         createSouthCard();
     }
 
-    private JPanel createNorthCard(){
-        northCard = ViewHelper.createPanel(Color.gray);
-        btnHome = ViewHelper.createButton("Home");
-        northCard.add(btnHome);
-        return northCard;
-    }
-
-    private JPanel createCenterCard(){
+    private JPanel createCenterCard(String[][] colData, String[] colNames){
         centerCard = ViewHelper.createPanel(Color.white);
         JLabel titleLabel = ViewHelper.createLabel("Manage Users", ViewHelper.TITLE_FONT);
         //get user table to display
-        userTable = ViewHelper.createJTable(DBInteract.getUserData(DBInteract.selectUserJoinPermission()), DBInteract.getColNames(DBInteract.selectUserJoinPermission()));
+        userTable = ViewHelper.createJTable(colData, colNames);
         centerCard.add(titleLabel);
         centerCard.add(ViewHelper.createLabel("Double click to edit cell", ViewHelper.TEXT_FONT));
         centerCard.add(new JScrollPane(userTable));
@@ -46,9 +36,18 @@ public class ManageUserCard extends MasterView {
 
     private JPanel createSouthCard(){
         southCard = ViewHelper.createPanel(Color.gray);
+        southCard.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
         btnDltUser = ViewHelper.createButton("Delete User");
         btnCreateUser = ViewHelper.createButton("Create User");
         southCard.add(btnCreateUser);
+        c.anchor = GridBagConstraints.WEST;
+        c.weightx = 0.5;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.EAST;
+        c.gridy = 0;
+        c.gridx = 2;
         southCard.add(btnDltUser);
         return southCard;
     }
