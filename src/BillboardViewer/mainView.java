@@ -27,7 +27,7 @@ public class mainView extends JFrame implements Runnable{
         super(title);
         final Boolean[] Loop = {true};
 
-
+        //Thread to check the server for a new billboard every 15 seconds
         Thread timer = new Thread(() -> {
             while(Loop[0])
             {
@@ -222,7 +222,7 @@ public class mainView extends JFrame implements Runnable{
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridBagLayout());
         //pass the scale through
-        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT, this.getBounds().width);
+        infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT);
         infoLabel.setForeground(Color.decode(infoColour));
         infoPanel.setBackground(Color.decode(backGroundColour));
         infoPanel.add(infoLabel);
@@ -231,6 +231,14 @@ public class mainView extends JFrame implements Runnable{
             helper.setInformationFont(messageLabel, infoLabel);
         }
         infoPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height *scale)));
+
+        if (scale<=0.5) {
+            infoLabel.setPreferredSize(new Dimension((int) ((double) this.getBounds().width * 0.75), (int) ((double) this.getBounds().height * scale)));
+        }
+        else{
+            infoLabel.setPreferredSize(new Dimension((int) ((double) this.getBounds().width * 0.75), (int) ((double) this.getBounds().height * 0.5)));
+        }
+
         this.getContentPane().add(infoPanel,Position);
     }
 
