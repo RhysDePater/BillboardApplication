@@ -3,6 +3,7 @@ package BillboardControlPanel.View;
 import BillboardControlPanel.Helper.ViewHelper;
 
 import javax.swing.*;
+import javax.swing.text.View;
 import java.awt.*;
 
 
@@ -14,7 +15,7 @@ public class ScheduleCard extends MasterView{
 
     private static String[] scheduleHeader = {"user_id", "billboard_id", "start_time", "duration"};
     private static JTextField billboardToSchedule;
-    private static JTextField startTime;
+    private static JFormattedTextField startTime;
     private static JTextField duration;
     private static  JTable tableSun;
     private static  JTable tableMon;
@@ -32,6 +33,8 @@ public class ScheduleCard extends MasterView{
         createCenterCard(sundayData,mondayData,tuesdayData,wednesdayData,thursdayData,fridayData,saturdayData);
         createSouthCard();
     }
+
+
 
     private JPanel createCenterCard(String[][] sundayData, String[][] mondayData, String[][] tuesdayData, String[][] wednesdayData,String[][] thursdayData,String[][] fridayData, String[][] saturdayData){
         //
@@ -75,11 +78,9 @@ public class ScheduleCard extends MasterView{
 
 
 
-
-        //
         centerCard = ViewHelper.createPanel(Color.WHITE);
         //contents of panel
-        centerCard.setLayout(new GridLayout(1,7));
+        centerCard.setLayout(new GridLayout());
         centerCard.add(new JScrollPane(tableSun));
         centerCard.add(new JScrollPane(tableMon));
         centerCard.add(new JScrollPane(tableTue));
@@ -92,8 +93,19 @@ public class ScheduleCard extends MasterView{
 
     private JPanel createSouthCard(){
         southCard = ViewHelper.createPanel(Color.GRAY);
+        southCard.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
         btnCreate = ViewHelper.createButton("Create Schedule");
+        JLabel toolTip = ViewHelper.createLabel("Double click cell to open full list of schedules for that day", ViewHelper.TEXT_FONT);
+        c.anchor = GridBagConstraints.WEST;
+        c.weightx = 0.5;
+        c.gridx = 0;
+        c.gridy = 0;
         southCard.add(btnCreate);
+        c.anchor = GridBagConstraints.EAST;
+        c.gridy = 0;
+        c.gridx = 2;
+        southCard.add(toolTip);
         return southCard;
     }
 
@@ -105,7 +117,7 @@ public class ScheduleCard extends MasterView{
         JLabel durationL = ViewHelper.createLabel("Duration: ", ViewHelper.TEXT_FONT);
 
         billboardToSchedule = ViewHelper.createTextField();
-        startTime = ViewHelper.createTextField();
+        startTime = ViewHelper.createDateTimeInputField();
         duration = ViewHelper.createTextField();
 
         jPanel.add(billboardNameL);
@@ -169,7 +181,7 @@ public class ScheduleCard extends MasterView{
         return billboardToSchedule;
     }
 
-    public JTextField getStartTime() {
+    public JFormattedTextField getStartTime() {
         return startTime;
     }
 

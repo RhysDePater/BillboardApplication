@@ -20,10 +20,19 @@ public class MasterView {
 
     protected JPanel createNorthCard(){
         northCard = ViewHelper.createPanel(Color.gray);
+        northCard.setLayout( new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.WEST;
+        c.weightx = 0.5;
+        c.gridx = 0;
+        c.gridy = 0;
         btnHome = ViewHelper.createButton("Home");
         logOut = ViewHelper.createButton("Log-out");
-        northCard.add(btnHome);
-        northCard.add(logOut);
+        northCard.add(btnHome, c);
+        c.anchor = GridBagConstraints.EAST;
+        c.gridy = 0;
+        c.gridx = 2;
+        northCard.add(logOut, c);
         return northCard;
     }
 

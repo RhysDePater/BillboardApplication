@@ -3,7 +3,10 @@ package BillboardControlPanel.Helper;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Calendar.*;
 import java.util.Date;
@@ -71,7 +74,21 @@ public class ViewHelper {
     }
 
 
-    //no inbuilt calendar components that can be added to a jpanel so im making a custom calendar using tables
+    public static JFormattedTextField createDateTimeInputField(){
+        Date date = new Date();
+        JFormattedTextField formatText;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(date);
+        try{
+            formatText = new JFormattedTextField(new MaskFormatter("####-##-## ##:##:##"));
+            formatText.setColumns(20);
+            formatText.setText(dateString);
+        } catch (ParseException e){
+            formatText = null;
+        }
+        return formatText;
+    }
+
 
 
 }

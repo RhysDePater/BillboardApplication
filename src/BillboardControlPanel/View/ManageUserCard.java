@@ -36,9 +36,18 @@ public class ManageUserCard extends MasterView {
 
     private JPanel createSouthCard(){
         southCard = ViewHelper.createPanel(Color.gray);
+        southCard.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
         btnDltUser = ViewHelper.createButton("Delete User");
         btnCreateUser = ViewHelper.createButton("Create User");
         southCard.add(btnCreateUser);
+        c.anchor = GridBagConstraints.WEST;
+        c.weightx = 0.5;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.EAST;
+        c.gridy = 0;
+        c.gridx = 2;
         southCard.add(btnDltUser);
         return southCard;
     }

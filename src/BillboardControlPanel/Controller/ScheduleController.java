@@ -5,11 +5,14 @@ import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.View.ScheduleCard;
 
 import javax.swing.*;
+import javax.xml.namespace.QName;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class ScheduleController {
     private ScheduleCard scheduleCard;
@@ -221,9 +224,35 @@ public class ScheduleController {
         int action = ScheduleCard.createNewSchedule();
         switch (action){
             case JOptionPane.OK_OPTION:
-                LocalDateTime dateTime= LocalDateTime.parse(scheduleCard.getStartTime().getText());
-                int duration = Integer.parseInt(scheduleCard.getDuration().getText());
-                ServerRequestClient.createSchedule(scheduleCard.getBillboardToSchedule().getText(), dateTime,duration , MainController.getSessionToken());
+                LocalDateTime dateTime  =null;
+                String name = null;
+                int duration = 0;
+                try{
+                    String date = scheduleCard.getStartTime().getText();
+                    dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (Exception e){
+                    ControllerHelper.returnMessage("Must be valid date time yyyy-MM-dd HH:mm:ss");
+                    createSchedule();
+                    break;
+                }
+                try {
+                    name = scheduleCard.getBillboardToSchedule().getText();
+                    duration = Integer.parseInt(scheduleCard.getDuration().getText());
+                } catch (Exception e){
+                    ControllerHelper.returnMessage("name & duration cannot be null & duration must be int");
+                    createSchedule();
+                    break;
+                }
+
+                //logic to make sure scheudles dont dupe
+                    //insert here
+                //
+
+                String[] res = ServerRequestClient.createSchedule(name, dateTime,duration , MainController.getSessionToken());
+                if(res[0].equalsIgnoreCase("false")){
+                    ControllerHelper.returnMessage("bilboard name does not exist");
+                    createSchedule();
+                }
                 break;
                 case JOptionPane.CANCEL_OPTION:
                     break;
