@@ -21,15 +21,11 @@ public class helper {
         return label;
     }
 
-    public static JTextPane JMultilineLabel(String text, Font font, int Width) {
+    public static JTextPane JMultilineLabel(String text, Font font) {
 
         JTextPane textArea = new JTextPane();
         textArea.setText(text);
         textArea.setFont(font);
-
-        //handle the scale
-        textArea.setSize((int)((double)Width * 0.75),Integer.MAX_VALUE);
-        textArea.setPreferredSize(new Dimension((int)((double)Width * 0.75), textArea.getPreferredSize().height));
 
         textArea.setEditable(false);
         textArea.setCursor(null);
