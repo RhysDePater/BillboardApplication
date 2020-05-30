@@ -67,6 +67,9 @@ public class ManageUserController {
         });
     }
 
+    /**
+     * Create a new user handles all errors
+     */
     private void createUser(){
         //create input box
         int action = ManageUserCard.createUserCreateInputBox();
@@ -117,7 +120,9 @@ public class ManageUserController {
         }
         ControllerHelper.refreshUsersTablePanel();
     }
-
+    /**
+     * edit a user handles all errors
+     */
     private void editUser(){
         //get table values
         JTable userTable = manageUserCard.getUserTable();
@@ -175,7 +180,9 @@ public class ManageUserController {
         }
         ControllerHelper.refreshUsersTablePanel();
     }
-
+    /**
+     * delete a user handles all errors
+     */
     private void deleteUser(){
         switch (selectedRow) {
             case (-1):

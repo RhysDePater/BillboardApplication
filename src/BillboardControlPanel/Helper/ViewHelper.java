@@ -73,7 +73,10 @@ public class ViewHelper {
         return panel;
     }
 
-
+    /**
+     * Creates a textfiled which accepts data in a date time format
+     * @return text field in date time format
+     */
     public static JFormattedTextField createDateTimeInputField(){
         Date date = new Date();
         JFormattedTextField formatText;
@@ -92,20 +95,3 @@ public class ViewHelper {
 
 
 }
-//    public static JPanel createFlowPanel(){
-//        JPanel panel = new JPanel(new FlowLayout());
-//
-//    }
-
-    //old functions
-//    public static void addToPanel(JPanel jp,Component c, GridBagConstraints constraints,int x, int y, int w, int h) {
-//        constraints.gridx = x;
-//        constraints.gridy = y;
-//        constraints.gridwidth = w;
-//        constraints.gridheight = h;
-//        jp.add(c, constraints);
-////    }
-//
-//
-//
-//}

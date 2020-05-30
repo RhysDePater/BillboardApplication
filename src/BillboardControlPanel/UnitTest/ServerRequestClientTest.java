@@ -166,14 +166,14 @@ class ServerRequestClientTest {
     }
 
 
-//    @Test
-//    @Order(6)
-//    public void deleteBillboardTest(){
-//        String[] res = deleteBillboard(newBillboard, sessionToken);
-//    }
-//
-//    @Test
-//    public void deleteScheduleTest(){
-////        String[] res = deleteSchedule(newBillboard, );
-//    }
+    @Test
+    @Order(6)
+    public void deleteBillboardTest(){
+        String[] res = deleteBillboard(newBillboard, sessionToken);
+    }
+
+    @Test
+    public void deleteScheduleTest(){
+//        String[] res = deleteSchedule(newBillboard, );
+    }
 }

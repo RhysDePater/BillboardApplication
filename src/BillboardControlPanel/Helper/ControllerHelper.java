@@ -54,7 +54,6 @@ public class ControllerHelper {
 
     public static void refreshScheduleTablePanel(){
         MainController.setScheduleData();
-        MainController.setAmountOfSchedulesPerDay();
         MainController.setSunData();
         MainController.setMonData();
         MainController.setTueData();
@@ -144,6 +143,11 @@ public class ControllerHelper {
 
 //    public static String[]
 
+    /**
+     * get the day as a string of a specific localdate time
+     * @param date the date to get the day of
+     * @return
+     */
     public static String getDayOfDate(LocalDateTime date){
         Calendar calendar = Calendar.getInstance();
         Date formattedDate = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
@@ -152,6 +156,12 @@ public class ControllerHelper {
         return dayOfWeek;
     }
 
+    /**
+     * Function to handling setting of new password
+     * @param userToUpdate userToUpdate
+     * @param manageUserCard manageUserCard
+     * @param sessionToken sessionToken
+     */
     public static void setNewPassword(String userToUpdate, ManageUserCard manageUserCard, String sessionToken){
         int passwordBox = ManageUserCard.createFrameTextInputBox(userToUpdate, "password");
         switch (passwordBox) {
@@ -169,7 +179,11 @@ public class ControllerHelper {
         }
     }
 
-
+    /**
+     * basic password hashing
+     * @param passwordToHash passwordToHash
+     * @return hashed password
+     */
     public static String createSecurePassword(String passwordToHash) {
         String securePassword = null;
         try {
@@ -188,7 +202,7 @@ public class ControllerHelper {
     }
 
     /**
-     *
+     * get a list of billboard names scheudels on any given day
      * @param scheduleData
      * @return returns a list of billboard names for a given day
      */
@@ -216,7 +230,7 @@ public class ControllerHelper {
     }
 
     /**
-     *
+     *get schedule for a single day
      * @param scheduleData data to get schedules from
      * @param dayToGet starting from sunday values 0-6 to represent each day
      * @return
@@ -304,7 +318,4 @@ public class ControllerHelper {
         return dayScheduleToReturn;
     }
 
-    public static String getAmountOfSchedulesPerDay(String[][] schedulesOnDay){
-        return String.valueOf(schedulesOnDay.length) ;
-    }
 }

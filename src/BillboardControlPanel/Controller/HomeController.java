@@ -64,7 +64,11 @@ public class HomeController{
         homeCard.getManageSchedule().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ControllerHelper.refreshScheduleTablePanel();
+                if(MainController.getLoggedUserPrivs()[2].equalsIgnoreCase("1")){
+                    ControllerHelper.refreshScheduleTablePanel();
+                } else {
+                    ControllerHelper.returnMessage("YOU ARE NOT GRANTED SCHEDULE MANAGEMENT PRIVILEGES");
+                }
             }
         });
     }

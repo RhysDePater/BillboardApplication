@@ -17,9 +17,6 @@ public class MainController{
     private static String[] userColNames = {};
     private static String[][] billData = {};
     private static String[][] scheduleData = {};
-    private static String[][] amountOfSchedulesPerDay = {
-            {"1", "1", "1","1","1", "1", "1"},
-           };
     //
     private static String[][] sunData = {};
     private static String[][] monData = {};
@@ -62,23 +59,9 @@ public class MainController{
     //but its to late to change or structure now, so lets stick with it, we can look at changing if we have enough time :O
 
     //this gets it own section because it pure and utter cancer to make a calendar
-    public static void setAmountOfSchedulesPerDay() {
-        amountOfSchedulesPerDay[0] = new String[]{
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 0)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 1)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 2)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 3)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 4)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 5)),
-                ControllerHelper.getAmountOfSchedulesPerDay(ControllerHelper.getScheduleForSingleDay(scheduleData, 6)),
-        };
-    }
     public static void setScheduleData() {
         scheduleData = ServerRequestClient.listSchedules(sessionToken);
         scheduleData = ServerRequestClient.removeHeaderFromDoubleArray(scheduleData);
-    }
-    public static String[][] getAmountOfSchedulesPerDay() {
-        return amountOfSchedulesPerDay;
     }
     public static String[][] getScheduleData() {
         try {
@@ -155,8 +138,6 @@ public class MainController{
     };
 
     //GETS
-
-
     public static String[] getLoggedUserPrivs() {
         return loggedUserPrivs;
     }
