@@ -25,30 +25,14 @@ public class mainView extends JFrame implements Runnable{
 
     public mainView(String title) throws HeadlessException {
         super(title);
+
         final Boolean[] Loop = {true};
 
         //Thread to check the server for a new billboard every 15 seconds
         Thread timer = new Thread(() -> {
             while(Loop[0])
             {
-                //get the data and draw it on screen
-                try {
-                    //get the xmldata for the billboard that should be displayed from the server
-                    String[] xmlData = ServerRequest.getCurrentBillboard();
-                    System.out.println(xmlData[1]);
-                    //send the xml string the xmlparser to be drawn on screen
-                    getXMLElements(xmlData[1]);
-                }
-                catch(Exception e)
-                {
-                    try {
-                        drawElements("Unable to connect to billboard server.", "", "", "", "#FFFFFF", "#000000", "");
-                    }
-                    catch(Exception ex)
-                    {
-                        System.out.println(ex);
-                    }
-                }
+                getXMLElements();
 
                 //sleep for 15 seconds
                 try {
@@ -93,10 +77,16 @@ public class mainView extends JFrame implements Runnable{
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+    }
+
+
+    public void getXMLElements()
+    {
+        String[] xmlData = null;
+
         try {
-            String[] xmlData = ServerRequest.getCurrentBillboard();
+            xmlData = ServerRequest.getCurrentBillboard();
             System.out.println(xmlData[1]);
-            getXMLElements(xmlData[1]);
         }
         catch(Exception e)
         {
@@ -108,11 +98,8 @@ public class mainView extends JFrame implements Runnable{
                 System.out.println(ex);
             }
         }
-    }
 
-    public void getXMLElements(String xmlText)
-    {
-        String[] elements = xmlParser.parseXML(xmlText);
+        String[] elements = xmlParser.parseXML(xmlData[1]);
         String Message = elements[0];
         String Picture = elements[1];
         String Info = elements[2];
@@ -132,7 +119,12 @@ public class mainView extends JFrame implements Runnable{
     public void drawElements(String Message, String Picture, String Info, String encodedPicture, String backGroundColour, String messageColour, String infoColour) throws IOException {
         getContentPane().setBackground(Color.decode(backGroundColour));
 
-        removeBillboardContent();
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new GridBagLayout());
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new GridBagLayout());
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new GridBagLayout());
 
         JLabel messageLabel = null;
         JLabel picLabel = null;
@@ -140,87 +132,91 @@ public class mainView extends JFrame implements Runnable{
 
         if (Message != "" && (Picture != "" || encodedPicture !="") && Info != "")
         {
-            messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.35);
+            messageLabel = drawMessage(Message, backGroundColour, messageColour, northPanel, 0.35);
             if (Picture != "")
             {
-                drawURLPicture(Picture, backGroundColour, 0.3, BorderLayout.CENTER, 0.3);
+                drawURLPicture(Picture, backGroundColour, 0.3, centerPanel, 0.3);
             }
             else
             {
-                drawDataPicture(encodedPicture, backGroundColour, 0.3, BorderLayout.CENTER,0.3);
+                drawDataPicture(encodedPicture, backGroundColour, 0.3, centerPanel,0.3);
             }
-            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.SOUTH, 0.35);
+            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, southPanel, 0.35);
         }
         else if ((Picture != "" || encodedPicture !="") && Info != "")
         {
+            //drawMessage("", backGroundColour, messageColour, BorderLayout.NORTH, 0);
             if (Picture != "")
             {
-                drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
+                drawURLPicture(Picture, backGroundColour, 0.5, centerPanel, 0.67);
             }
             else
             {
-                drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
+                drawDataPicture(encodedPicture, backGroundColour, 0.5,centerPanel, 0.67);
             }
-            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.SOUTH, 0.33);
+            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, southPanel, 0.33);
         }
         else if (Message != "" && Info != "")
         {
-            messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.5);
-            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.SOUTH,0.5);
+            messageLabel = drawMessage(Message, backGroundColour, messageColour, northPanel, 0.5);
+            drawMessage("", backGroundColour, messageColour, centerPanel, 0);
+            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, southPanel,0.5);
         }
         else if (Message != "" && (Picture != "" || encodedPicture !="") )
         {
-            messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.NORTH, 0.33);
+            messageLabel = drawMessage(Message, backGroundColour, messageColour, northPanel, 0.33);
             if (Picture != "")
             {
-                drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
+                drawURLPicture(Picture, backGroundColour, 0.5, centerPanel, 0.67);
+                System.out.println("Im in");
             }
             else
             {
-                drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER, 0.67);
+                drawDataPicture(encodedPicture, backGroundColour, 0.5, centerPanel, 0.67);
             }
+            drawMessage("", backGroundColour, messageColour, southPanel, 0);
         }
         else if ( Info != "")
         {
-            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, BorderLayout.CENTER, 1);
+            drawMessage("", backGroundColour, messageColour, northPanel, 0);
+            drawInformation(Info, Message, backGroundColour, infoColour, messageLabel, centerPanel, 1);
+            drawMessage("", backGroundColour, messageColour, southPanel, 0);
         }
         else if ((Picture != "" || encodedPicture !=""))
         {
+            drawMessage("", backGroundColour, messageColour, northPanel, 0);
             if (Picture != "")
             {
-                drawURLPicture(Picture, backGroundColour, 0.5, BorderLayout.CENTER, 1);
+                drawURLPicture(Picture, backGroundColour, 0.5, centerPanel, 1);
             }
             else
             {
-                drawDataPicture(encodedPicture, backGroundColour, 0.5, BorderLayout.CENTER,1);
+                drawDataPicture(encodedPicture, backGroundColour, 0.5, centerPanel,1);
             }
+            drawMessage("", backGroundColour, messageColour, southPanel, 0);
         }
         else if (Message != "")
         {
-            messageLabel = drawMessage(Message, backGroundColour, messageColour, BorderLayout.CENTER, 1);
+            drawMessage("", backGroundColour, messageColour, northPanel, 0);
+            drawMessage(Message, backGroundColour, messageColour, centerPanel, 1);
+            drawMessage("", backGroundColour, messageColour, southPanel, 0);
         }
-    }
+        else
+        {
+            drawMessage("", backGroundColour, messageColour, northPanel, 0);
+            drawMessage("", backGroundColour, messageColour, centerPanel, 0);
+            drawMessage("", backGroundColour, messageColour, southPanel, 0);
+        }
 
-    private void removeBillboardContent()
-    {
-        JPanel North = new JPanel();
-        JPanel Center = new JPanel();
-        JPanel South = new JPanel();
-
-        this.getContentPane().add(North,BorderLayout.NORTH);
-        this.getContentPane().add(Center,BorderLayout.CENTER);
-        this.getContentPane().add(South,BorderLayout.SOUTH);
-
-        this.remove(North);
-        this.remove(Center);
-        this.remove(South);
+        this.getContentPane().add(northPanel,BorderLayout.NORTH);
+        this.getContentPane().add(centerPanel,BorderLayout.CENTER);
+        this.getContentPane().add(southPanel,BorderLayout.SOUTH);
+        setVisible(true);
     }
 
 
-    private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, String Position, double scale) {
+    private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, JPanel infoPanel, double scale) {
         JTextPane infoLabel;
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridBagLayout());
         //pass the scale through
         infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT);
         infoLabel.setForeground(Color.decode(infoColour));
@@ -238,14 +234,10 @@ public class mainView extends JFrame implements Runnable{
         else{
             infoLabel.setPreferredSize(new Dimension((int) ((double) this.getBounds().width * 0.75), (int) ((double) this.getBounds().height * 0.5)));
         }
-
-        this.getContentPane().add(infoPanel,Position);
     }
 
-    private void drawDataPicture(String encodedPicture, String backGroundColour, double imageScale, String position, double panelScale) throws IOException {
+    private void drawDataPicture(String encodedPicture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
         JLabel picLabel;
-        JPanel picPanel = new JPanel();
-        picPanel.setLayout(new GridBagLayout());
         byte[] decodedPicture = Base64.getDecoder().decode(encodedPicture);
         BufferedImage myPicture = ImageIO.read(new ByteArrayInputStream(decodedPicture));
         int[] imgDimensions = helper.getImgDimensions(myPicture.getHeight(),myPicture.getWidth(), imageScale, this);
@@ -254,13 +246,10 @@ public class mainView extends JFrame implements Runnable{
         picPanel.setBackground(Color.decode(backGroundColour));
         picPanel.add(picLabel);
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
-        this.getContentPane().add(picPanel,position);
     }
 
-    private void drawURLPicture(String picture, String backGroundColour, double imageScale, String position, double panelScale) throws IOException {
+    private void drawURLPicture(String picture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
         JLabel picLabel;
-        JPanel picPanel = new JPanel();
-        picPanel.setLayout(new GridBagLayout());
         URL url = new URL(picture);
         BufferedImage myPicture = ImageIO.read(url);
         int[] imgDimensions = helper.getImgDimensions(myPicture.getHeight(),myPicture.getWidth(), imageScale, this);
@@ -269,20 +258,16 @@ public class mainView extends JFrame implements Runnable{
         picPanel.setBackground(Color.decode(backGroundColour));
         picPanel.add(picLabel);
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
-        this.getContentPane().add(picPanel,position);
     }
 
-    private JLabel drawMessage(String message, String backGroundColour, String messageColour, String position, double scale) {
+    private JLabel drawMessage(String message, String backGroundColour, String messageColour, JPanel messagePanel, double scale) {
         JLabel messageLabel;
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new GridBagLayout());
         messageLabel = helper.createLabel(message, MESSAGE_FONT);
         messageLabel.setForeground(Color.decode(messageColour));
         messagePanel.setBackground(Color.decode(backGroundColour));
         helper.setMessageFont(messageLabel, this);
         messagePanel.add(messageLabel);
         messagePanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height *scale)));
-        this.getContentPane().add(messagePanel,position);
         return messageLabel;
     }
 
@@ -290,5 +275,6 @@ public class mainView extends JFrame implements Runnable{
     @Override
     public void run() {
         createGUI();
+        getXMLElements();
     }
 }
