@@ -53,14 +53,18 @@ public class ControllerHelper {
     }
 
     public static void refreshScheduleTablePanel(){
-        MainController.setScheduleData();
-        MainController.setSunData();
-        MainController.setMonData();
-        MainController.setTueData();
-        MainController.setWedData();
-        MainController.setThuData();
-        MainController.setFriData();
-        MainController.setSatData();
+        try{
+            MainController.setScheduleData();
+            MainController.setSunData();
+            MainController.setMonData();
+            MainController.setTueData();
+            MainController.setWedData();
+            MainController.setThuData();
+            MainController.setFriData();
+            MainController.setSatData();
+        } catch (Exception e){
+            System.out.println("is null");
+        }
         MainController.getScheduleController().setSelectedCol(-1);
         MainController.getScheduleController().setSelectedRow(-1);
         MainController.getScheduleController().initView();
@@ -69,7 +73,11 @@ public class ControllerHelper {
     }
 
     public static void refreshBillBoardTablePanel(){
+        try{
         MainController.setBillData();
+        } catch (Exception e){
+            System.out.println("is null");
+        }
         MainController.getManageBillboardController().setSelectedCol(-1);
         MainController.getManageBillboardController().setSelectedRow(-1);
         MainController.getManageBillboardController().initView();
