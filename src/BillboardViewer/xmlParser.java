@@ -38,6 +38,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard[@background]", document);
                 backGroundColour = node.getAttributes().getNamedItem("background").getNodeValue();
+                System.out.println(backGroundColour);
             }
             catch(Exception e)
             {
@@ -48,6 +49,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/message", document);
                 message = node.getTextContent();
+                System.out.println(message);
             }
             catch(Exception e)
             {
@@ -57,6 +59,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/message[@colour]", document);
                 messageColour = node.getAttributes().getNamedItem("colour").getNodeValue();
+                System.out.println(messageColour);
             }
             catch(Exception e)
             {
@@ -66,6 +69,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/picture[@url]", document);
                 picture = node.getAttributes().getNamedItem("url").getNodeValue();
+                System.out.println(picture);
             }
             catch(Exception e)
             {
@@ -75,6 +79,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/picture[@data]", document);
                 encodedPicture = node.getAttributes().getNamedItem("data").getNodeValue();
+                System.out.println(encodedPicture);
             }
             catch(Exception e)
             {
@@ -84,6 +89,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/information", document);
                 information = node.getTextContent();
+                System.out.println(information);
             }
             catch(Exception e)
             {
@@ -93,6 +99,7 @@ public class xmlParser {
             try {
                 Node node = helper.xmlNode("/billboard/information[@colour]", document);
                 infoColour = node.getAttributes().getNamedItem("colour").getNodeValue();
+                System.out.println(infoColour);
             }
             catch(Exception e)
             {
