@@ -15,7 +15,18 @@ import java.time.LocalDateTime;
  * The way the string array is sent should be abstracted out by just using the provided methods
  * See the comment for sendQuery below for information on the array which is returned (This is not finalised, suggestions are welcome)
  */
-public class ServerRequest {
+public class ServerRequest  {
+
+    public static Socket initServerConnect(){
+        try{
+            Socket socket = new Socket (ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
+            socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
+            return socket;
+        } catch (IOException e){
+            System.out.println(e);
+            return  null;
+        }
+    }
 
     /**
      * Sends a given string array in a specific format, then listens for and returns the result
@@ -271,12 +282,12 @@ public class ServerRequest {
      * Adds one schedule to the database for one billboard
      * @param billboardName The billboard to associate the schedule with
      * @param startTime When the billboard should start displaying, currently a LocalDateTime object
-     * @param duration Duration in seconds to be displayed from the startTime
+     * @param durationSec Duration in seconds to be displayed from the startTime
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  addSchedule(String billboardName, LocalDateTime startTime, Integer duration, String sessionToken) {
-        String[] command = {"addSchedule", billboardName, startTime.toString(), duration.toString(), sessionToken};
+    public static String[] createSchedule(String billboardName, LocalDateTime startTime, Integer durationSec, String sessionToken) {
+        String[] command = {"addSchedule", billboardName, startTime.toString(), durationSec.toString(), sessionToken};
         return sendQuery(command);
     }
 
@@ -313,5 +324,52 @@ public class ServerRequest {
         return sendQueryAlt(command);
     }
 
-}
 
+    ////// helpers
+
+    //this function is really scuffed
+    public static String[] getFormattedUserColumnNames(String sessionToken){
+        String[] user = getColumnNames("user", sessionToken)[1]; //value 0 is header 1 is reponse
+        String[] perm = getColumnNames("permission", sessionToken)[1];
+        int lengthOfUserArray = user.length -1; //-1 becuase i dont want salt value
+        int LengthOfPermArray = perm.length -2; //-2 bceause i dont awnt id or user_id
+        int lengthOfArray = lengthOfUserArray + LengthOfPermArray;
+        String[] appendedArray = new String[lengthOfArray];
+        for(int i = 0; i < lengthOfUserArray; i++) {
+            appendedArray[i] = user[i];
+        }
+        for(int i = lengthOfUserArray; i < lengthOfArray; i++){
+            appendedArray[i] = perm[i - lengthOfUserArray + 2]; //scuffed way of not getting first 2 values from an array
+        }
+        return appendedArray;
+    }
+
+    public static String[] getFormattedUserPrivs(String currentLoggedUser, String sessionToken){
+        String[][] userPerm = getPermissions(currentLoggedUser, sessionToken);
+        userPerm = removeHeaderFromDoubleArray(userPerm);
+        String[] formattedUserPerm = userPerm[0];
+        return formattedUserPerm;
+    }
+
+    public static String[][] removeHeaderFromDoubleArray(String[][] userList){
+        try{
+            int arrayLength = userList.length - 1; // -1 to compensate for removing header
+            int arrayItemLength = userList[1].length;
+            String[][] formattedList = new String[arrayLength][arrayItemLength];
+            for(int i = 0; i < arrayLength; i ++){
+//            System.out.println("Item: " + i);
+                for(int j = 0; j < arrayItemLength; j++){
+//                System.out.println("Body: " +j + " Data: " + userList[i+1][j]);
+                    formattedList[i][j] = userList[i+1][j];               //i+1 to ignore header
+                }
+            }
+            return formattedList;
+        } catch (NullPointerException e){
+            System.err.println(e);
+            return userList;
+        }
+
+    }
+
+
+}
