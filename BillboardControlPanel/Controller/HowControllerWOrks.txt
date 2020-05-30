@@ -1,0 +1,10 @@
+Controllers have 2 main functions
+* init view - initialises the gui to be displayed by setting up all the panels relevant to the current user request
+* init controller - adds functionality to the componenets
+
+The MAIN controller Pulls all controllers together and handles varibales those controllers all use.
+This is the controller which is called within ControlPanleApp.java - the main application
+
+The other controllers handle the functionality for the specific content pane
+
+All controllers have gets and sets and data between controllers is accessed this way
