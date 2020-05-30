@@ -58,7 +58,7 @@ public class UserFunctions extends ServerVariables{
                 SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            optionalMessage = "Error adding user to database: User likely already exists";
+            optionalMessage = "Error adding user to database: User already exists";
         }
     }
 
@@ -90,12 +90,16 @@ public class UserFunctions extends ServerVariables{
             if (user_exists) {
                 String QueryDeleteUser = DBInteract.deleteTarget("user", "id", user_id);
                 String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
-                //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
-                // TODO
-                // Delete orphaned billboards and schedules
+                String QueryDeleteSchedules = DBInteract.deleteTarget("schedule", "user_id", user_id);
+                String QueryDeleteBillboards = DBInteract.deleteTarget("billboard", "user_id", user_id);
+                System.out.println(QueryDeleteSchedules);
+                System.out.println(QueryDeleteBillboards);
                 System.out.println(QueryDeletePermissions);
                 System.out.println(QueryDeleteUser);
+
                 try {
+                    DBInteract.dbExecuteCommand(QueryDeleteSchedules);// This has to be run first so it deletes the foreign key user_id in permission
+                    DBInteract.dbExecuteCommand(QueryDeleteBillboards);
                     DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
                     DBInteract.dbExecuteCommand(QueryDeleteUser);
                     commandSucceeded = true;

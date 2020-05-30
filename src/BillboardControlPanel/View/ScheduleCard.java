@@ -13,10 +13,11 @@ public class ScheduleCard extends MasterView{
     private JButton btnCreate;
     private static String[] daysOfWeek = {"Sun", "Mon","Tue","Wed","Thu","Fri","Sat"};
 
-    private static String[] scheduleHeader = {"user_id", "billboard_id", "start_time", "duration"};
+    private static String[] scheduleHeader = {"user_id", "billboard_id", "start_time", "duration", "time to recur"};
     private static JTextField billboardToSchedule;
     private static JFormattedTextField startTime;
     private static JTextField duration;
+    private static JTextField time_to_recur;
     private static  JTable tableSun;
     private static  JTable tableMon;
     private static  JTable tableTue;
@@ -115,10 +116,12 @@ public class ScheduleCard extends MasterView{
         JLabel billboardNameL = ViewHelper.createLabel("Billboard Name:", ViewHelper.TITLE_FONT);
         JLabel startTimeL = ViewHelper.createLabel("Start Time: ", ViewHelper.TEXT_FONT);
         JLabel durationL = ViewHelper.createLabel("Duration: ", ViewHelper.TEXT_FONT);
+        JLabel time_to_recurL = ViewHelper.createLabel("Time until the billboard reoccurs: ", ViewHelper.TEXT_FONT);
 
         billboardToSchedule = ViewHelper.createTextField();
         startTime = ViewHelper.createDateTimeInputField();
         duration = ViewHelper.createTextField();
+        time_to_recur = ViewHelper.createTextField();
 
         jPanel.add(billboardNameL);
         jPanel.add(billboardToSchedule);
@@ -126,6 +129,8 @@ public class ScheduleCard extends MasterView{
         jPanel.add(startTime);
         jPanel.add(durationL);
         jPanel.add(duration);
+        jPanel.add(time_to_recurL);
+        jPanel.add(time_to_recur);
         int action = JOptionPane.showConfirmDialog(null, jPanel, "Create schedule",JOptionPane.OK_CANCEL_OPTION);
         return action;
     }
@@ -187,6 +192,10 @@ public class ScheduleCard extends MasterView{
 
     public JTextField getDuration() {
         return duration;
+    }
+
+    public JTextField getRecur() {
+        return time_to_recur;
     }
     //
     public JButton getBtnCreate() {
