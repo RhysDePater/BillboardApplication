@@ -47,7 +47,6 @@ public class LoginCard extends MasterView{
         btnLogIn = ViewHelper.createButton("Log In");
         bypassLogIn = ViewHelper.createButton("bypass");
         southCard.add(btnLogIn);
-        southCard.add(bypassLogIn);
         return southCard;
     }
 
