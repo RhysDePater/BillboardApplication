@@ -36,7 +36,7 @@ public class DBInteract {
     private static final String CREATE_BILLBOARD_TABLE = "CREATE TABLE IF NOT EXISTS billboard("
             + "id INT UNSIGNED AUTO_INCREMENT NOT NULL,"
             + "user_id INT UNSIGNED NOT NULL,"
-            + "schedule_id INT UNSIGNED DEFAULT 0,"
+            // Schedule id column used to be here
             + "billboard_name VARCHAR(255) UNIQUE,"
             + "xml_data MEDIUMTEXT NOT NULL,"
             + "status BOOLEAN NOT NULL DEFAULT false,"
