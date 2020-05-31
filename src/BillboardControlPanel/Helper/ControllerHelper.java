@@ -25,6 +25,12 @@ import java.util.*;
 public class ControllerHelper {
 
 
+    /**
+     * update current panel to be displayed to frame
+     * @param mainView object to display data to
+     * @param masterView the view to be displayed
+     * @return
+     */
     public static MainView updateFrame(MainView mainView, MasterView masterView){
         mainView.getMainFrame().getContentPane().removeAll();
         mainView.getMainFrame().getContentPane().add(masterView.getNorthCard(), BorderLayout.NORTH);
@@ -35,12 +41,19 @@ public class ControllerHelper {
         return mainView;
     }
 
+    /**
+     * reset textfields
+     * @param jTextField text fields to reset
+     */
     public static void resetJTextFields(JTextField[] jTextField){
         for (JTextField item: jTextField) {
             item.setText("");
         }
     }
-    //Refreshes the users table with the latest updates.
+
+    /**
+     * refresh data within the user table panel adn re-render
+     */
     public static void refreshUsersTablePanel(){
         MainController.setUserData();
         MainController.setUserColNames();
@@ -50,7 +63,9 @@ public class ControllerHelper {
         MainController.getManageUserController().initController(MainController.getManageUserController().getManageUserCard());
         ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
     }
-    //Updates the Schedule screen
+    /**
+     * refresh data within the schedule table panel adn re-render
+     */
     public static void refreshScheduleTablePanel(){
         try{
             MainController.setScheduleData();
@@ -70,7 +85,9 @@ public class ControllerHelper {
         MainController.getScheduleController().initController(MainController.getScheduleController().getScheduleCard());
         ControllerHelper.updateFrame(MainController.getMainView(), MainController.getScheduleController().getScheduleCard());
     }
-    //Refreshes the manage billboards screen with the latest updates.
+    /**
+     * refresh data within the billbaord table panel adn re-render
+     */
     public static void refreshBillBoardTablePanel(){
 
         String[][] billData = ServerRequestClient.listBillboards(MainController.getSessionToken());
@@ -93,12 +110,20 @@ public class ControllerHelper {
     }
 
 
-
+    /**
+     * display confirmation popup
+     * @param message message to return
+     * @return
+     */
     public static int confirmPopUp(String message){
         int action = JOptionPane.showConfirmDialog(null, message, "confirm", JOptionPane.OK_CANCEL_OPTION);
         return action;
     }
 
+    /**
+     * display a message to screen
+     * @param message message to display
+     */
     public static void returnMessage(String message){
         JOptionPane.showMessageDialog(null, message, null, JOptionPane.INFORMATION_MESSAGE);
     }
@@ -134,6 +159,10 @@ public class ControllerHelper {
         });
     }
 
+    /**
+     * check connection to db
+     * @return true if able to connect
+     */
     public static Boolean checkConnection(){
             Boolean check = false;
             int timesFailed = 0;

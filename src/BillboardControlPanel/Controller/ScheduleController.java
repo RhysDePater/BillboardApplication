@@ -3,6 +3,8 @@ package BillboardControlPanel.Controller;
 import BillboardControlPanel.Helper.ControllerHelper;
 import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.View.ScheduleCard;
+import BillboardViewer.ClientUtilities.ServerRequest;
+import com.sun.tools.javac.Main;
 
 import javax.swing.*;
 import javax.xml.namespace.QName;
@@ -277,25 +279,25 @@ public class ScheduleController {
             //check value of selected table element and return response
             switch (columnHeader){
                 case ("Sun"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 0), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 0), columnHeader);
                     break;
                 case ("Mon"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 1), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 1), columnHeader);
                     break;
                 case ("Tue"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 2), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 2), columnHeader);
                     break;
                 case ("Wed"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 3), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 3), columnHeader);
                     break;
                 case ("Thu"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 4), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 4), columnHeader);
                     break;
                 case ("Fri"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 5), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 5), columnHeader);
                     break;
                 case ("Sat"):
-                    ScheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 6), columnHeader);
+                    scheduleCard.createUserViewAllBillboardSchedules(ControllerHelper.getScheduleForSingleDay(MainController.getScheduleData(), 6), columnHeader);
                     break;
             }
             ControllerHelper.refreshScheduleTablePanel();

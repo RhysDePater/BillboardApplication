@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class ScheduleCard extends MasterView{
 
-    private JTable calendar;
     private JButton btnCreate;
+    private JButton btnDelete;
     private static String[] daysOfWeek = {"Sun", "Mon","Tue","Wed","Thu","Fri","Sat"};
 
     private static String[] scheduleHeader = {"user_id", "billboard_id", "start_time", "duration", "time to recur"};
@@ -25,7 +25,6 @@ public class ScheduleCard extends MasterView{
     private static  JTable tableThu;
     private static  JTable tableFri;
     private static  JTable tableSat;
-
 
 
     private static  JTable scheduleTable;
@@ -103,6 +102,8 @@ public class ScheduleCard extends MasterView{
         c.gridx = 0;
         c.gridy = 0;
         southCard.add(btnCreate);
+        btnDelete = ViewHelper.createButton("Delete schedule");
+        southCard.add(btnDelete);
         c.anchor = GridBagConstraints.EAST;
         c.gridy = 0;
         c.gridx = 2;
@@ -135,20 +136,16 @@ public class ScheduleCard extends MasterView{
         return action;
     }
 
+
     public static int createUserViewAllBillboardSchedules(String[][] scheduleTableContents, String columnHeader){
         JPanel jPanel = ViewHelper.createPanel(Color.white);
         //contents of panel
         scheduleTable = ViewHelper.createJTable(scheduleTableContents, scheduleHeader);
         jPanel.add(new JScrollPane(scheduleTable));
+
         int action = JOptionPane.showConfirmDialog(null, jPanel, columnHeader + ": schedules",JOptionPane.OK_CANCEL_OPTION);
         return action;
     }
-
-//    public static int testBox(String[][] scheduleData){
-//
-//        int action = JOptionPane.showConfirmDialog(null, jPanel,  "day" + ": schedules",JOptionPane.OK_CANCEL_OPTION);
-//        return action;
-//    }
 
 
     //
@@ -202,11 +199,9 @@ public class ScheduleCard extends MasterView{
         return btnCreate;
     }
 
-    public JTable getCalendar() {
-        return calendar;
+    public JButton getBtnDelete() {
+        return btnDelete;
     }
 
-    public String[] getDaysOfWeek() {
-        return daysOfWeek;
-    }
+
 }
