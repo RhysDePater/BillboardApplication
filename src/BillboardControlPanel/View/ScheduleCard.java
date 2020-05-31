@@ -115,7 +115,7 @@ public class ScheduleCard extends MasterView{
         //contents of panel
         JLabel billboardNameL = ViewHelper.createLabel("Billboard Name:", ViewHelper.TITLE_FONT);
         JLabel startTimeL = ViewHelper.createLabel("Start Time: ", ViewHelper.TEXT_FONT);
-        JLabel durationL = ViewHelper.createLabel("Duration: ", ViewHelper.TEXT_FONT);
+        JLabel durationL = ViewHelper.createLabel("Duration (seconds): ", ViewHelper.TEXT_FONT);
         JLabel time_to_recurL = ViewHelper.createLabel("Time until the billboard reoccurs: ", ViewHelper.TEXT_FONT);
 
         billboardToSchedule = ViewHelper.createTextField();

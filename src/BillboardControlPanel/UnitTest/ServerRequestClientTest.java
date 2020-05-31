@@ -151,7 +151,7 @@ class ServerRequestClientTest {
     @Test
     @Order(6)
     public void createScheduleTest(){
-        String[] res = ServerRequestClient.createSchedule(newBillboard, LocalDateTime.now(), 60, sessionToken);
+        String[] res = ServerRequestClient.createSchedule(newBillboard, LocalDateTime.now(), 60, 60, sessionToken);
         Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
