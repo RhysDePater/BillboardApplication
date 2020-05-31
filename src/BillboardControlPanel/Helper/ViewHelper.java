@@ -12,6 +12,9 @@ import java.util.Calendar.*;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * class holding the creation of java swing/awt components
+ */
 public class ViewHelper {
     protected static final int DEFAULT_ROW_LENGTH = 5;
     protected static final int DEFAULT_COL_LENGTH = 30;

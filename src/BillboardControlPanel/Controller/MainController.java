@@ -32,6 +32,9 @@ public class MainController{
     //
 
 
+    /**
+     * controller which inits all controllers
+     */
     public MainController(){
         //this is a server connection test to run before launching application, bandaid check, implement better later
 //        if(!ControllerHelper.checkConnection()) {
@@ -42,10 +45,17 @@ public class MainController{
         initView(loginController.getLoginCard());
     }
 
+    /**
+     * init view to be rendered
+     * @param masterView this intial view to render
+     */
     private void initView(MasterView masterView){
         mainView = new MainView(masterView);
     }
 
+    /**
+     * init functionality for the applciaiton
+     */
     private void initController() {
         loginController = new LoginController();
         homeController = new HomeController();
@@ -54,6 +64,8 @@ public class MainController{
         scheduleController = new ScheduleController();
     }
 
+
+    //sets and gets
     public static void setScheduleData() {
         scheduleData = ServerRequestClient.listSchedules(sessionToken);
         scheduleData = ServerRequestClient.removeHeaderFromDoubleArray(scheduleData);
