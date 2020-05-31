@@ -49,7 +49,7 @@ public class helper {
 
     }
 
-    public static void setMessageFont(JLabel label, Frame component)
+    public static void setMessageFont(JLabel label, JPanel component)
     {
         Font labelFont = label.getFont();
         String labelText = label.getText();
@@ -68,7 +68,7 @@ public class helper {
         int fontSizeToUse = Math.min(newFontSize, componentHeight);
 
 // Set the label's font size to the newly determined size.
-        label.setFont(new Font(labelFont.getName(), Font.BOLD, newFontSize));
+        label.setFont(new Font(labelFont.getName(), Font.BOLD, fontSizeToUse));
     }
 
     public static void setInformationFont(JLabel message, JTextPane info)
@@ -78,6 +78,11 @@ public class helper {
         int infoFontSize = 0;
 
         infoFontSize = messageFont.getSize() / 2;
+
+        if (infoFontSize>50)
+        {
+            infoFontSize=50;
+        }
 
         info.setFont(new Font(infoFont.getName(), Font.BOLD, infoFontSize));
     }

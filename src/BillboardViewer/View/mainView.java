@@ -142,7 +142,7 @@ public class mainView extends JFrame implements Runnable{
         }
         else if ((Picture != "" || encodedPicture !="") && Info != "")
         {
-            //drawMessage("", backGroundColour, messageColour, BorderLayout.NORTH, 0);
+            drawMessage("", backGroundColour, messageColour, northPanel, 0);
             if (Picture != "")
             {
                 drawURLPicture(Picture, backGroundColour, 0.5, centerPanel, 0.67);
@@ -262,9 +262,10 @@ public class mainView extends JFrame implements Runnable{
         messageLabel = helper.createLabel(message, MESSAGE_FONT);
         messageLabel.setForeground(Color.decode(messageColour));
         messagePanel.setBackground(Color.decode(backGroundColour));
-        helper.setMessageFont(messageLabel, this);
         messagePanel.add(messageLabel);
+        messagePanel.setSize(this.getBounds().width, (int)((double)this.getBounds().height *scale));
         messagePanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height *scale)));
+        helper.setMessageFont(messageLabel, messagePanel);
         return messageLabel;
     }
 
