@@ -24,6 +24,9 @@ import java.util.Base64;
 public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 30);
+    public JPanel northPanel = new JPanel();
+    public JPanel southPanel = new JPanel();
+    public JPanel centerPanel = new JPanel();
 
     /**
      * Constructor, also creates the timer thread and event listeners
@@ -159,16 +162,23 @@ public class mainView extends JFrame implements Runnable{
         getContentPane().setBackground(Color.decode(backGroundColour));
 
         //setup the panels that will be shown in the north center and south region
-        JPanel northPanel = new JPanel();
         northPanel.setLayout(new GridBagLayout());
-        JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
-        JPanel southPanel = new JPanel();
         southPanel.setLayout(new GridBagLayout());
 
         JLabel messageLabel = null;
         JLabel picLabel = null;
         JTextArea infoLabel = null;
+
+        //remove any content in the panels
+        try {
+            centerPanel.removeAll();
+            southPanel.removeAll();
+            northPanel.removeAll();
+        } catch (Exception ex)
+        {
+            System.out.println("Couldn't remove components");
+        }
 
         //draw the elements on screen according to what was given by the xml
 
@@ -245,9 +255,9 @@ public class mainView extends JFrame implements Runnable{
         }
         else
         {
-            drawMessage("", backGroundColour, messageColour, northPanel, 0);
-            drawMessage("", backGroundColour, messageColour, centerPanel, 0);
-            drawMessage("", backGroundColour, messageColour, southPanel, 0);
+            drawMessage(" ", backGroundColour, messageColour, northPanel, 0);
+            drawMessage("No Billboard To Show", backGroundColour, messageColour, centerPanel, 0.3);
+            drawMessage(" ", backGroundColour, messageColour, southPanel, 0);
         }
 
         //add the panel to the frame
@@ -258,6 +268,7 @@ public class mainView extends JFrame implements Runnable{
         //set the frame background colour
         getContentPane().setBackground(Color.decode(backGroundColour));
         //makes sure everything that was added to screen is visible
+        validate();
         setVisible(true);
     }
 
@@ -312,6 +323,8 @@ public class mainView extends JFrame implements Runnable{
     private void drawDataPicture(String encodedPicture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
         //set label that will hold the picture
         JLabel picLabel;
+        //set panel background
+        picPanel.setBackground(Color.decode(backGroundColour));
 
         //decode the data given using base64
         byte[] decodedPicture = Base64.getDecoder().decode(encodedPicture);
@@ -347,6 +360,8 @@ public class mainView extends JFrame implements Runnable{
         //set the label and url
         JLabel picLabel;
         URL url = new URL(picture);
+        //set panel background
+        picPanel.setBackground(Color.decode(backGroundColour));
 
         //create buffered image using url
         BufferedImage myPicture = ImageIO.read(url);
@@ -399,6 +414,6 @@ public class mainView extends JFrame implements Runnable{
     @Override
     public void run() {
         createGUI();
-        getXMLElements();
+        //getXMLElements();
     }
 }
