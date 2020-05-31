@@ -5,13 +5,10 @@ import BillboardControlPanel.Controller.MainController;
 import BillboardControlPanel.View.MainView;
 import BillboardControlPanel.View.ManageUserCard;
 import BillboardControlPanel.View.MasterView;
-import com.sun.tools.javac.Main;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
-import javax.print.attribute.standard.NumberUp;
 import javax.swing.*;
 import java.awt.*;
 import java.security.*;
@@ -21,8 +18,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.List;
 
+/**
+ * Helper functions, used to assist in maintaining and preparing functionality of the GUIs.
+ */
 public class ControllerHelper {
 
 
@@ -41,7 +40,7 @@ public class ControllerHelper {
             item.setText("");
         }
     }
-
+    //Refreshes the users table with the latest updates.
     public static void refreshUsersTablePanel(){
         MainController.setUserData();
         MainController.setUserColNames();
@@ -51,7 +50,7 @@ public class ControllerHelper {
         MainController.getManageUserController().initController(MainController.getManageUserController().getManageUserCard());
         ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageUserController().getManageUserCard());
     }
-
+    //Updates the Schedule screen
     public static void refreshScheduleTablePanel(){
         try{
             MainController.setScheduleData();
@@ -71,18 +70,26 @@ public class ControllerHelper {
         MainController.getScheduleController().initController(MainController.getScheduleController().getScheduleCard());
         ControllerHelper.updateFrame(MainController.getMainView(), MainController.getScheduleController().getScheduleCard());
     }
-
+    //Refreshes the manage billboards screen with the latest updates.
     public static void refreshBillBoardTablePanel(){
-        try{
-        MainController.setBillData();
-        } catch (Exception e){
-            System.out.println("is null");
+
+        String[][] billData = ServerRequestClient.listBillboards(MainController.getSessionToken());
+        if (billData[1][0] != ""){
+            MainController.setBillData();
+            MainController.getManageBillboardController().setSelectedCol(-1);
+            MainController.getManageBillboardController().setSelectedRow(-1);
+            MainController.getManageBillboardController().initView();
+            MainController.getManageBillboardController().initController(MainController.getManageBillboardController().getManageBillboardCard());
+            ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
         }
-        MainController.getManageBillboardController().setSelectedCol(-1);
-        MainController.getManageBillboardController().setSelectedRow(-1);
-        MainController.getManageBillboardController().initView();
-        MainController.getManageBillboardController().initController(MainController.getManageBillboardController().getManageBillboardCard());
-        ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
+        else{
+            MainController.getManageBillboardController().setSelectedCol(-1);
+            MainController.getManageBillboardController().setSelectedRow(-1);
+            MainController.getManageBillboardController().initView();
+            MainController.getManageBillboardController().initController(MainController.getManageBillboardController().getManageBillboardCard());
+            ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
+        }
+
     }
 
     public static int confirmPopUp(String message){

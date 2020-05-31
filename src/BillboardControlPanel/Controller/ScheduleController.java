@@ -13,9 +13,7 @@ import java.awt.event.MouseListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-//todo
-// fix returning the wrong error if the schedule cannot be added due to the billboard already being scheduled
-// make it clear that the user input is in minutes, or hours, or seconds, and just multiply appropriately to get the seconds to pass to the server
+
 public class ScheduleController {
     private ScheduleCard scheduleCard;
     private int selectedRow = -1;
@@ -229,7 +227,6 @@ public class ScheduleController {
                 LocalDateTime dateTime  =null;
                 String name = null;
                 int duration = 0;
-                int time_to_recur = 0;
                 try{
                     String date = scheduleCard.getStartTime().getText();
                     dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -246,18 +243,12 @@ public class ScheduleController {
                     createSchedule();
                     break;
                 }
-                String stringReoccur = scheduleCard.getRecur().getText();
-                if(stringReoccur.length() <=0){
-                    time_to_recur =0;
-                } else {
-                    time_to_recur = Integer.parseInt(scheduleCard.getRecur().getText());
-                }
 
                 //logic to make sure scheudles dont dupe
                     //insert here
                 //
 
-                String[] res = ServerRequestClient.createSchedule(name, dateTime,duration, time_to_recur, MainController.getSessionToken());
+                String[] res = ServerRequestClient.createSchedule(name, dateTime,duration , MainController.getSessionToken());
                 if(res[0].equalsIgnoreCase("false")){
                     ControllerHelper.returnMessage("bilboard name does not exist");
                     createSchedule();
