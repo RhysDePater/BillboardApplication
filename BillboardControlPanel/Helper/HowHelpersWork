@@ -1,0 +1,2 @@
+Controller helper handles the controllers, the refresh functions are what render the content pages and are called whenever a page needs to be changed or refreshed.
+View Helper handles creating View components
