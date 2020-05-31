@@ -3,7 +3,9 @@ package BillboardServer.ServerLogic;
 import BillboardServer.Database.DBInteract;
 import BillboardServer.Misc.SessionToken;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static BillboardServer.Misc.SessionToken.isSessionTokenValid;
 
@@ -16,9 +18,14 @@ public class ScheduleFunctions extends ServerVariables {
         //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
         String billboard_id;
         String user_id;
-        sessionTokenFromClient = inboundData[4];
+        sessionTokenFromClient = inboundData[5];
         if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        // Checks if the current user has the permission to add schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to add a schedule (need schedule_billboard permission)";
             return;
         }
         try {
@@ -31,23 +38,27 @@ public class ScheduleFunctions extends ServerVariables {
             return;
         }
         // Add the new schedule to the schedule table, if the billboard exists
-        String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id, inboundData[2], inboundData[3]);
+        String QueryAddSchedule = DBInteract.addSchedule(user_id, billboard_id, inboundData[2], inboundData[3], inboundData[4]);
         System.out.println(QueryAddSchedule);
         try {
             DBInteract.dbExecuteCommand(QueryAddSchedule);
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            optionalMessage = "Error adding schedule to the database";
+            optionalMessage = "Error adding schedule to the database: Billboard is already scheduled";
+            return;
         }
         // Add to the billboard table
         String schedule_id = "";
         try {
-            // Get the id of this new schedule
+            // Get the id of this new schedule and status
             schedule_id = DBInteract.getValue("id", "schedule", "billboard_id", billboard_id);
             // Finally, add the schedule number to the billboard table, this will link that billboard to a row in the schedule table
-            String updateSchedule = DBInteract.updateColumnWhereId("billboard", "schedule_id", schedule_id, billboard_id);
-            DBInteract.dbExecuteCommand(updateSchedule);
+            String updateBillboard = DBInteract.updateColumnWhereId("billboard", "schedule_id", schedule_id, billboard_id);
+            // add status
+            DBInteract.dbExecuteCommand(updateBillboard);
+            String updateBillboardStatus = DBInteract.updateColumnWhereId("billboard", "status", "1", billboard_id);
+            DBInteract.dbExecuteCommand(updateBillboardStatus);
             commandSucceeded = true;
             optionalMessage = "Schedule added successfully";
         } catch (SQLException e) {
@@ -62,6 +73,11 @@ public class ScheduleFunctions extends ServerVariables {
         sessionTokenFromClient = inboundData[3];
         if (!isSessionTokenValid(sessionTokenFromClient)) {
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
+            return;
+        }
+        // Checks if the current user has the permission to remove schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to remove a schedule (need schedule_billboard permission)";
             return;
         }
         // First see if the billboard actually exists
@@ -87,6 +103,19 @@ public class ScheduleFunctions extends ServerVariables {
                 String QueryDeleteSchedule = DBInteract.deleteTarget("schedule", "id", schedule_id); // Delete the row where the billboard name and time is as specified
                 try {
                     DBInteract.dbExecuteCommand(QueryDeleteSchedule);
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                    optionalMessage = "Error deleting the schedule: " + e.getMessage();
+                }
+                // And also the data in billboard table linking to the recently deleted schedule.
+                try {
+                    // Finally, add the schedule number to the billboard table, this will link that billboard to a row in the schedule table
+                    PreparedStatement updateBillboard = DBInteract.updateColumnWhereIdToNull("billboard", "schedule_id", billboard_id);
+                    // add status
+                    updateBillboard.execute();
+                    String updateBillboardStatus = DBInteract.updateColumnWhereId("billboard", "status", "0", billboard_id);
+                    DBInteract.dbExecuteCommand(updateBillboardStatus);
                     commandSucceeded = true;
                     optionalMessage = "Schedule deleted successfully";
                 } catch (SQLException e) {
@@ -99,10 +128,17 @@ public class ScheduleFunctions extends ServerVariables {
     }
 
     public static void listSchedules(){
-        if(!isSessionTokenValid(inboundData[1])){
+        sessionTokenFromClient = inboundData[1];
+        if(!isSessionTokenValid(sessionTokenFromClient)){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
         }
+        // Checks if the current user has the permission to list schedules
+        if(!(CheckPermissions.checkUserPermissions(sessionTokenFromClient, "scheduleBillboard"))){
+            optionalMessage = "User does not have permission to list schedule (need schedule_billboard permission)";
+            return;
+        }
+
         String getScheduleDataQuery = DBInteract.selectScheduleJoinUserAndBillboard();
         System.out.println(getScheduleDataQuery);
         String[][] results;
@@ -114,6 +150,7 @@ public class ScheduleFunctions extends ServerVariables {
             optionalMessage = "Failed to get schedule list:" + e.getMessage();
             return;
         }
+        System.out.println("RESULTS ARE " + Arrays.deepToString(results));
         commandSucceeded = true;
         optionalMessage = "List of schedules successfully returned";
         outboundData2D = results;

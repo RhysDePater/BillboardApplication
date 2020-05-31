@@ -18,37 +18,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.sql.SQLDataException;
-import java.sql.SQLException;
 import java.util.Base64;
 
-import static BillboardControlPanel.Controller.PreviewerController.xml_data;
-import static BillboardControlPanel.ModelOUTDATED.DBInteract.*;
 
 public class XMLParsing {
-    /**
-     * Queries server specifically for the XML_data and storing into a string for parsing.
-     * @param billboard_id stored on the server in the billboard table, and is unique.
-     * @return xmlstr, string containing queried XML data
-     * @throws SQLException
-     */
-    public static String getXMLData(String billboard_id) throws SQLException {
-        String xmlstr = "";
-        try {
-            //Query database with specific information for the result set
-            ResultSet rs = dbQueryCommand(selectTarget("billboard", "xml_data", "id", billboard_id));
-            //Move cursor forward in result set.
-            rs.next();
-            //Extract the XML data from the result set.
-            xmlstr = rs.getString("xml_data");
-            rs.close();
-        } catch(SQLDataException e){
-            System.out.println("This billboard ID doesn't exist.");
-        }
-        return xmlstr;
-    }
-
     /**
      * Receives XML file input, and converts the contents into a string for use in StrToXMLArray()
      * @param directory the path to the XML file on the local storage.

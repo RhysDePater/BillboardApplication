@@ -115,64 +115,68 @@ class ServerRequestClientTest {
 
     //For post test if the response at res[0] is true then the command succeeded
     @Test
+    @Order(1)
     public void createUserTest(){
         String[] postRes = createUser(newUsername, newPassword, newUserPerm[0], newUserPerm[1],newUserPerm[2], newUserPerm[3], sessionToken);
         Assertions.assertEquals(postRes[0], "true");
     }
 
-
     @Test
+    @Order(2)
     public void changeUserPasswordTest(){
         String[] res = setUserPassword(newUsername, setNewHashPass, sessionToken );
         Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
     @Test
-    public void deleteUserTest(){
-        String[] postRes = deleteUser(newUsername, sessionToken);
-        Assertions.assertEquals((postRes[0]), "true");
-    }
-
-    @Test
+    @Order(3)
     public void getUserPermissionTest(){
         String[][] userPerm = getPermissions(loginUsername, sessionToken);
         Assertions.assertTrue(userPerm[0][0].equalsIgnoreCase("true"));
     }
 
     @Test
+    @Order(4)
     public void getFormattedUserPermissionTest(){
         String[] userPerm = getFormattedUserPrivs(loginUsername, sessionToken);
         Assertions.assertNotNull(userPerm);
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void createBillboardTest(){
         String[] res = createOrEditBillboard(newBillboard, newXmlData, sessionToken);
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void createScheduleTest(){
-        String[] res = ServerRequestClient.createSchedule(newBillboard, LocalDateTime.now(), 60, sessionToken);
+        String[] res = ServerRequestClient.createSchedule(newBillboard, LocalDateTime.now(), 60, 60, sessionToken);
         Assertions.assertTrue(res[0].equalsIgnoreCase("true"));
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void listScheduleTest(){
         String[][] res = listSchedules(sessionToken);
         Assertions.assertTrue(res[0][0].equalsIgnoreCase("true"));
     }
 
+    @Test
+    @Order(9)
+    public void deleteUserTest(){
+        String[] postRes = deleteUser(newUsername, sessionToken);
+        Assertions.assertEquals((postRes[0]), "true");
+    }
 
     @Test
-    @Order(6)
+    @Order(10)
     public void deleteBillboardTest(){
         String[] res = deleteBillboard(newBillboard, sessionToken);
     }
 
     @Test
+    @Order(11)
     public void deleteScheduleTest(){
 //        String[] res = deleteSchedule(newBillboard, );
     }

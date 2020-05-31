@@ -22,7 +22,7 @@ public class UserFunctions extends ServerVariables{
         return salt;
     }
 
-    public static void createUser() throws NoSuchAlgorithmException, SQLException {
+    public static void createUser() throws NoSuchAlgorithmException {
         byte[] salt = GenerateSalt();
         //String placeHolderSalt = "11001";
         sessionTokenFromClient = inboundData[7];
@@ -58,11 +58,11 @@ public class UserFunctions extends ServerVariables{
                 SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            optionalMessage = "Error adding user to database: User likely already exists";
+            optionalMessage = "Error adding user to database: User already exists";
         }
     }
 
-    public static void deleteUser() throws SQLException {
+    public static void deleteUser() {
         boolean user_exists = false;
         String user_id = "";
         String username = inboundData[1];
@@ -90,13 +90,16 @@ public class UserFunctions extends ServerVariables{
             if (user_exists) {
                 String QueryDeleteUser = DBInteract.deleteTarget("user", "id", user_id);
                 String QueryDeletePermissions = DBInteract.deleteTarget("permission", "user_id", user_id);
-                //String fullQuery = QueryDeleteUser + "; " + QueryDeletePermissions + ";"; // Executing the query on one line gave a syntax error for some reason
-                // TODO
-                // Change these to be a transaction so that they are guaranteed to both run together.
-                // Otherwise it could be deleted from the user table without deleting the permissions
+                String QueryDeleteSchedules = DBInteract.deleteTarget("schedule", "user_id", user_id);
+                String QueryDeleteBillboards = DBInteract.deleteTarget("billboard", "user_id", user_id);
+                System.out.println(QueryDeleteSchedules);
+                System.out.println(QueryDeleteBillboards);
                 System.out.println(QueryDeletePermissions);
                 System.out.println(QueryDeleteUser);
+
                 try {
+                    DBInteract.dbExecuteCommand(QueryDeleteSchedules);// This has to be run first so it deletes the foreign key user_id in permission
+                    DBInteract.dbExecuteCommand(QueryDeleteBillboards);
                     DBInteract.dbExecuteCommand(QueryDeletePermissions);// This has to be run first so it deletes the foreign key user_id in permission
                     DBInteract.dbExecuteCommand(QueryDeleteUser);
                     commandSucceeded = true;
@@ -109,7 +112,7 @@ public class UserFunctions extends ServerVariables{
             }
     }
 
-    public static void listUsers() throws SQLException {
+    public static void listUsers() {
         if(!isSessionTokenValid(inboundData[1])){
             optionalMessage = "Session token is invalid or expired. The user will need to log in again.";
             return;
