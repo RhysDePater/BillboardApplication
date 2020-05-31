@@ -54,11 +54,6 @@ public class MainController{
         scheduleController = new ScheduleController();
     }
 
-
-    //this is a mess we should of had a MasterView similar to our view to handle all these variables
-    //but its to late to change or structure now, so lets stick with it, we can look at changing if we have enough time :O
-
-    //this gets it own section because it pure and utter cancer to make a calendar
     public static void setScheduleData() {
         scheduleData = ServerRequestClient.listSchedules(sessionToken);
         scheduleData = ServerRequestClient.removeHeaderFromDoubleArray(scheduleData);
@@ -72,8 +67,6 @@ public class MainController{
         }
 
     }
-    /////////////////////
-
 
     public static void setSunData(){
         sunData = ControllerHelper.getBillNamesFromScheduleSingleDay(scheduleData, 0);
@@ -106,8 +99,8 @@ public class MainController{
     public static String[][] getSatData(){return satData;}
 
 
-    /////////////////////
-    //sets
+
+    //SETS
     public static void setUserData(){
         userData = ServerRequestClient.listUsers(sessionToken);
         userData = ServerRequestClient.removeHeaderFromDoubleArray(userData);

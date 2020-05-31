@@ -1,16 +1,17 @@
 package BillboardControlPanel.Controller;
 
 import BillboardControlPanel.Helper.ControllerHelper;
-
+import BillboardControlPanel.ServerUtilities.ServerRequestClient;
 import BillboardControlPanel.View.HomeCard;
-
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-
+/**
+ * This class stores functionality for the HomeCard buttons. Includes changing passwords functionality.
+ * Allows managing billboard, managing schedule, and mangaging user cards to be pulled for display, along
+ * with their required data and functionalities.
+ */
 public class HomeController{
     protected HomeCard homeCard;
 
@@ -25,6 +26,7 @@ public class HomeController{
 
     private void initController(HomeCard homeCard) {
         ControllerHelper.enableGlobalButtons(homeCard);
+        //CHANGE PASSWORD BUTTON FUNCTIONALITY
         homeCard.getBtnChangePassword().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -36,7 +38,7 @@ public class HomeController{
 
             }
         });
-
+        //MANAGE USERS BUTTON FUNCTIONALITY
         homeCard.getManageUser().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -49,12 +51,31 @@ public class HomeController{
 
             }
         });
+
+
+
+//        System.out.println(billData.length);
+//        for(int i = 0; i < billData.length; i++){
+//            for (int k = 0; k < billData[i].length; k++){
+//                System.out.println(billData[i][k]);
+//            }
+//        }
+
+        //MANAGE BILLBOARDS BUTTON FUNCTIONALITY
         homeCard.getManageBillboard().addActionListener((new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ControllerHelper.refreshBillBoardTablePanel();
+                String[][] billData = ServerRequestClient.listBillboards(MainController.getSessionToken());
+                if (billData[1][0]!="") {
+                    ControllerHelper.refreshBillBoardTablePanel();
+                } else {
+                    MainController.getManageBillboardController().initView();
+                    MainController.getManageBillboardController().initController(MainController.getManageBillboardController().getManageBillboardCard());
+                    ControllerHelper.updateFrame(MainController.getMainView(), MainController.getManageBillboardController().getManageBillboardCard());
+                }
             }
         }));
+        //MANAGE SCHEDULES BUTTON FUNCTIONALITY
         homeCard.getManageSchedule().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

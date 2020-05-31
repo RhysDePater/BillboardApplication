@@ -1,6 +1,7 @@
 package BillboardControlPanel.ServerUtilities;
 
-import javax.print.attribute.standard.NumberUp;
+import BillboardServer.Misc.ReadNetworkProps;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
  * The way the string array is sent should be abstracted out by just using the provided methods
  * See the comment for sendQuery below for information on the array which is returned (This is not finalised, suggestions are welcome)
  */
-public class ServerRequestClient {
+public class ServerRequestClient  {
 
     public static Socket initServerConnect(){
         try{
@@ -37,12 +38,11 @@ public class ServerRequestClient {
      *      "A string of results" Not many functions use this currently, getBillboard does as an example, it would return the xml string from the database. For a function like delete user, this will just be "".
      *      "Optional message that could be displayed to the user/debugging purposes", Just print this to the console for greater verbosity
      * See the SendBackData function on the server for more the code responsible
-     *
-     * @throws IOException This is thrown from lots of the networking functions, probably going to happen if the server isn't up, or network props file doesn't exist and a weird socket is made
      */
     public static String[] sendQuery(String[] queryArray){
-        try{
-            Socket socket = initServerConnect();
+        try {
+            Socket socket = new Socket (ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
+            socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             oos.writeObject(queryArray);
@@ -63,41 +63,46 @@ public class ServerRequestClient {
                 System.out.println(e.getMessage());
                 return null;
             }
-        } catch (IOException e){
-            System.out.println(e);
+        } catch (IOException e){ //This is caught from lots of the networking functions, probably going to happen if the server isn't up, or network props file doesn't exist and a weird socket is made
+            e.printStackTrace();
             return  null;
         }
-
     }
 
     // Same as above but returns a string[][] for use in certain functions, like list users
     // result[0] will be the same as the normal return above, all extra indices will be the results
     public static String[][] sendQueryAlt(String[] queryArray){
-        try{
-            Socket socket = initServerConnect();
+        try {
+            Socket socket = new Socket(ReadNetworkProps.getHost(), ReadNetworkProps.getPort());
+            socket.setSoTimeout(4000); // Set a two second timeout on read operations. After two seconds of nothing being read, an exception will be thrown
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             oos.writeObject(queryArray);
             oos.flush();
             // Now listen for a response, no loop is required because there will only be a single response from the server for now, then return the results
             Object Response = null;
-            try{
+            try {
                 Response = ois.readObject();
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return null;
             }
-            try{
-                return (String[][])Response;
+            try { // The returned object from the server will be a double string array if the command was executed successfully
+                return (String[][]) Response;
+            } catch (Exception e) {
+                //System.out.println(e.getMessage());
             }
-            catch (Exception e ){
+            try { // The returned object from the server will be a single array if the command failed, so it needs to be formatted properly to be returned to the client
+                String[] returnedErrorArray = (String[]) Response;
+                String[] emptyArray = new String[]{""};
+                return new String[][]{returnedErrorArray, emptyArray};
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return null;
             }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-            return null;
+        } catch (IOException e){
+            e.printStackTrace();
+            return  null;
         }
     }
 
@@ -117,8 +122,8 @@ public class ServerRequestClient {
      * @return See ServerRequest.sendQuery
      */
     public static String[] createUser(String username, String password, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken){
-            String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
-            return sendQuery(command);
+        String[] command = {"createUser", username, password, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
+        return sendQuery(command);
     }
 
     /**
@@ -127,7 +132,7 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  deleteUser(String username, String sessionToken){
+    public static String[]  deleteUser(String username, String sessionToken) {
         String[] command = {"deleteUser", username, sessionToken};
         return sendQuery(command);
     }
@@ -137,7 +142,7 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[][]  listUsers(String sessionToken){
+    public static String[][]  listUsers(String sessionToken) {
         String[] command = {"listUsers", sessionToken};
         return sendQueryAlt(command);
     }
@@ -148,7 +153,7 @@ public class ServerRequestClient {
      * @param password The password, which has to match the stored password (only plaintext right now)
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  login(String username, String password){
+    public static String[]  login(String username, String password) {
         String[] command = {"login", username, password};
         return sendQuery(command);
     }
@@ -158,7 +163,7 @@ public class ServerRequestClient {
      * @param sessionToken The currently logged in users' session token.
      * @return See ServerRequest.sendQuery
      */
-    public static String[] logout(String sessionToken){
+    public static String[] logout(String sessionToken) {
         String[] command = {"logout", sessionToken};
         return sendQuery(command);
     }
@@ -172,19 +177,23 @@ public class ServerRequestClient {
      * @param edit_user 0 or 1 for disabled or enabled
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  editAllPermissions(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken){
+    public static String[]  editAllPermissions(String username, Integer create_billboard, Integer edit_billboard, Integer schedule_billboard, Integer edit_user, String sessionToken) {
         String[] command = {"editPermission", username, create_billboard.toString(), edit_billboard.toString(), schedule_billboard.toString(), edit_user.toString(), sessionToken};
         return sendQuery(command);
     }
 
-    //this should be handled server side just let me send
+    public static String[][] getPermissions(String username, String sessionToken) {
+        String[] command = {"getPermissions", username, sessionToken};
+        return sendQueryAlt(command);
+    }
+
     /**
      * This function makes use of the initial use of editing permissions by formatting it in such a way so only one value will be changed
      * @param username The user to edit permissions for
      * @param permission Either create_billboard, edit_billboard, schedule_billboard, or edit_user
      * @param value 1 or 0
      */
-    public static String[] editPermission(String username, String permission, Integer value, String sessionToken){
+    public static String[] editPermission(String username, String permission, Integer value, String sessionToken) {
         switch (permission) {
             case "create_billboard":
                 return editAllPermissions(username, value, -1, -1, -1, sessionToken); // -1 is so the value doesn't change on the server side
@@ -202,15 +211,11 @@ public class ServerRequestClient {
         return new String[]{"false", "", "column " + permission + " doesn't exist"};
     }
 
-    public static String[][] getPermissions(String username, String sessionToken) {
-        String[] command = {"getPermissions", username, sessionToken};
-        return sendQueryAlt(command);
-    }
-
-    public static String[] setUserPassword(String username, String password, String sessionToken){
+    public static String[] setUserPassword(String username, String password, String sessionToken) {
         String[] command = {"setUserPassword", username, password, sessionToken};
         return sendQuery(command);
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // BILLBOARD
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,7 +239,7 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  getBillboard(String billboardName, String sessionToken) throws IOException {
+    public static String[]  getBillboard(String billboardName, String sessionToken) {
         String[] command = {"getBillboard", billboardName, sessionToken};
         return sendQuery(command);
     }
@@ -245,7 +250,7 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQuery
      */
-    public static String[]  deleteBillboard(String billboardName, String sessionToken){
+    public static String[]  deleteBillboard(String billboardName, String sessionToken) {
         String[] command = {"deleteBillboard", billboardName, sessionToken};
         return sendQuery(command);
     }
@@ -255,9 +260,18 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[][]  listBillboards(String sessionToken){
+    public static String[][]  listBillboards(String sessionToken) {
         String[] command = {"listBillboards", sessionToken};
         return sendQueryAlt(command);
+    }
+
+    /**
+     * Get the contents of the currently scheduled billboard, or a placeholder
+     * @return See ServerRequest.sendQueryDoubleArray
+     */
+    public static String[]  getCurrentBillboard() {
+        String[] command = {"getCurrentBillboard"};
+        return sendQuery(command);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,7 +310,7 @@ public class ServerRequestClient {
      * @param sessionToken A session token so the server can authenticate the request
      * @return See ServerRequest.sendQueryDoubleArray
      */
-    public static String[][]  listSchedules(String sessionToken){
+    public static String[][]  listSchedules(String sessionToken) {
         String[] command = {"listSchedules", sessionToken};
         return sendQueryAlt(command);
     }
@@ -305,7 +319,7 @@ public class ServerRequestClient {
     // OTHER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static String[][] getColumnNames(String table_name, String sessionToken){
+    public static String[][] getColumnNames(String table_name, String sessionToken) {
         String[] command = {"getColumns", table_name, sessionToken};
         return sendQueryAlt(command);
     }

@@ -7,30 +7,36 @@ import BillboardControlPanel.View.ManageBillboardCard;
 import BillboardControlPanel.View.MasterView;
 import BillboardControlPanel.View.PreviewerCard;
 import static BillboardControlPanel.Controller.PreviewerController.xml_data;
-import static BillboardControlPanel.View.PreviewerCard.getCenterPanel;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.awt.event.*;
 
-
+/**
+ * This class handles all ManageBillboardCard functionalities.
+ * Includes calling the previewer, pulling user data from server, confirming user permissions.
+ * Includes editing, exporting, importing, deleting billboards.
+ * Displays billboards in a list.
+ */
 public class ManageBillboardController {
 
     private ManageBillboardCard manageBillboardCard;
+    private static String[][] respArray;
     private int selectedRow = -1;
     private int selectedCol = -1;
 
+    //Pull GUI information
     public ManageBillboardController(){
         initView();
         initController(getManageBillboardCard());
     }
 
+    //Pull billboard data to display
     public void initView(){
-        manageBillboardCard = new ManageBillboardCard(MainController.getBillData());
+            manageBillboardCard = new ManageBillboardCard(MainController.getBillData());
     }
 
+    //Initiate all listeners for user interactions and respond accordingly
     public void initController(ManageBillboardCard manageBillboardCard) {
         ControllerHelper.enableGlobalButtons(manageBillboardCard);
         //CREATE
@@ -64,6 +70,7 @@ public class ManageBillboardController {
                 if (selectedRow == -1 || selectedCol == -1){
                     JOptionPane.showMessageDialog(MasterView.getMainFrame(), "Please select a billboard from the table.");
                 }
+                //Check to see if user has full edit permissions.
                 else if (MainController.getLoggedUserPrivs()[1].equalsIgnoreCase("1")){
                     PreviewerCard.PreviewerCard();
                     String bbName = manageBillboardCard.getBillTable().getValueAt(selectedRow, 1).toString();
@@ -76,6 +83,7 @@ public class ManageBillboardController {
                         JOptionPane.showMessageDialog(MasterView.getMainFrame(), "Billboard table is currently empty.");
                     }
                 }
+                //check to see if user has create billboard permissions, if so did they create this billboard, is it scheduled?
                 else if ((MainController.getLoggedUserPrivs()[0].equalsIgnoreCase("1"))
                         && (manageBillboardCard.getBillTable().getValueAt(selectedRow, 0).toString().equalsIgnoreCase(MainController.getLoggedUser()))
                         && (manageBillboardCard.getBillTable().getValueAt(selectedRow, 3).toString().equals("0"))){
@@ -123,6 +131,7 @@ public class ManageBillboardController {
 
             }
         });
+        //DELETE
         manageBillboardCard.getBtnImport().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -142,18 +151,16 @@ public class ManageBillboardController {
                     PreviewerCard.PreviewerCard();
                     try {
                         xml_data = XMLParsing.StrToXMLArray(extractedXMLStr);
-//                        for (int i = 0; i < 4; i++){
-//                            for (int k = 0; k < 3; k++){
-//                                System.out.println(PreviewerController.xml_data[i][k]);
-//                            }
-//                        }
+                        //Place data into String[][] further usage
                         setFields();
                     } catch(ParserConfigurationException parse_error){
                         JOptionPane.showMessageDialog(MasterView.getMainFrame(), "Please import a correctly formatted XML file.");
                     }
+                    ControllerHelper.refreshBillBoardTablePanel();
                 }
             }
         });
+        //EXPORT
         manageBillboardCard.getBtnExport().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -197,15 +204,8 @@ public class ManageBillboardController {
         PreviewerCard.getPicField().setText(xml_data[2][1]);
         PreviewerCard.getInfoField().setText(xml_data[3][1]);
         //Center Panel Components
-        //PreviewerCard.getCenterPanel().setBackground(Color.decode(xml_data[0][1]));
         PreviewerController.billboardDrawer();
         PreviewerCard.getCenterPanel().validate();
-        //PreviewerCard.getMessageLabel().setText("hi");
-        //PreviewerCard.getInformationLabel().setText(xml_data[3][1]);
-
-
-        //PreviewerCard.getMessageLabel().setForeground(Color.decode(xml_data[1][2]));
-        //PreviewerCard.getInformationLabel().setForeground(Color.decode(xml_data[3][2]));
     }
 
     public void setSelectedCol(int newValue) { this.selectedCol = newValue; }

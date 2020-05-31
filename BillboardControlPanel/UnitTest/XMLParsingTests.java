@@ -38,6 +38,13 @@ public class XMLParsingTests {
     static ResultSet rs;
     private final String expectedStr = "SELECT xml_data FROM billboard WHERE id = '1';";
 
+//Assertions.assertTrue(StringUtils.isNotBlank("true"));
+//Assertions.assertTrue(someString.includes(someOtherStringValue));
+
+    //QueryOnExisting and QueryOnNonExisting is used for the commented tests.
+    private final String QueryOnExisting = selectTarget("billboard", "xml_data", "id", "1");
+    private final String QueryOnNonExisting = selectTarget("billboard", "xml_data", "id", "0");
+
     private final String msgOnly = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><billboard><message>Basic message-only billboard</message></billboard>";
     private final String urlPicOnly = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<billboard><picture url=\"https://cloudstor.aarnet.edu.au/plus/s/62e0uExNviPanZE/download\" /></billboard>";
@@ -75,6 +82,48 @@ public class XMLParsingTests {
         String actualStr = selectTarget("billboard", "xml_data", "id", "1");
         assertEquals(expectedStr, actualStr);
     }
+
+    //Uncomment the following commented tests if connected to a local database from testing.
+    //Testing to make getXMLData() using existing billboard ID
+//    @Test
+//    public void shouldReturn() throws SQLException {
+//        rs = dbQueryCommand(QueryOnExisting);
+//        rs.next();
+//        String xmlstr = rs.getString("xml_data");
+//        //System.out.println(xmlstr);
+//        rs.close();
+//    }
+//
+//    @Test
+//    //Testing to make getXMLData() handle non-existing billboard ID
+//    public void shouldReturnErr() throws SQLException {
+//        try {
+//            rs = dbQueryCommand(QueryOnNonExisting);
+//            rs.next();
+//            String xmlstr = rs.getString("xml_data");
+//            //System.out.println(xmlstr);
+//            rs.close();
+//        } catch (SQLDataException e) {
+//            //System.out.println("This billboard ID doesn't exist");
+//        }
+//    }
+//
+//    @Test
+//    //Testing the getXMLData function using ID 1 and 0(doesn't exist)
+//    public void billboardID1() throws SQLException {
+//        getXMLData("1");
+//    }
+//
+//    @Test
+//    public void billboardID0() throws SQLException {
+//        getXMLData("0");
+//    }
+//
+//    //Testing -1 ID, that shouldn't exist as long as billboard creation doesn't allow negative numbers.
+//    @Test
+//    public void billboardIDNeg1() throws SQLException {
+//        getXMLData("-1");
+//    }
 
     //Parsing tests from String into String[][]
     @Test

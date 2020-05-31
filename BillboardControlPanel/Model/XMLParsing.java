@@ -1,7 +1,5 @@
 package BillboardControlPanel.Model;
 
-import BillboardControlPanel.View.MasterView;
-import BillboardControlPanel.View.PreviewerCard;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -22,7 +20,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.Base64;
 
-//import static BillboardControlPanel.ModelOUTDATED.DBInteract.*;
 
 public class XMLParsing {
     /**
@@ -52,7 +49,7 @@ public class XMLParsing {
         } catch (IOException | ParserConfigurationException | TransformerException e) {
             System.out.println("XML file doesn't exist. Check file name.");
         } catch(SAXException e){
-            JOptionPane.showMessageDialog(MasterView.getMainFrame(), "Imported XML file is incorrectly formatted.");
+            System.out.println("No file specified. Check file's directory.");
         }
         return xmlString;
     }
@@ -154,7 +151,7 @@ public class XMLParsing {
             }
         }
         else{
-            JOptionPane.showMessageDialog(PreviewerCard.getPreviewer(), "No XML components to display.");
+            System.out.println("Can't parse an empty string.");
         }
 //        for (int i = 0; i < 4; i++) {
 //            for (int r = 0; r < 3; r++) {
