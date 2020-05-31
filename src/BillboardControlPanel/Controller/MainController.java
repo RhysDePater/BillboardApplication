@@ -114,7 +114,6 @@ public class MainController{
     }
 
     public static void setBillData(){
-
         billData = ServerRequestClient.listBillboards(sessionToken);
         billData = ServerRequestClient.removeHeaderFromDoubleArray(billData);
     }

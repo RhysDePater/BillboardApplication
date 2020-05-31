@@ -241,11 +241,16 @@ public class ScheduleController {
                 try {
                     name = scheduleCard.getBillboardToSchedule().getText();
                     duration = Integer.parseInt(scheduleCard.getDuration().getText());
-                    time_to_recur = Integer.parseInt(scheduleCard.getRecur().getText());
                 } catch (Exception e){
                     ControllerHelper.returnMessage("name & duration cannot be null & duration must be int");
                     createSchedule();
                     break;
+                }
+                String stringReoccur = scheduleCard.getRecur().getText();
+                if(stringReoccur.length() <=0){
+                    time_to_recur =0;
+                } else {
+                    time_to_recur = Integer.parseInt(scheduleCard.getRecur().getText());
                 }
 
                 //logic to make sure scheudles dont dupe
