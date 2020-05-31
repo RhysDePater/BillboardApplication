@@ -14,6 +14,7 @@ public class ManageBillboardCard extends MasterView {
     private static JTable billboardTable;
 
     private static String[] colNames = new String[]{"User Name", "Billboard Name","XML Data", "Status"};
+
     public ManageBillboardCard(String[][] colData){
         createCenterCard(colData);
         createSouthCard();
@@ -25,7 +26,6 @@ public class ManageBillboardCard extends MasterView {
         centerCard.add(new JScrollPane(billboardTable));
         return centerCard;
     }
-
     private JPanel createSouthCard() {
         southCard = new JPanel(new FlowLayout());
         btnCreate= ViewHelper.createButton("Create");

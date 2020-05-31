@@ -37,31 +37,11 @@ public class ManageBillboardController {
                 PreviewerCard.PreviewerCard();
             }
         });
-        manageBillboardCard.getBillTable().addMouseListener(new MouseListener() {
+        manageBillboardCard.getBillTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectedRow = manageBillboardCard.getBillTable().rowAtPoint(e.getPoint());
                 selectedCol = manageBillboardCard.getBillTable().columnAtPoint(e.getPoint());
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
             }
         });
 
