@@ -13,7 +13,7 @@ import java.io.*;
 
 
 public class xmlParser {
-
+    //function for parsing the xml, it is given an xml string
     public static String[] parseXML(String xmlString)  {
         final String filePath = "./src/BillboardViewer/xmlFiles/xmlFile.xml";
 
@@ -25,13 +25,19 @@ public class xmlParser {
         String messageColour = "";
         String infoColour = "";
 
+        //write the provided xml string into a file so that the DocumentBuilderFactory can read it
         writeXMLFile(xmlString, filePath);
 
         try {
+            //open the xml file with document builder factory
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.parse(new File(filePath));
 
+            //For each different element that can be passed through the file try and grab it
+            //if not set the default value in the catch statement
+
+            //get background colour data
             try {
                 Node node = helper.xmlNode("/billboard[@background]", document);
                 backGroundColour = node.getAttributes().getNamedItem("background").getNodeValue();
@@ -53,6 +59,7 @@ public class xmlParser {
                 message="";
             }
 
+            //get message colour data
             try {
                 Node node = helper.xmlNode("/billboard/message[@colour]", document);
                 messageColour = node.getAttributes().getNamedItem("colour").getNodeValue();
@@ -63,6 +70,7 @@ public class xmlParser {
                 messageColour="#000000";
             }
 
+            //get picture url data
             try {
                 Node node = helper.xmlNode("/billboard/picture[@url]", document);
                 picture = node.getAttributes().getNamedItem("url").getNodeValue();
@@ -73,6 +81,7 @@ public class xmlParser {
                 picture="";
             }
 
+            //get picture data data
             try {
                 Node node = helper.xmlNode("/billboard/picture[@data]", document);
                 encodedPicture = node.getAttributes().getNamedItem("data").getNodeValue();
@@ -83,6 +92,7 @@ public class xmlParser {
                 encodedPicture ="";
             }
 
+            //get information data
             try {
                 Node node = helper.xmlNode("/billboard/information", document);
                 information = node.getTextContent();
@@ -93,6 +103,7 @@ public class xmlParser {
                 information="";
             }
 
+            //get information colour data
             try {
                 Node node = helper.xmlNode("/billboard/information[@colour]", document);
                 infoColour = node.getAttributes().getNamedItem("colour").getNodeValue();
@@ -106,9 +117,11 @@ public class xmlParser {
             return (new String[]{message, picture, information, encodedPicture, backGroundColour, messageColour, infoColour});
         }
 
+        //return all the values
         return (new String[]{message, picture, information, encodedPicture, backGroundColour, messageColour, infoColour});
     }
 
+    //function for writing the xml string to a file
     public static void writeXMLFile(String xml, String filePath)
     {
         try {

@@ -23,12 +23,14 @@ public class mainView extends JFrame implements Runnable{
     public mainView(String title) throws HeadlessException {
         super(title);
 
+        //boolean used for breaking the timer thread
         final Boolean[] Loop = {true};
 
         //Thread to check the server for a new billboard every 15 seconds
         Thread timer = new Thread(() -> {
             while(Loop[0])
             {
+                //update the viewer
                 getXMLElements();
 
                 //sleep for 15 seconds
@@ -42,9 +44,11 @@ public class mainView extends JFrame implements Runnable{
 
         timer.start();
 
+        //event listen for the escape key
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent ke) {
                 if(ke.getKeyCode() == ke.VK_ESCAPE) {
+                    //close the viewer
                     mainView.this.dispose();
                     //break the timer thread out of sleep, so that the app can close right away
                     timer.interrupt();
@@ -53,10 +57,12 @@ public class mainView extends JFrame implements Runnable{
                 }
             }
         });
+        //event listen for mouse click
         addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent mouse) {
                 if (mouse.getButton() == MouseEvent.BUTTON1)
                 {
+                    //close the viewer
                     mainView.this.dispose();
                     //break the timer thread out of sleep, so that the app can close right away.
                     timer.interrupt();
@@ -67,10 +73,13 @@ public class mainView extends JFrame implements Runnable{
         });
     }
 
+    //function to setup the frame
     public void createGUI() {
-
+        //set the frame to be the screen size
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //get rid of the window border
         setUndecorated(true);
+
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -79,15 +88,19 @@ public class mainView extends JFrame implements Runnable{
 
     public void getXMLElements()
     {
+        //intialise the data
         String[] xmlData = null;
 
         try {
+            //get what should be displayed from the server
             xmlData = ServerRequest.getCurrentBillboard();
             System.out.println(xmlData[1]);
         }
+        //if the application can't talk to the server
         catch(Exception e)
         {
             try {
+                //tell the user the viewer couldn't connect to the server
                 drawElements("Unable to connect to billboard server.", "", "", "", "#FFFFFF", "#000000", "");
             }
             catch(Exception ex)
@@ -96,6 +109,7 @@ public class mainView extends JFrame implements Runnable{
             }
         }
 
+        //parse the xml data that was taken from the server assign each array section to a variable
         String[] elements = xmlParser.parseXML(xmlData[1]);
         String Message = elements[0];
         String Picture = elements[1];
@@ -106,6 +120,7 @@ public class mainView extends JFrame implements Runnable{
         String infoColour = elements[6];
 
         try {
+            //draw the elements to the screen
             drawElements(Message, Picture, Info, encodedPicture, backGroundColour, messageColour, infoColour);
         } catch (Exception e)
         {
@@ -113,9 +128,12 @@ public class mainView extends JFrame implements Runnable{
         }
     }
 
+    //function for drawing elements to thr frame
     public void drawElements(String Message, String Picture, String Info, String encodedPicture, String backGroundColour, String messageColour, String infoColour) throws IOException {
+        //set the frame background colour
         getContentPane().setBackground(Color.decode(backGroundColour));
 
+        //setup the panels that will be shown in the north center and south region
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new GridBagLayout());
         JPanel centerPanel = new JPanel();
@@ -126,6 +144,8 @@ public class mainView extends JFrame implements Runnable{
         JLabel messageLabel = null;
         JLabel picLabel = null;
         JTextArea infoLabel = null;
+
+        //draw the elements on screen according to what was given by the xml
 
         if (Message != "" && (Picture != "" || encodedPicture !="") && Info != "")
         {
@@ -205,26 +225,38 @@ public class mainView extends JFrame implements Runnable{
             drawMessage("", backGroundColour, messageColour, southPanel, 0);
         }
 
+        //add the panel to the frame
         this.getContentPane().add(northPanel,BorderLayout.NORTH);
         this.getContentPane().add(centerPanel,BorderLayout.CENTER);
         this.getContentPane().add(southPanel,BorderLayout.SOUTH);
+
+        //set the frame background colour
+        getContentPane().setBackground(Color.decode(backGroundColour));
+        //makes sure everything that was added to screen is visible
         setVisible(true);
     }
 
-
+    //function for drawing information
     private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, JPanel infoPanel, double scale) {
+        //create the label
         JTextPane infoLabel;
-        //pass the scale through
         infoLabel = helper.JMultilineLabel(info, INFORMATION_FONT);
+
+        //set label text colour
         infoLabel.setForeground(Color.decode(infoColour));
+        //set the panel background
         infoPanel.setBackground(Color.decode(backGroundColour));
+        //add the text to the panel
         infoPanel.add(infoLabel);
         if(message !="")
         {
+            //set the text size
             helper.setInformationFont(messageLabel, infoLabel);
         }
+        //scale the panel to the desired size on screen
         infoPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height *scale)));
 
+        //scale the label to the desired size on screen while not exceeding 50% height
         if (scale<=0.5) {
             infoLabel.setPreferredSize(new Dimension((int) ((double) this.getBounds().width * 0.75), (int) ((double) this.getBounds().height * scale)));
         }
@@ -233,38 +265,71 @@ public class mainView extends JFrame implements Runnable{
         }
     }
 
+    //function for drawing a picture using provided data
     private void drawDataPicture(String encodedPicture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
+        //set label that will hold the picture
         JLabel picLabel;
+
+        //decode the data given using base64
         byte[] decodedPicture = Base64.getDecoder().decode(encodedPicture);
+        //create a buffered image using the decoded data
         BufferedImage myPicture = ImageIO.read(new ByteArrayInputStream(decodedPicture));
+
+        //get the picture height and width according to the scale provided
         int[] imgDimensions = helper.getImgDimensions(myPicture.getHeight(),myPicture.getWidth(), imageScale, this);
+
+        //create an image by scaling the bufferedImage previously made with the new height and width found
         Image newImage = myPicture.getScaledInstance(imgDimensions[1], imgDimensions[0], Image.SCALE_DEFAULT);
+        //add the image to the label
         picLabel = new JLabel(new ImageIcon(newImage));
+        //set panel background
         picPanel.setBackground(Color.decode(backGroundColour));
+
+        //add the picture to the panel and then set the panel size
         picPanel.add(picLabel);
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
     }
 
+    //function for drawing a picture using provided url
     private void drawURLPicture(String picture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
+        //set the label and url
         JLabel picLabel;
         URL url = new URL(picture);
+
+        //create buffered image using url
         BufferedImage myPicture = ImageIO.read(url);
+
+        //get the picture height and width according to the scale provided
         int[] imgDimensions = helper.getImgDimensions(myPicture.getHeight(),myPicture.getWidth(), imageScale, this);
+
+        //create an image by scaling the bufferedImage previously made with the new height and width found
         Image newImage = myPicture.getScaledInstance(imgDimensions[1], imgDimensions[0], Image.SCALE_DEFAULT);
+
+        //add the image to the label
         picLabel = new JLabel(new ImageIcon(newImage));
+        //set panel background
         picPanel.setBackground(Color.decode(backGroundColour));
+        //add picture to panel and set panel size
         picPanel.add(picLabel);
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
     }
 
     private JLabel drawMessage(String message, String backGroundColour, String messageColour, JPanel messagePanel, double scale) {
+        //create the message label
         JLabel messageLabel;
         messageLabel = helper.createLabel(message, MESSAGE_FONT);
+
+        //set message text colour
         messageLabel.setForeground(Color.decode(messageColour));
+        //set panel background colour
         messagePanel.setBackground(Color.decode(backGroundColour));
+
+        //add the label to the panel and set panel size
         messagePanel.add(messageLabel);
         messagePanel.setSize(this.getBounds().width, (int)((double)this.getBounds().height *scale));
         messagePanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height *scale)));
+
+        //set the text size to max possible size
         helper.setMessageFont(messageLabel, messagePanel);
         return messageLabel;
     }
