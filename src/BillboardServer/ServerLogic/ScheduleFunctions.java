@@ -15,7 +15,6 @@ public class ScheduleFunctions extends ServerVariables {
         // Add restrictions so the user can't enter a schedule which already exists
         // Currently if this is the case, the deleteSchedule won't know which one to delete, and just delete the first one
         // But, there shouldn't be a case where two of the same billboard want to start at the same time
-        //{"addSchedule", "billboardname", "2015-02-20T06:30", "120", "sessiontoken"};
         String billboard_id;
         String user_id;
         sessionTokenFromClient = inboundData[5];
@@ -45,18 +44,20 @@ public class ScheduleFunctions extends ServerVariables {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            optionalMessage = "Error adding schedule to the database: Billboard is already scheduled";
+            optionalMessage = "Error adding schedule to the database"; // Exception used to be thrown when you could only have one schedule per billboard
             return;
         }
         // Add to the billboard table
-        String schedule_id = "";
+        //String schedule_id = "";
         try {
+            // No need for a schedule id column, that's why all the code below is commented
             // Get the id of this new schedule and status
-            schedule_id = DBInteract.getValue("id", "schedule", "billboard_id", billboard_id);
+            // schedule_id = DBInteract.getValue("id", "schedule", "billboard_id", billboard_id);
             // Finally, add the schedule number to the billboard table, this will link that billboard to a row in the schedule table
-            String updateBillboard = DBInteract.updateColumnWhereId("billboard", "schedule_id", schedule_id, billboard_id);
+            // String updateBillboard = DBInteract.updateColumnWhereId("billboard", "schedule_id", schedule_id, billboard_id);
+            // DBInteract.dbExecuteCommand(updateBillboard);
+
             // add status
-            DBInteract.dbExecuteCommand(updateBillboard);
             String updateBillboardStatus = DBInteract.updateColumnWhereId("billboard", "status", "1", billboard_id);
             DBInteract.dbExecuteCommand(updateBillboardStatus);
             commandSucceeded = true;
@@ -110,12 +111,16 @@ public class ScheduleFunctions extends ServerVariables {
                 }
                 // And also the data in billboard table linking to the recently deleted schedule.
                 try {
-                    // Finally, add the schedule number to the billboard table, this will link that billboard to a row in the schedule table
-                    PreparedStatement updateBillboard = DBInteract.updateColumnWhereIdToNull("billboard", "schedule_id", billboard_id);
-                    // add status
-                    updateBillboard.execute();
-                    String updateBillboardStatus = DBInteract.updateColumnWhereId("billboard", "status", "0", billboard_id);
-                    DBInteract.dbExecuteCommand(updateBillboardStatus);
+                    // edit status
+                    // see if the billboard has any other schedules
+                    try {
+                        DBInteract.getValue("id", "schedule", "billboard_id", billboard_id); // Will throw an error if nothing exists
+                    }
+                    catch (Exception e){ // No other schedules exits, this is fine
+                        e.printStackTrace();
+                        String updateBillboardStatus = DBInteract.updateColumnWhereId("billboard", "status", "0", billboard_id);
+                        DBInteract.dbExecuteCommand(updateBillboardStatus);
+                    }
                     commandSucceeded = true;
                     optionalMessage = "Schedule deleted successfully";
                 } catch (SQLException e) {
