@@ -11,7 +11,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 
-
+/**
+ * class that deals with xml parsing
+ * @author Rhys De Pater
+ * @version 1.0.0
+ * @since 2020-05-01
+ */
 public class xmlParser {
     //function for parsing the xml, it is given an xml string
     public static String[] parseXML(String xmlString)  {

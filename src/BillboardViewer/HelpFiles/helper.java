@@ -12,8 +12,20 @@ import javax.swing.text.StyledDocument;
 import javax.xml.xpath.*;
 import java.awt.*;
 
+
+/**
+ * class that holds all helper functions
+ * @author Rhys De Pater
+ * @version 1.0.0
+ * @since 2020-05-01
+ */
 public class helper {
-    //function for making a basic label with a provided string and font
+    /**
+     * makes a basic label with test str and font font
+     * @param str
+     * @param font
+     * @return label
+     */
     public static JLabel createLabel(String str, Font font) {
         JLabel label = new JLabel();
         label.setText(str);
@@ -22,7 +34,12 @@ public class helper {
         return label;
     }
 
-    //function for making the info section , with a provided text and font
+    /**
+     * function for making the info section , with a provided text and font
+     * @param text
+     * @param font
+     * @return textArea
+     */
     public static JTextPane JMultilineLabel(String text, Font font) {
         //create the text pane with a text and font
         JTextPane textArea = new JTextPane();
@@ -44,7 +61,13 @@ public class helper {
         return textArea;
     }
 
-    //small helper function for the xml parser
+    /**
+     * small helper function for the xml parser
+     * @param path
+     * @param document
+     * @return node
+     * @throws XPathExpressionException
+     */
     public static Node xmlNode(String path, Document document) throws XPathExpressionException {
         //simple helper function for when reading the xml document, this is boiler plate code that is used each time when extracting
         //data from the file
@@ -54,7 +77,11 @@ public class helper {
         return node;
     }
 
-    //function for dynamically resizing the message to be max size
+    /**
+     * function for dynamically resizing the message to be max size
+     * @param label
+     * @param component
+     */
     public static void setMessageFont(JLabel label, JPanel component)
     {
         Font labelFont = label.getFont();
@@ -78,7 +105,11 @@ public class helper {
         label.setFont(new Font(labelFont.getName(), Font.BOLD, fontSizeToUse));
     }
 
-    //function for determining how big the info font size should be
+    /**
+     * function for determining how big the info font size should be
+     * @param message
+     * @param info
+     */
     public static void setInformationFont(JLabel message, JTextPane info)
     {
         Font messageFont = message.getFont();
@@ -100,7 +131,14 @@ public class helper {
         info.setFont(new Font(infoFont.getName(), Font.BOLD, infoFontSize));
     }
 
-    //function for getting how big a pic should be when getting scaled
+    /**
+     * function for getting how big a pic should be when getting scaled
+     * @param height
+     * @param width
+     * @param scale
+     * @param frame
+     * @return array containing height and width
+     */
     public static int[] getImgDimensions(int height, int width, double scale, Frame frame)
     {
         int newHeight;

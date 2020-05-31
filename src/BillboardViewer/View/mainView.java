@@ -15,11 +15,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
 
+/**
+ * mainView is the viewer itself and is where everything is displayed
+ * @author Rhys De Pater
+ * @version 1.0.0
+ * @since 2020-05-01
+ */
 public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
     public static final Font INFORMATION_FONT = new Font("SansSerif", Font.BOLD, 30);
 
-
+    /**
+     * Constructor, also creates the timer thread and event listeners
+     * @param title
+     * @throws HeadlessException
+     */
     public mainView(String title) throws HeadlessException {
         super(title);
 
@@ -73,7 +83,9 @@ public class mainView extends JFrame implements Runnable{
         });
     }
 
-    //function to setup the frame
+    /**
+     * function for creating the frame
+     */
     public void createGUI() {
         //set the frame to be the screen size
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -85,7 +97,10 @@ public class mainView extends JFrame implements Runnable{
         setLayout(new BorderLayout());
     }
 
-
+    /**
+     * function for getting the xml data from the server and then pulling the elements from that
+     * and sending them to be drawn
+     */
     public void getXMLElements()
     {
         //intialise the data
@@ -128,7 +143,17 @@ public class mainView extends JFrame implements Runnable{
         }
     }
 
-    //function for drawing elements to thr frame
+    /**
+     * Draws the elements on screen based on what has data and what is an empty string
+     * @param Message
+     * @param Picture
+     * @param Info
+     * @param encodedPicture
+     * @param backGroundColour
+     * @param messageColour
+     * @param infoColour
+     * @throws IOException
+     */
     public void drawElements(String Message, String Picture, String Info, String encodedPicture, String backGroundColour, String messageColour, String infoColour) throws IOException {
         //set the frame background colour
         getContentPane().setBackground(Color.decode(backGroundColour));
@@ -236,7 +261,16 @@ public class mainView extends JFrame implements Runnable{
         setVisible(true);
     }
 
-    //function for drawing information
+    /**
+     * Draw the info section on screen in the panel passed to it with a size based on scale
+     * @param info
+     * @param message
+     * @param backGroundColour
+     * @param infoColour
+     * @param messageLabel
+     * @param infoPanel
+     * @param scale
+     */
     private void drawInformation(String info, String message, String backGroundColour, String infoColour, JLabel messageLabel, JPanel infoPanel, double scale) {
         //create the label
         JTextPane infoLabel;
@@ -265,7 +299,16 @@ public class mainView extends JFrame implements Runnable{
         }
     }
 
-    //function for drawing a picture using provided data
+    /**
+     * function for drawing the data picture with provided base 64 encoded image data
+     * it is also sized according to image scale and places in pic panel with panel scale size
+     * @param encodedPicture
+     * @param backGroundColour
+     * @param imageScale
+     * @param picPanel
+     * @param panelScale
+     * @throws IOException
+     */
     private void drawDataPicture(String encodedPicture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
         //set label that will hold the picture
         JLabel picLabel;
@@ -290,7 +333,16 @@ public class mainView extends JFrame implements Runnable{
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
     }
 
-    //function for drawing a picture using provided url
+    /**
+     * function for drawing the url picture with provided url to an image
+     * it is also sized according to image scale and places in pic panel with panel scale size
+     * @param picture
+     * @param backGroundColour
+     * @param imageScale
+     * @param picPanel
+     * @param panelScale
+     * @throws IOException
+     */
     private void drawURLPicture(String picture, String backGroundColour, double imageScale, JPanel picPanel, double panelScale) throws IOException {
         //set the label and url
         JLabel picLabel;
@@ -314,6 +366,15 @@ public class mainView extends JFrame implements Runnable{
         picPanel.setPreferredSize(new Dimension(this.getBounds().width, (int)((double)this.getBounds().height * panelScale)));
     }
 
+    /**
+     * draw message in panel messagePanel scaled to scale
+     * @param message
+     * @param backGroundColour
+     * @param messageColour
+     * @param messagePanel
+     * @param scale
+     * @return
+     */
     private JLabel drawMessage(String message, String backGroundColour, String messageColour, JPanel messagePanel, double scale) {
         //create the message label
         JLabel messageLabel;
