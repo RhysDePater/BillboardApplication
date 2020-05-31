@@ -32,8 +32,8 @@ public class DBConnection {
 
         }
         catch (Exception e) {
-            System.err.println("Fatal error: could not connect to the database");
-            e.printStackTrace();
+            System.err.println("Fatal error: could not connect to the database.");
+            System.out.println("Please make sure a compatible database is running and try again.");
             System.exit(0);
         }
     }

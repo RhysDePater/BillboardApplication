@@ -171,18 +171,35 @@ public class BillboardFunctions extends ServerVariables{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String startDateString;
         int duration;
+        int time_to_recur;
         LocalDateTime startDate;
         LocalDateTime endDate;
         LocalDateTime currentDate = LocalDateTime.now();
         System.out.println("Scheduled Billboards: " + Arrays.deepToString(scheduledBillboards));
         for (int i = 0; i < scheduledBillboards.length; i++){ // Iterate over the array and see if each billboard should be currently displayed
             startDateString = scheduledBillboards[i][2];
+            time_to_recur = Integer.parseInt(scheduledBillboards[i][4]);
             duration = Integer.parseInt(scheduledBillboards[i][3]);
             startDate = LocalDateTime.parse(startDateString, formatter);
             endDate = startDate.plusSeconds(duration);
-            if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)){ // The billboard should be currently displayed
-                billboardCurrentlyScheduled = true;
-                indexOfCurrentBillboard = i;
+            if (time_to_recur == 0) { // A simple check to see if the billboard should currently be displayed
+                if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)){ // The billboard should be currently displayed
+                    billboardCurrentlyScheduled = true;
+                    indexOfCurrentBillboard = i;
+                }
+            }
+            else{
+                // First add the recur time until we reach the closest current time.
+                while (startDate.isBefore(currentDate)){
+                    startDate = startDate.plusSeconds(time_to_recur);
+                }
+                startDate = startDate.minusSeconds(time_to_recur); // Go back to before we overwrote the current time
+                endDate = startDate.plusSeconds(duration);
+                System.out.println("From: " + startDate + " to: " + endDate);
+                if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)){ // The billboard should be currently displayed
+                    billboardCurrentlyScheduled = true;
+                    indexOfCurrentBillboard = i;
+                }
             }
         }
         if(billboardCurrentlyScheduled){

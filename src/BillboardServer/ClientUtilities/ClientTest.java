@@ -26,9 +26,6 @@
 //     * USE THIS METHOD TO HASH THE PASSWORD BEING SENT FROM THE CLIENT. Used for hashing
 //     *  a password when either creating a user or logging
 //     * into an account.
-//     * @param password
-//     * @return
-//     * @throws NoSuchAlgorithmException
 //     */
 //    // Based on material from cab302 week 9 assignment Q&A lecture.
 //    private static String hashedPassword(String password) throws NoSuchAlgorithmException {
@@ -67,13 +64,11 @@
 //
 //        // These are the functions to call if you want the server to perform stuff on the database. Hopefully they are straightforward, but there are java doc style comments available.
 //        // See ServerRequest.sendQuery (and below) for what they return.
-//        try {
 //            //responseArray = ServerRequest.setUserPassword("ADMIN", NewADMINPassword, sessionToken);
 //
 //            //responseArray = ServerRequest.login("testusername", testPassword); // Password for this user is myPassword2
 //            responseArray = ServerRequest.login("ADMIN", ADMINPassword); // Password for this user is myPassword2
-//            //sessionToken = responseArray[1];
-//            //responseArray = ServerRequest.createUser("testusername3", testPassword, 1,1,1,1, sessionToken);
+//            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
 //            sessionToken = responseArray[1];
 //            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
 //            //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
@@ -83,18 +78,12 @@
 //            //responseArray = ServerRequest.addSchedule("BillboardMethodTest6", startDate, 120, sessionToken);
 //            //responseArray = ServerRequest.deleteSchedule("BillboardMethodTest6", startDate, sessionToken);
 //            //responseArray = ServerRequest.editAllPermissions("testusername", 0,0,0,0, sessionToken);
-//        }
-//        catch (IOException e){
-//            System.out.println("Could not access server");
-//            return; // Can't really do much if we can't access the server
-//        }
 //
 //       // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
 //        System.out.println(responseArray[0]); // true or false if the sql query ran okay
 //        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
-//        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+//        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be ""
 //
-//        try {
 //            //responseArray = ServerRequest.setUserPassword("testusername1", NewtestPassword, sessionToken)
 //            //responseArray = ServerRequest.setUserPassword("ADMIN", ADMINPassword, sessionToken);
 //            //responseArray = ServerRequest.login("testusername4", testPassword); // Password for this user is myPassword2
@@ -103,26 +92,26 @@
 //            //responseArray = ServerRequest.createUser("testusername2", testPassword, 1,1,1,0, sessionToken);
 //            //sessionToken = responseArray[1];
 //            //responseArray = ServerRequest.createUser("testusername", testPassword, 1,1,1,1, sessionToken);
-//            //responseArray = ServerRequest.deleteUser("testusername2", sessionToken);
-//            //responseArray = ServerRequest.createOrEditBillboard("admin bill", "example data", sessionToken);
+//            //responseArray = ServerRequest.deleteUser("testusername", sessionToken);
+//            //responseArray = ServerRequest.createOrEditBillboard("testbillboard", "example data", sessionToken);
+//            //ServerRequest.createOrEditBillboard("bill1", "example data1", sessionToken);
+//            //ServerRequest.createOrEditBillboard("bill2", "example data2", sessionToken);
+//
 //            //responseArray = ServerRequest.deleteBillboard("my billboard", sessionToken);
 //            //responseArray = ServerRequest.getBillboard("BillboardMethodTest6", sessionToken);
-//            //responseArray = ServerRequest.addSchedule("my billboard4", startDate, 120, sessionToken);
-//            //responseArray = ServerRequest.deleteSchedule("my billboard", startDate, sessionToken);
+//            //responseArray = ServerRequest.createSchedule("testbillboard", startDate, 30, 60, sessionToken);
+//            //responseArray = ServerRequest.createSchedule("bill2", LocalDateTime.now().plusSeconds(45), 30, 60, sessionToken);
+//            responseArray = ServerRequest.deleteSchedule("testbillboard", startDate, sessionToken);
 //            //responseArray = ServerRequest.editAllPermissions("testusername", 1,1,0,1, sessionToken);
-//            responseArray2D = ServerRequest.listSchedules(sessionToken);
+//            //responseArray2D = ServerRequest.listSchedules(sessionToken);
 //            //responseArray2D = ServerRequest.listBillboards(sessionToken);
-//        }
-//        catch (IOException e){
-//            System.out.println("Could not access server");
-//            return; // Can't really do much if we can't access the server
-//        }
+//        //responseArray = ServerRequest.getCurrentBillboard();
 //
 //        // When an exception occurs the response array is null, so you will get an error if you try read it, otherwise it's fine
-//        System.out.println(responseArray[0]); // true or false if the sql query ran okay
-//        System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
-//        System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
-//        System.out.print(Arrays.deepToString(responseArray2D));
+//        //System.out.println(responseArray[0]); // true or false if the sql query ran okay
+//        //System.out.println(responseArray[1]); // Response string (Returned from some functions such as those which get stuff from the database, "" from others)
+//        //System.out.println(responseArray[2]); // Optional user-friendly message (Not implemented for every function, it might just be "")
+//        System.out.print(Arrays.deepToString(responseArray));
 //
 //        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////        try{
@@ -154,4 +143,4 @@
 ////        System.out.println(Arrays.deepToString(responseArray2D)); // Entire output
 //    }
 //}
-//
+

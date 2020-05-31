@@ -1,7 +1,8 @@
-package BillboardViewer;
+package BillboardViewer.View;
 
-import BillboardViewer.helper;
+import BillboardViewer.HelpFiles.helper;
 import BillboardViewer.ClientUtilities.ServerRequest;
+import BillboardViewer.HelpFiles.xmlParser;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,13 +11,9 @@ import java.awt.event.*;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class mainView extends JFrame implements Runnable{
     public static final Font MESSAGE_FONT = new Font("SansSerif", Font.BOLD, 3);
